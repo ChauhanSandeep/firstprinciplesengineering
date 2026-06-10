@@ -1,0 +1,443 @@
+@use "./variables.scss" as *;
+
+// =============================================================================
+//  First Principles Engineering — Catppuccin theme polish
+//  All site-wide visual customizations live here. Pure CSS / SCSS only —
+//  Quartz components are untouched.
+// =============================================================================
+
+// ---- Theme transition ----------------------------------------------------
+// Smooth fade when toggling light / dark.
+:root,
+:root[saved-theme="dark"],
+:root[saved-theme="light"] {
+  body,
+  body *,
+  body *::before,
+  body *::after {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      fill 200ms ease,
+      stroke 200ms ease;
+  }
+}
+
+// ---- Body typography -----------------------------------------------------
+article {
+  line-height: 1.7;
+
+  p,
+  ul,
+  ol,
+  blockquote {
+    max-width: 72ch;
+  }
+
+  // Code / pre / figure / table should use the full content width.
+  pre,
+  figure,
+  table,
+  .excalidraw-embed,
+  details {
+    max-width: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.01em;
+  }
+}
+
+// ---- Inline <code> pills -------------------------------------------------
+:not(pre) > code {
+  background: var(--lightgray);
+  color: var(--secondary);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: var(--codeFont);
+  border: 1px solid color-mix(in srgb, var(--secondary) 12%, transparent);
+  white-space: nowrap;
+}
+
+// ---- Heading anchors on hover -------------------------------------------
+article {
+  h2,
+  h3,
+  h4 {
+    position: relative;
+    scroll-margin-top: 2rem;
+
+    // Quartz auto-injects an SVG chain-link anchor inside each heading.
+    & > a[role="anchor"] {
+      visibility: hidden;
+      position: absolute;
+      left: -1.4rem;
+      top: 50%;
+      transform: translateY(-50%);
+
+      svg {
+        width: 0.95em;
+        height: 0.95em;
+      }
+    }
+
+    &:hover > a[role="anchor"] {
+      visibility: visible;
+      color: var(--secondary);
+      opacity: 0.6;
+    }
+  }
+}
+
+// ---- Code blocks ---------------------------------------------------------
+pre {
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid var(--lightgray);
+  padding: 1rem 1.1rem !important;
+  font-size: 0.9em;
+  line-height: 1.55;
+
+  // Language badge (populated by site.js from data-language attr)
+  &::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 0.5rem;
+    right: 0.65rem;
+    font-family: var(--codeFont);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  // Copy button placeholder — site.js fills it in
+  & > .copy-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 2.5rem;
+    padding: 0.18rem 0.55rem;
+    font-size: 0.7rem;
+    font-family: var(--codeFont);
+    color: var(--darkgray);
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 120ms ease;
+
+    &:hover {
+      color: var(--secondary);
+      border-color: var(--secondary);
+    }
+
+    &.copied {
+      color: var(--tertiary);
+      border-color: var(--tertiary);
+    }
+  }
+
+  &:hover > .copy-btn {
+    opacity: 1;
+  }
+}
+
+// ---- Excalidraw embed treatment -----------------------------------------
+// Diagrams render via <img src="…/Foo.excalidraw.svg">. Style them as cards.
+img[src$=".excalidraw.svg"] {
+  display: block;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  height: auto;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+
+  // In dark mode, the underlying SVG is light-themed Excalidraw, so frame
+  // it on a slightly lifted surface so it doesn't shock against #1e1e2e.
+  :root[saved-theme="dark"] & {
+    background: #fdfdfd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+// ---- Callouts ------------------------------------------------------------
+.callout {
+  border-radius: 8px;
+  border-left: 3px solid var(--callout-color, var(--secondary));
+  background: color-mix(in srgb, var(--callout-color, var(--secondary)) 8%, var(--light));
+
+  .callout-title {
+    color: var(--callout-color, var(--secondary));
+    font-weight: 600;
+  }
+}
+
+// Catppuccin-flavoured callout colors
+.callout[data-callout="note"],
+.callout[data-callout="info"] {
+  --callout-color: var(--secondary); // Mauve
+}
+.callout[data-callout="tip"],
+.callout[data-callout="success"] {
+  --callout-color: #40a02b; // Latte green
+  :root[saved-theme="dark"] & {
+    --callout-color: #a6e3a1; // Mocha green
+  }
+}
+.callout[data-callout="warning"],
+.callout[data-callout="caution"] {
+  --callout-color: var(--tertiary); // Peach
+}
+.callout[data-callout="danger"],
+.callout[data-callout="error"],
+.callout[data-callout="failure"] {
+  --callout-color: #d20f39; // Latte red
+  :root[saved-theme="dark"] & {
+    --callout-color: #f38ba8; // Mocha red
+  }
+}
+.callout[data-callout="quote"],
+.callout[data-callout="cite"] {
+  --callout-color: var(--gray);
+}
+
+// ---- Tag pills -----------------------------------------------------------
+a.internal.tag-link {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  margin: 0.15rem 0.2rem 0.15rem 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--secondary) 14%, transparent);
+  color: var(--secondary);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+
+  &:hover {
+    background: var(--secondary);
+    color: var(--light);
+  }
+}
+
+// ---- Scroll progress bar -------------------------------------------------
+// CSS-only on modern browsers; site.js falls back on older ones.
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--secondary);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  #scroll-progress {
+    animation: scroll-grow linear forwards;
+    animation-timeline: scroll(root);
+  }
+  @keyframes scroll-grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+// ---- Graph view restyle -------------------------------------------------
+#graph-container {
+  border-radius: 8px;
+  border: 1px solid var(--lightgray);
+
+  svg .node {
+    fill: var(--gray) !important;
+    opacity: 0.7;
+    transition: fill 150ms ease, opacity 150ms ease;
+  }
+
+  svg .node:hover,
+  svg .node.active {
+    fill: var(--secondary) !important;
+    opacity: 1;
+  }
+
+  svg .link {
+    stroke: var(--lightgray) !important;
+    opacity: 0.5;
+  }
+
+  svg .label {
+    font-family: var(--bodyFont) !important;
+    fill: var(--darkgray) !important;
+  }
+}
+
+// ---- Background texture --------------------------------------------------
+// Graph paper in light mode, dot grid in dark mode. Skip on mobile to save
+// repaints + keep things calmer on small screens.
+@media (min-width: 800px) {
+  body {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-attachment: fixed;
+  }
+  :root[saved-theme="dark"] body {
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--dark) 8%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+}
+
+// ---- Landing-page hero + topic cards ------------------------------------
+.fpe-hero {
+  margin: 1rem 0 2.5rem;
+  padding: 2.5rem 0 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--lightgray);
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    margin: 0 0 0.5rem;
+    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.15;
+  }
+  p {
+    max-width: 56ch;
+    margin: 0.75rem auto 0;
+    color: var(--darkgray);
+    font-size: 1.05rem;
+  }
+}
+
+.fpe-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+}
+
+.fpe-topic-card {
+  display: block;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+
+  & > .topic-eyebrow {
+    display: block;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--secondary);
+    margin-bottom: 0.35rem;
+  }
+  & > .topic-title {
+    display: block;
+    font-family: var(--headerFont);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  & > .topic-desc {
+    color: var(--darkgray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 18%, transparent);
+  }
+}
+
+// ---- Folder-page card grid ----------------------------------------------
+// Quartz emits folder/tag listings as <ul.section-ul> with <li.section-li>.
+.section-ul,
+ul.section-ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.section-li,
+li.section-li {
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  padding: 1rem 1.1rem 0.9rem;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 12%, transparent);
+  }
+
+  // Quartz inserts these slots; tighten typography.
+  .section {
+    display: block;
+  }
+  .meta {
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+  }
+  h3 {
+    margin: 0.1rem 0 0.35rem;
+    font-size: 1.05rem;
+  }
+  p {
+    color: var(--darkgray);
+    font-size: 0.88rem;
+    margin: 0;
+    max-width: none;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+// ---- Subtle header polish -----------------------------------------------
+.page > #quartz-body > .sidebar.left {
+  & h2.page-title-text,
+  & .page-title a {
+    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+}

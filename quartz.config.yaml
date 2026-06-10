@@ -1,0 +1,247 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+configuration:
+  pageTitle: First Principles Engineering
+  pageTitleSuffix: ""
+  enableSPA: true
+  enablePopovers: true
+  locale: en-US
+  baseUrl: chauhansandeep.github.io/firstprinciplesengineering
+  ignorePatterns:
+    - private
+    - templates
+    - .obsidian
+    # Defense in depth: never render a raw Excalidraw source even if one
+    # somehow lands in content/.
+    - "**/*.excalidraw.md"
+    - "**/*.excalidraw"
+  theme:
+    fontOrigin: googleFonts
+    cdnCaching: true
+    typography:
+      header: Lexend Deca
+      body: Atkinson Hyperlegible
+      code: JetBrains Mono
+    colors:
+      # Catppuccin Latte — light mode
+      lightMode:
+        light: "#eff1f5"          # Base — page background
+        lightgray: "#ccd0da"      # Surface0 — borders / muted surfaces
+        gray: "#9ca0b0"           # Overlay0 — muted text / icons
+        darkgray: "#5c5f77"       # Subtext1 — secondary text
+        dark: "#4c4f69"           # Text — primary text
+        secondary: "#8839ef"      # Mauve — primary accent / links
+        tertiary: "#fe640b"       # Peach — secondary accent
+        highlight: rgba(136, 57, 239, 0.10)
+        textHighlight: rgba(254, 100, 11, 0.28)
+      # Catppuccin Mocha — dark mode
+      darkMode:
+        light: "#1e1e2e"          # Base
+        lightgray: "#313244"      # Surface0
+        gray: "#7f849c"           # Overlay1
+        darkgray: "#bac2de"       # Subtext1
+        dark: "#cdd6f4"           # Text
+        secondary: "#cba6f7"      # Mauve
+        tertiary: "#fab387"       # Peach
+        highlight: rgba(203, 166, 247, 0.15)
+        textHighlight: rgba(250, 179, 135, 0.30)
+plugins:
+  - source: github:quartz-community/created-modified-date
+    enabled: true
+    options:
+      defaultDateType: modified
+      priority:
+        - frontmatter
+        - git
+        - filesystem
+    order: 10
+  - source: github:quartz-community/syntax-highlighting
+    enabled: true
+    options:
+      theme:
+        light: catppuccin-latte
+        dark: catppuccin-mocha
+      keepBackground: false
+    order: 20
+  - source: github:quartz-community/obsidian-flavored-markdown
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+    order: 30
+  - source: github:quartz-community/github-flavored-markdown
+    enabled: true
+    order: 40
+  - source: github:quartz-community/table-of-contents
+    enabled: true
+    order: 50
+    layout:
+      position: right
+      priority: 30
+  - source: github:quartz-community/crawl-links
+    enabled: true
+    options:
+      markdownLinkResolution: shortest
+    order: 60
+  - source: github:quartz-community/description
+    enabled: true
+    order: 70
+  - source: github:quartz-community/latex
+    enabled: true
+    options:
+      renderEngine: katex
+    order: 80
+  - source: github:quartz-community/remove-draft
+    enabled: true
+  # SECOND publish gate. The sync script injects `publish: true` for
+  # folder-allowlisted notes so this filter still accepts them.
+  - source: github:quartz-community/explicit-publish
+    enabled: true
+  - source: github:quartz-community/alias-redirects
+    enabled: true
+  - source: github:quartz-community/content-index
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: true
+  - source: github:quartz-community/favicon
+    enabled: true
+  - source: github:quartz-community/og-image
+    enabled: true
+  - source: github:quartz-community/cname
+    enabled: true
+  - source: github:quartz-community/canvas-page
+    enabled: true
+  - source: github:quartz-community/content-page
+    enabled: true
+  - source: github:quartz-community/folder-page
+    enabled: true
+  - source: github:quartz-community/tag-page
+    enabled: true
+  - source: github:quartz-community/explorer
+    enabled: true
+    layout:
+      position: left
+      priority: 50
+  - source: github:quartz-community/graph
+    enabled: true
+    layout:
+      position: right
+      priority: 10
+  - source: github:quartz-community/search
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: github:quartz-community/backlinks
+    enabled: true
+    layout:
+      position: right
+      priority: 50
+  - source: github:quartz-community/article-title
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+  - source: github:quartz-community/content-meta
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: github:quartz-community/page-title
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+  - source: github:quartz-community/darkmode
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: github:quartz-community/reader-mode
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+  - source: github:quartz-community/breadcrumbs
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+  - source: github:quartz-community/footer
+    enabled: true
+    options:
+      links:
+        GitHub: https://github.com/chauhansandeep/firstprinciplesengineering
+        Source (Quartz): https://github.com/jackyzha0/quartz
+  - source: github:quartz-community/recent-notes
+    enabled: true
+    options:
+      title: Recently updated
+      limit: 8
+      showTags: true
+      hideTagPages: true
+      hideFolderPages: true
+  - source: github:quartz-community/spacer
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+  - source: github:quartz-community/bases-page
+    enabled: true
+    options: {}
+    order: 50
+  - source: github:quartz-community/note-properties
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties:
+        - description
+        - tags
+        - aliases
+      excludedProperties: []
+      hidePropertiesView: false
+      delimiters: ---
+      language: yaml
+    order: 5
+    layout:
+      position: beforeBody
+      priority: 15
+      display: all
+  - source: github:quartz-community/unlisted-pages
+    enabled: true
+    options: {}
+    order: 45
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content: {}
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    canvas: {}
+    bases: {}
