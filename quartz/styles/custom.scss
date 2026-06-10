@@ -347,7 +347,10 @@ img[src$=".excalidraw.svg"] {
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 10px;
-  padding: 0.5rem;
+  // Generous matting so labels positioned at the SVG's own viewBox edges
+  // (which Excalidraw often does for axis ticks, corner annotations, and
+  // tightly-cropped diagrams) have breathing room from the frame border.
+  padding: 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
