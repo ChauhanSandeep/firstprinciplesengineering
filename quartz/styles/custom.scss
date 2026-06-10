@@ -349,6 +349,42 @@ article figcaption {
   text-align: center;
 }
 
+// ---- Link styling (W2-P7) -------------------------------------------------
+// Internal vs external differentiation. Internal links get subtle muted
+// underline; external links get arrow icon and slightly different color.
+article a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-thickness 150ms ease, text-decoration-color 150ms ease;
+
+  &:hover {
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--secondary);
+  }
+}
+
+// External links (anything starting http(s) but not pointing back to our site)
+article a[href^="http://"]:not([href*="firstprinciplesengineering"]),
+article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
+  color: var(--tertiary);
+  text-decoration-color: color-mix(in srgb, var(--tertiary) 35%, transparent);
+
+  &:hover {
+    text-decoration-color: var(--tertiary);
+  }
+
+  &::after {
+    content: "↗";
+    display: inline-block;
+    margin-left: 0.15em;
+    font-size: 0.85em;
+    transform: translateY(-0.05em);
+    opacity: 0.75;
+  }
+}
+
 // ---- Excalidraw lightbox -------------------------------------------------
 // Fullscreen viewer triggered by site.js when an Excalidraw image is clicked.
 #fpe-lightbox {
