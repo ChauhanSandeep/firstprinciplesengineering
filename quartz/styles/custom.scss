@@ -438,8 +438,11 @@ article img:not([src*=".excalidraw."]) {
 // page background in either mode. Both images are downloaded; the inactive
 // one is hidden via CSS (and `aria-hidden="true"` keeps screen readers from
 // announcing it twice).
+// Use `display: block` (not inline-block) so the parent rule's
+// `margin: 1.5rem auto` centers the active variant horizontally — matches the
+// behavior of single (non-pair) excalidraw images.
 img.excalidraw-light {
-  display: inline-block;
+  display: block;
 }
 img.excalidraw-dark {
   display: none;
@@ -449,7 +452,7 @@ img.excalidraw-dark {
     display: none;
   }
   img.excalidraw-dark {
-    display: inline-block;
+    display: block;
   }
 }
 
