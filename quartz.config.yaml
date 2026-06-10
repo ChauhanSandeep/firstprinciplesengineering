@@ -72,8 +72,14 @@ plugins:
     enabled: true
     order: 40
   - source: github:quartz-community/table-of-contents
-    enabled: false
+    enabled: true
+    options:
+      layout: modern
     order: 50
+    layout:
+      position: beforeBody
+      priority: 25
+      condition: not-index
   - source: github:quartz-community/crawl-links
     enabled: true
     options:
