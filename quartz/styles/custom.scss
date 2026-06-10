@@ -392,12 +392,13 @@ img[src$=".excalidraw.svg"] {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
-  // Dark-mode "paper figure" — same warm cream as light-mode page so the
-  // diagram reads as a printed plate set on the dark page. Tonally
-  // consistent with the rest of the warm hybrid palette.
+  // Dark-mode "paper figure" — softer than full cream so the contrast
+  // against the warm-dark page reads as a tinted plate rather than a
+  // bright punch. Tones the plate toward the dark page bg while keeping
+  // enough lift for the diagram's dark strokes to remain legible. #20.
   :root[saved-theme="dark"] & {
-    background: #fbf6e9;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 28px rgba(0, 0, 0, 0.3);
+    background: #e8dfc9;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32), 0 6px 22px rgba(0, 0, 0, 0.26);
   }
 }
 
@@ -672,17 +673,18 @@ a.internal.tag-link {
 }
 
 // ---- Background texture --------------------------------------------------
-// Graph paper in light mode, dot grid in dark mode. Skip on mobile to save
-// repaints + keep things calmer on small screens.
+// Graph paper in light mode, dot grid in dark mode. Scoped to the landing
+// page only (#16 audit fix) so article reading surfaces stay calm and free
+// of visual noise. Skipped on mobile to save repaints.
 @media (min-width: 800px) {
-  body {
+  body[data-slug="index"] {
     background-image:
       linear-gradient(to right, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px),
       linear-gradient(to bottom, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px);
     background-size: 32px 32px;
     background-attachment: fixed;
   }
-  :root[saved-theme="dark"] body {
+  :root[saved-theme="dark"] body[data-slug="index"] {
     background-image: radial-gradient(
       color-mix(in srgb, var(--dark) 8%, transparent) 1px,
       transparent 1px
@@ -750,6 +752,16 @@ a.internal.tag-link {
     strong {
       color: var(--dark);
       font-weight: 600;
+    }
+
+    // On narrow phones the role line is too long for one line; let the
+    // separator dot collapse onto its own break so the line wraps cleanly
+    // between name and role instead of mid-phrase.
+    @media all and ($mobile) {
+      font-size: 0.88rem;
+      max-width: 32ch;
+      .fpe-hero-bullet { display: none; }
+      .fpe-hero-role { display: block; margin-top: 0.15rem; }
     }
   }
   p {

@@ -7,7 +7,7 @@ publish: true
 
 # First Principles Engineering
 
-<p class="fpe-hero-byline"><strong>Sandeep Chauhan</strong> · Senior Software Engineer @ LinkedIn</p>
+<p class="fpe-hero-byline"><strong>Sandeep Chauhan</strong><span class="fpe-hero-bullet"> · </span><span class="fpe-hero-role">Senior Software Engineer @ LinkedIn</span></p>
 
 <p>Writing about Distributed Systems, System Design, Staff Engineering, Algorithms and AI — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
 
