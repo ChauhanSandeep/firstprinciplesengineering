@@ -1058,11 +1058,13 @@ a.internal.tag-link {
 // Quartz emits folder/tag listings as <ul.section-ul> with <li.section-li>.
 //
 // The folder-page plugin wraps its body in <div class="popover-hint"> with
-// <article> as a *grandchild* of .center, so the base.scss rule
-// `.center > article { grid-area: grid-center }` doesn't match and .center
-// collapses to its intrinsic width. Re-anchor the popover-hint wrapper into
-// the grid-center area so the listing gets the full center column width.
-.center > .popover-hint {
+// <article> as a grandchild of .center, so base.scss's
+// `.center > article { grid-area: grid-center }` rule no longer matches and
+// .center itself ends up auto-placed by the grid into a tiny intrinsic-sized
+// track (~315px), squishing the listing to a single column. Anchor .center
+// itself into the grid-center area so it always fills the 740px center
+// column regardless of which child layout the page uses.
+.page > #quartz-body > .center {
   grid-area: grid-center;
 }
 
