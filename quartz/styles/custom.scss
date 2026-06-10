@@ -1229,19 +1229,22 @@ ul.toc-content.overflow {
     display: none !important;
   }
 
-  // Centre the article. In normal mode the content column already sits
-  // around 960px between the two sidebars, so reader mode must be at
-  // least as wide or the article visibly shrinks on desktop — the exact
-  // opposite of "focus on the content". 1100px gives a roomier measure
-  // (still well under ~90ch for prose at body size) while leaving real
-  // breathing room on either side of the viewport.
+  // Centre the article. In normal mode on common desktops the content
+  // column between sidebars sits around 1260px (1920 viewport) or more.
+  // Reader mode must be at least that wide or the article visibly
+  // shrinks when entering reader — the exact opposite of "focus on the
+  // content". 1280px gives a roomier measure than normal on desktops up
+  // to ~2560px while still capping line length around ~95ch so prose
+  // stays readable. Padding uses clamp() so narrow phones don't lose
+  // horizontal space versus normal mode.
   & .center {
-    max-width: 1100px !important;
+    max-width: 1280px !important;
     min-width: 0 !important;
     width: 100% !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding: 0 1.5rem;
+    padding-left: clamp(0px, 2vw, 1.5rem);
+    padding-right: clamp(0px, 2vw, 1.5rem);
     box-sizing: border-box;
   }
 
