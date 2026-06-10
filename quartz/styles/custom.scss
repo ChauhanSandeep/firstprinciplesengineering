@@ -379,13 +379,30 @@ img[src$=".excalidraw.svg"]:hover {
 
 // ---- Callouts ------------------------------------------------------------
 .callout {
-  border-radius: 8px;
+  border-radius: 10px;
   border-left: 3px solid var(--callout-color, var(--secondary));
-  background: color-mix(in srgb, var(--callout-color, var(--secondary)) 8%, var(--light));
+  background: color-mix(in srgb, var(--callout-color, var(--secondary)) 6%, var(--light));
+  padding: 1rem 1.25rem;
+  margin: 1.75rem 0;
+  transition: border-left-width 150ms ease, transform 150ms ease;
 
   .callout-title {
     color: var(--callout-color, var(--secondary));
     font-weight: 600;
+    margin-bottom: 0.5rem;
+
+    .callout-icon {
+      transform: scale(1.1);
+      transform-origin: center;
+    }
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    border-left-width: 5px;
   }
 }
 
