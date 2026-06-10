@@ -182,6 +182,24 @@
     article.appendChild(nav)
   }
 
+  function wrapInScrollable(el, className) {
+    if (!el || el.dataset.fpeWrapped === "1") return
+    if (el.parentElement && el.parentElement.classList.contains(className)) {
+      el.dataset.fpeWrapped = "1"
+      return
+    }
+    const wrap = document.createElement("div")
+    wrap.className = className
+    el.parentNode.insertBefore(wrap, el)
+    wrap.appendChild(el)
+    el.dataset.fpeWrapped = "1"
+  }
+
+  function wrapKatex(root) {
+    const blocks = (root || document).querySelectorAll("article .katex-display")
+    blocks.forEach((k) => wrapInScrollable(k, "fpe-katex-wrap"))
+  }
+
   function hydrateExcalidrawZoom(root) {
     const imgs = (root || document).querySelectorAll('img[src$=".excalidraw.svg"]')
     imgs.forEach((img) => {
@@ -223,6 +241,7 @@
     hydrateCodeBlocks(document)
     ensureProgressBar()
     hydrateExcalidrawZoom(document)
+    wrapKatex(document)
     prettifyBreadcrumbs(document)
     decorateSearchButton(document)
     ensureBackToTop()
