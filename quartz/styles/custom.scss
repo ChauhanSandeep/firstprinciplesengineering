@@ -1578,6 +1578,19 @@ body[data-slug="404"] {
   pre {
     max-width: 100%;
   }
+
+  // Inline KaTeX spans (`.katex` without `.katex-display`) can render very wide
+  // on mobile when the source has long unbroken math like `$X/tenant/year$`.
+  // We can't wrap inline math in a block-level scroll container without breaking
+  // text flow, so make the inline span itself an inline-block scrollable.
+  // Only target inline katex — display math is already handled by .fpe-katex-wrap.
+  article .katex:not(.katex-display .katex) {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: inline-block;
+    vertical-align: middle;
+  }
 }
 
 // ---- Phase 10: share / discuss row (#17) --------------------------------
