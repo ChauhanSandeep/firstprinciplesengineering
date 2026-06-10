@@ -2091,3 +2091,19 @@ body[data-slug="about"] {
   .note-properties,
   .fpe-share { display: none !important; }
 }
+
+// ---- Backlinks: cap height + enable scroll ------------------------------
+// The upstream @quartz-community/backlinks plugin sets
+// `max-height: calc(100% - 2rem)` on the `<ul>` and never sets `overflow-y`.
+// Because backlinks are placed at `afterBody` (in the main column, not a
+// fixed-height sidebar), the percentage cap resolves against an unbounded
+// parent → effectively `none` → the list grows arbitrarily tall and never
+// scrolls. Cap it explicitly so heavily-linked notes don't push half the
+// page off-screen.
+//
+// Selector is body-prefixed because Quartz loads custom.scss BEFORE the
+// component CSS; same-specificity rules would lose the cascade.
+body .backlinks > ul.overflow {
+  max-height: min(40vh, 280px);
+  overflow-y: auto;
+}
