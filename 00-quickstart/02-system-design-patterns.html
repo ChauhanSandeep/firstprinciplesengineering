@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>02-System-Design-Patterns</title><meta charset="utf-8"/><link rel="preload" href="../index-22a5354e.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="02-System-Design-Patterns"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="02-System-Design-Patterns"/><meta name="twitter:description" content="A comprehensive guide to recognizing and solving system design problems."/><meta property="og:description" content="A comprehensive guide to recognizing and solving system design problems."/><meta property="og:image:alt" content="A comprehensive guide to recognizing and solving system design problems."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/02-system-design-patterns"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/02-system-design-patterns"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="A comprehensive guide to recognizing and solving system design problems."/><meta name="generator" content="Quartz"/><script src="../static/site.js" defer></script><link href="../index-22a5354e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/02-system-design-patterns-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/02-system-design-patterns-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/02-system-design-patterns-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="00-quickstart/02-system-design-patterns" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-1" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-1" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../00-quickstart/">00-QuickStart</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>02-System-Design-Patterns</a></div></nav><h1 class="article-title">02-System-Design-Patterns</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T06:50:21.264Z">Jun 10, 2026</time><span>20 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>A comprehensive guide to recognizing and solving system design problems. Each pattern includes trigger words, architectural approach, implementation ladder, and interview talking points.</p>
+<hr/>
+<h2 id="1-read-heavy-systems">1. Read-Heavy Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-read-heavy-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “feed”, “timeline”, “search”, “dashboard”, “browse”, “list”</p>
+<p><strong>Goal:</strong> The problem is that most requests are reads (90%+ read ratio) hitting the database, causing high latency and database overload.</p>
+<ul>
+<li>The goal is to minimize read latency by reducing the work the database has to do per request, primarily through caching, replication, and precomputation strategies.</li>
+</ul>
+<p><strong>Mental model:</strong> “Don’t make DB do work”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-1.excalidraw.svg" alt="1200"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Index</strong> - Add database indexes on query columns (WHERE, JOIN, ORDER BY). First and cheapest optimization.</li>
+<li><strong>Cache</strong> - Add Redis/Memcached layer with <a href="../00-quickstart/03-technology-decisions#fish" class="internal internal-link alias" data-slug="00-quickstart/03-technology-decisions">FISH pattern</a> (Fallback, Invalidation, Stampede prevention, Hot keys). Use write-through or TTL-based expiry. Target 80-90% hit rate.</li>
+<li><strong>CDN</strong> - Use CDN for cases where the data is updated less frequently, for example once a day or at the time of application deployment etc.</li>
+<li><strong>Read Replicas</strong> - Add async replicas for read traffic. Route user reads to replicas, own writes to primary. Monitor replication lag (&lt;1s). Scale reads horizontally.</li>
+<li><strong>Denormalize</strong> - Avoid expensive JOINs by duplicating data across tables. Store feed/timeline data pre-sorted and ready to serve. Trade storage in favour of read speed.</li>
+<li><strong>Precompute</strong> - Calculate expensive results during writes instead of reads. Store computed values (eg. counts, aggregates in <a href="../01-pinot" class="internal internal-link alias" data-slug="01-pinot">Pinot</a>) directly. Use materialized views or background jobs.</li>
+<li><strong>Shard</strong> - Partition data across multiple databases by user_id, tenant_id, or geography. Last resort due to complexity. Use consistent hashing for even distribution.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> p95/p99 latency target, freshness/staleness tolerance, read/write ratio, personalization needs (e.g., feed <a href="../01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies">fanout-on-write vs fanout-on-read</a>)</li>
+<li><strong>Measure:</strong> cache hit rate + tail latency, DB QPS/CPU, replica lag, hot key/top query distribution</li>
+<li><strong>Rollout:</strong> add caches incrementally (feature flag), protect DB with fallback + stampede protection, validate with load tests and shadow reads</li>
+</ul>
+<p><strong>Red flag:</strong> Jumping to sharding before trying cache + replicas</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is read-heavy, so I’m optimizing for latency. I’d start with indexes and <a href="../01-01-redis" class="internal internal-link" data-slug="01-01-redis">01-01-Redis</a> caching, add read replicas at 10K QPS, and only shard after exhausting those options.”</p>
+</blockquote>
+<hr/>
+<h2 id="2-write-heavy-systems">2. Write-Heavy Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-write-heavy-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “logging”, “metrics”, “events”, “tracking”, “orders”, “analytics ingestion”</p>
+<p><strong>Goal:</strong> The problem is high volume of incoming writes that risk overwhelming the database or losing data during spikes.</p>
+<ul>
+<li>The goal is to ensure durability (never lose data) by accepting writes quickly and deferring expensive processing, using append-only patterns and asynchronous workflows to handle bursts.</li>
+</ul>
+<p><strong>Mental model:</strong> “Accept fast, process later”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-2.excalidraw.svg" alt="1200"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Append-only</strong> - Never UPDATE or DELETE, only INSERT. Immutable event log pattern. Eliminates lock contention on updates. Query latest state with GROUP BY or time-based filters.</li>
+<li><strong>WAL (Write-Ahead Log)</strong> - Persist writes to sequential log before processing. Fsync to disk for durability. Enables fast crash recovery. Similar to database commit logs or Kafka’s design.</li>
+<li><strong>Batch writes</strong> - Group multiple writes into single DB transaction. Reduce network round trips and fsync overhead. Batch 100-1000 writes every 100-500ms. Balance latency vs throughput.</li>
+<li><strong>Queue for buffering</strong> - Use <a href="../01-kafka" class="internal internal-link alias" data-slug="01-kafka">Kafka</a>/SQS to absorb write spikes. Decouple ingestion from processing. Provides backpressure and prevents overwhelming downstream. Monitor queue depth.</li>
+<li><strong>Async processing</strong> - Process writes in background workers instead of request path. Return <code>202 Accepted</code> immediately. Use worker pools for parallelism. Retry on failure.</li>
+<li><strong>Shard by write key</strong> - Partition writes across multiple databases by entity ID or time range. Each shard handles subset of writes. Use range or hash-based partitioning.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> acceptable data loss (RPO), max ingestion latency, peak vs avg QPS, ordering requirements</li>
+<li><strong>Measure:</strong> ingress success rate, queue depth/backlog, end-to-end write latency, dropped events, retry rate</li>
+<li><strong>Rollout:</strong> enforce backpressure + load shedding, make writes idempotent (dedupe keys), validate with spike tests and capacity headroom</li>
+</ul>
+<p><strong>Red flag:</strong> Doing validation/joins/aggregation in write path</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is write-heavy, so I’m optimizing for durability. I’d use append-only writes to a WAL, buffer in <a href="../01-kafka" class="internal internal-link" data-slug="01-kafka">01-Kafka</a>, and process async to ensure we never lose data even under load spikes.”</p>
+</blockquote>
+<hr/>
+<h2 id="3-async-pipelines">3. Async Pipelines<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-async-pipelines" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “bulk”, “ETL”, “batch”, “processing”, “workflow”, “campaign”</p>
+<p><strong>Goal:</strong> The problem is processing large volumes of data through multiple stages where failures and retries are common.</p>
+<ul>
+<li>The goal is to maximize throughput while ensuring fault tolerance, using queues to decouple stages, idempotency to handle retries safely, and checkpointing to recover from failures without reprocessing everything.</li>
+</ul>
+<p><strong>Mental model:</strong> “Stages + retries + idempotency”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-3.excalidraw.svg" alt="1300"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Queue between stages</strong> - Decouple pipeline stages with Kafka/SQS. Each stage consumes from input queue, produces to output queue. Enables independent scaling and failure isolation.</li>
+<li><strong>Idempotency keys</strong> - Generate unique ID per work item (request_id, message_id). Store processed IDs in database/cache. Skip duplicate processing. Critical for retries and exactly-once semantics.</li>
+<li><strong>Checkpointing</strong> - Save progress periodically (every N records or M seconds). Store offset/cursor in durable storage. Resume from checkpoint on failure instead of restarting entire pipeline.</li>
+<li><strong>Worker pools</strong> - Run multiple parallel workers per stage. Each worker processes subset of data. Scale workers based on queue depth. Use consumer groups for load distribution.</li>
+<li><strong>DLQ + exponential backoff</strong> - Route failed messages to Dead Letter Queue after N retries (typically 3-5). Use exponential backoff (1s, 2s, 4s, 8s) with jitter. Monitor DLQ and alert.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> retry policy + max delay, ordering constraints (per key vs global), replay/backfill needs, schema evolution expectations</li>
+<li><strong>Measure:</strong> consumer lag, processing time distribution, DLQ rate, retry rate, throughput per stage</li>
+<li><strong>Rollout:</strong> canary new consumers, version schemas, keep reprocessing safe via idempotency + checkpoints</li>
+</ul>
+<p><strong>Red flag:</strong> Processing stages tightly coupled without queues</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is an async pipeline, so I’m optimizing for throughput and fault tolerance. I’d use <a href="../01-kafka" class="internal internal-link alias" data-slug="01-kafka">Kafka</a> between stages, make everything idempotent, checkpoint progress, and route failures to DLQ.”</p>
+</blockquote>
+<hr/>
+<h2 id="4-real-time-systems">4. Real-Time Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-real-time-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “chat”, “live”, “streaming”, “multiplayer”, “trading”, “bidding”</p>
+<p><strong>Goal:</strong> The problem is users expect consistent, bounded response times where latency spikes are unacceptable (e.g., a chat message taking 5 seconds sometimes).</p>
+<ul>
+<li>The goal is predictable latency with minimal jitter by keeping state in-memory, setting aggressive timeouts, and failing fast rather than queuing requests that would degrade user experience.</li>
+</ul>
+<p><strong>Mental model:</strong> “In-memory + fail fast”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-4.excalidraw.svg" alt="1200"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>In-memory state</strong> - Keep active session state (sessions, presence, subscriptions, game state) in Redis or server memory. Avoid disk I/O on hot path. Use TTL for automatic cleanup. Replicate state for failover if needed.</li>
+<li><strong>WebSockets/persistent connections</strong> - Maintain long-lived bidirectional connections. Avoid HTTP handshake overhead per message. Enable server push. Handle connection lifecycle (heartbeat, reconnect).</li>
+<li><strong>Aggressive timeouts</strong> - Set tight timeouts (50-100ms) on all operations. Fail fast instead of queuing. Return error immediately rather than degrading latency. Prevents cascading delays.</li>
+<li><strong>Load shedding</strong> - Reject new requests when system saturated. Return 503 immediately rather than queuing. Protect system stability over accepting all traffic. Monitor rejection rate.</li>
+<li><strong>Pre-allocation</strong> - Allocate buffers/objects at startup, not per request. Avoid garbage collection pauses during hot path. Use object pools. Critical for languages with GC (Java, Go).</li>
+<li><strong>Pub-Sub architecture</strong> - To broadcast real-time events across app servers when users are connected to different machines. One server publishes an event; all subscribed servers receive it and push to their local WebSocket clients. Enables horizontal scaling without tight coupling between servers.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> latency budget (p95/p99), connection scale (concurrent sockets), delivery semantics (best-effort vs at-least-once), offline/reconnect UX</li>
+<li><strong>Measure:</strong> p99 latency + jitter, reconnect rate, dropped messages, saturation (CPU/mem/GC), pubsub lag</li>
+<li><strong>Rollout:</strong> set and enforce overload thresholds (load shedding), canary by % of connections, test reconnect storms and regional failures</li>
+</ul>
+<p><strong>Red flag:</strong> Synchronous database calls in message delivery path</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is real-time, so I’m optimizing for predictability. I’d use WebSockets with in-memory state, 100ms timeouts, load shedding when overloaded, and no retries to keep latency bounded.”</p>
+</blockquote>
+<hr/>
+<h2 id="5-compute-heavy-workflows">5. Compute-Heavy Workflows<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-compute-heavy-workflows" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “ML”, “batch analytics”, “video processing”, “image processing”, “map-reduce”</p>
+<p><strong>Goal:</strong> The problem is CPU-intensive operations take too long to complete sequentially (hours or days for large datasets).</p>
+<ul>
+<li>The goal is to finish computation faster by splitting work across many parallel workers, minimizing coordination overhead, and keeping compute close to data to reduce network bottlenecks.</li>
+</ul>
+<p><strong>Mental model:</strong> “Split work, minimize coordination”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-5.excalidraw.svg" alt="700"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Partition data</strong> - Split input into independent chunks (by key range, hash, or file). Each partition processed independently. Ensures no overlap or dependency. Critical for parallelism.</li>
+<li><strong>Horizontal workers</strong> - Scale out workers linearly with data size. Each worker processes one partition. Use autoscaling based on queue depth. Stateless workers for easy replacement.</li>
+<li><strong>Batch sizing</strong> - Tune chunk size for optimal throughput. Too small: overhead dominates. Too large: stragglers delay completion. Typically 100-1000 records or 1-10MB per batch.</li>
+<li><strong>Data locality</strong> - Move compute to data, not data to compute. Each worker runs in the same AZ (or same rack) as the data partition it processes — local disk reads at ~500 MB/s instead of network transfers at ~100 MB/s. The coordinator assigns partitions to workers based on where the data already lives. Workers across different AZs is fine; what matters is that each worker is co-located with its own data. The shuffle/reduce phase is the only unavoidable network cost, but by then the data volume is already reduced.</li>
+<li><strong>Map-reduce pattern</strong> :
+<ol>
+<li>Map phase: parallel processing of partitions in same AZ cluster where data resides.</li>
+<li>Shuffle: redistribute data by key.</li>
+<li>Reduce phase: aggregate results. Minimal coordination between map tasks.</li>
+</ol>
+</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> end-to-end completion SLA, data skew/stragglers, fault tolerance needs, cost constraints</li>
+<li><strong>Measure:</strong> worker utilization, task duration distribution, straggler rate, throughput, retries/checkpoint restores</li>
+<li><strong>Rollout:</strong> checkpoint often, make outputs idempotent, cap fan-out + protect downstream stores, run on representative data to tune partitions</li>
+</ul>
+<p><strong>Red flag:</strong> Workers talking to each other (kills parallelism)</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is compute-heavy, so I’m optimizing for parallelism. I’d partition the work across workers, use map-reduce, tune batch sizes, and minimize coordination to maximize throughput.”</p>
+</blockquote>
+<hr/>
+<h2 id="6-transactional-systems">6. Transactional Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-transactional-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “payment”, “inventory”, “booking”, “reservation”, “ledger”, “money”</p>
+<p><strong>Goal:</strong> The problem is concurrent operations can create race conditions that violate business invariants (double-booking, negative inventory, duplicate charges).</p>
+<ul>
+<li>The goal is correctness first through ACID guarantees, idempotency to handle retries, and proper locking strategies to prevent data corruption even under high concurrency or failures.</li>
+</ul>
+<p><strong>Mental model:</strong> “Safety first, speed second”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-6.excalidraw.svg" alt="500"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Idempotency keys</strong> - Require client-generated unique ID for each request. Store ID + result in database for 24 hours. Return cached result if duplicate detected. Prevents double-charging/double-booking.</li>
+<li><strong>ACID transactions</strong> - Read Committed is sufficient for most cases. Keep transactions short (&lt;100ms). Ensures no race conditions or phantom reads. Use Serializable isolation level only for critical operations (it could be 100x slower).</li>
+<li><strong>Optimistic locking</strong> - Use either of
+<ol>
+<li>Version column (compares metadata eg. version number) : <code>UPDATE orders SET status = 'PAID', version = version + 1 WHERE id = 101 AND version = 3;</code></li>
+<li>Conditional Update (compares actual data/value ):  <code>Set balance = 500 where current balance = 400</code>
+Update succeeds only if version/data matches; retry on conflict. Best for low contention. No blocking, higher throughput.</li>
+</ol>
+</li>
+<li><strong>Pessimistic locking</strong> - Use <code>SELECT ... FOR UPDATE</code> to acquire row lock. Block other transactions until commit. Best for high contention or critical sections. Risk of deadlocks → enforce global lock ordering, minimize lock scope.</li>
+<li><strong>Distributed locking</strong> - For cross-process coordination, use external lock service (<a href="../01-01-redis" class="internal internal-link alias" data-slug="01-01-redis">Redis(high throughput, low criticality)</a> or <a href="../02-zookeeper" class="internal internal-link alias" data-slug="02-zookeeper">Zookeeper(low throughput, high criticality)</a>) when multiple processes must coordinate. Locks are lease-based with TTL. Use fencing tokens to avoid stale lock holders.</li>
+<li><strong>Saga pattern</strong> - For distributed transactions across services where ACID doesn’t scale. Execute local transactions with compensating actions on failure. Choreography via events or orchestration via coordinator. Provides eventual consistency.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> invariants (what must never happen), failure handling (refund/compensation), concurrency expectations (contention), retry semantics</li>
+<li><strong>Measure:</strong> conflict/deadlock rate, transaction duration, lock wait time, idempotency hit rate, write error budget</li>
+<li><strong>Rollout:</strong> add DB constraints where possible, keep migrations safe (backfills + feature flags), reconcile/audit critical flows</li>
+</ul>
+<p><strong>Red flag:</strong> Using eventual consistency without understanding invariants</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is transactional, so I’m optimizing for correctness. I’d use idempotency keys, ACID transactions with Serializable isolation, optimistic locking for low contention, and saga pattern if distributed.”</p>
+</blockquote>
+<hr/>
+<h2 id="7-multi-region-systems">7. Multi-Region Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-multi-region-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “global”, “CDN”, “disaster recovery”, “multi-region”, “geo-distribution”</p>
+<p><strong>Goal:</strong> The problem is users are globally distributed and single-region deployment causes high latency or can’t survive regional failures.</p>
+<ul>
+<li>The goal is high availability despite regional outages by deploying to multiple regions, accepting eventual consistency across regions, and using conflict resolution strategies to handle concurrent updates in different locations.</li>
+</ul>
+<p><strong>Important note:</strong> A multi-region system can still have <strong>one write region</strong>. Reads may be global; writes may be centralized.</p>
+<p><strong>Mental model:</strong> “Eventual consistency + conflict resolution”</p>
+<p><strong>Go-to stack:</strong>
+<img src="../excalidraw/system-design-patterns-7.excalidraw.svg" alt="500"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>CDN for static content</strong> - Serve images, CSS, JS from edge locations. CloudFront, Cloudflare, or Akamai. 95%+ cache hit rate. Reduces origin load and improves global latency.</li>
+<li><strong>Geographic routing</strong> - Route users to nearest region via DNS (Route53). Reduces network latency. Each region serves local traffic independently.</li>
+<li><strong>Async replication</strong> - Replicate data across regions asynchronously. Prioritize local writes (low latency) over global consistency. Monitor replication lag (typically &lt;5 seconds).</li>
+<li><strong>Accept eventual consistency</strong> - Understand that cross-region reads may be stale. Define acceptable staleness (5s p50 - 15 sec p90 -60s p99). Critical for CAP theorem tradeoff - choosing availability over consistency.</li>
+<li><strong>Conflict resolution</strong> - Handle concurrent updates in different regions. Last-write-wins (timestamp-based), CRDTs (mathematically sound merges), or application-specific logic. Version vectors track causality. More Details : <a href="../01-fundamentals/01-concepts/03-data/02-change-data-capture#4-multi-leader-conflict-resolution" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/03-data/02-change-data-capture">Multi Leader Conflict Resolution</a></li>
+<li><strong>Cross-region failover</strong> - Automated failover when region fails. Health checks every 30s. DNS TTL &lt;60s for fast cutover. Runbooks for manual intervention if needed.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> <a href="../00-quickstart/06-production-checklist#3-recovery-objectives-rpo-and-rto" class="internal internal-link alias" data-slug="00-quickstart/06-production-checklist">RTO targets</a>, where writes happen (single-writer vs multi-writer), conflict semantics, compliance/data residency</li>
+<li><strong>Measure:</strong> replication lag, regional error rates, failover time, conflict rate/merge failures</li>
+<li><strong>Rollout:</strong> game days + failover drills, gradual traffic shifting, keep DNS TTL low enough for your failover plan, validate conflict resolution with tests</li>
+</ul>
+<p><strong>Red flag:</strong> Expecting strong consistency across regions without understanding latency cost</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is multi-region, so I’m optimizing for availability. I’d use CDN for static content, geographic routing, async cross-region replication with eventual consistency, and last-write-wins for conflicts.”</p>
+</blockquote>
+<hr/>
+<h2 id="8-search-and-filtering-systems">8. Search and Filtering Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-search-and-filtering-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “search bar”, “autocomplete”, “faceted search”, “filter by attributes”, “relevance ranking”</p>
+<p><strong>Goal:</strong> The problem is users need to query data by text, tags, filters, or combinations, where SQL LIKE queries are too slow and relational JOINs can’t handle relevance ranking efficiently.</p>
+<ul>
+<li>The goal is fast, relevant results by using inverted indexes for text search, pre-computed aggregations for facets, and caching for hot queries, while keeping the search index fresh with incremental updates.</li>
+</ul>
+<p><strong>Mental model:</strong> “Index for search, not for storage”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-8.excalidraw.svg" alt="1400"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Inverted index</strong> - Build mapping from terms to document IDs. Enables fast text lookups without scanning all records. Used by Elasticsearch, Solr, Lucene. Supports stemming, stop words, analyzers.</li>
+<li><strong>Ingestion pipeline</strong> - Transform database records into search documents. Denormalize data (embed related entities). Run async via <a href="../01-fundamentals/01-concepts/03-data/02-change-data-capture" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/03-data/02-change-data-capture">CDC (Change Data Capture)</a> or queue. Keep index eventually consistent with source.</li>
+<li><strong>Query layer</strong> - Build filters programmatically (bool queries with must/should/must_not). Apply pagination (offset + limit or search_after for deep pagination). Sort by relevance score or custom fields.</li>
+<li><strong>Caching hot queries</strong> - Cache popular searches and their results in Redis. Use query string as key. TTL 5-15 minutes. Invalidate on data updates if needed. Dramatically reduces index load.</li>
+<li><strong>Sharding and replication</strong> - Shard index by document count or size (not by ID). Each shard handles subset of documents. Replicate shards for availability. Route queries to all shards (scatter-gather).</li>
+<li><strong>Relevance tuning</strong> - Boost fields (title > body). Use function score for custom ranking (recency, popularity). A/B test scoring changes. Balance precision and recall.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> freshness requirements (real-time vs 5-min lag), typo tolerance, ranking signals beyond text (clicks, recency), facet/filter cardinality</li>
+<li><strong>Measure:</strong> index lag, query latency (p95/p99), cache hit rate, slow query rate, index size/shard distribution</li>
+<li><strong>Rollout:</strong> validate schema changes in separate index first, reindex with zero-downtime alias swap, monitor heap/GC in search cluster</li>
+</ul>
+<p><strong>Red flag:</strong> Using SQL LIKE ‘%term%’ for text search at scale</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is a search system, so I’m optimizing for relevance and speed. I’d use Elasticsearch with inverted indexes, async ingestion pipeline, query caching, shard by document count, and tune relevance with field boosting.”</p>
+</blockquote>
+<hr/>
+<h2 id="9-file-and-media-storage-systems">9. File and Media Storage Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-file-and-media-storage-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “photo upload”, “video streaming”, “document storage”, “profile pictures”, “file sharing”</p>
+<p><strong>Goal:</strong> The problem is storing and serving large binary files (images, videos, documents) from application servers is inefficient and doesn’t scale, causing bandwidth bottlenecks and slow global access.</p>
+<ul>
+<li>The goal is cost-effective storage and fast global delivery by separating metadata from blobs, using object storage for files, CDN for caching, and processing pipelines for thumbnails/transcoding.</li>
+</ul>
+<p><strong>Mental model:</strong> “Separate metadata from blobs”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-9.excalidraw.svg" alt="1000"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Object storage</strong> - Store files in S3/GCS/Azure Blob, not in database or local disk. Use file_id as key. Leverage 99.999999999% (11 9s) durability. Pay per GB stored and transferred.</li>
+<li><strong>Metadata store</strong> - Store file_id, filename, size, owner, permissions, upload timestamp in database. Keep blob reference (S3 key) in metadata. Query metadata, serve files from object storage.</li>
+<li><strong>Presigned URLs</strong> - Generate time-limited signed URLs for uploads/downloads. Clients upload directly to S3 bypassing app servers. Reduces bandwidth and latency. Set expiry (5-15 min for uploads, longer for downloads).</li>
+<li><strong>CDN for delivery</strong> - Put CloudFront/Cloudflare in front of object storage. Cache files at edge for global users. Set long cache TTL (hours/days) for immutable files. Use versioned keys for cache busting.</li>
+<li><strong>Processing pipeline</strong> - Generate thumbnails, transcode videos, extract metadata async after upload. Use workers consuming from queue. Store processed variants with naming convention (original.jpg, thumb_small.jpg, thumb_large.jpg).</li>
+<li><strong>Lifecycle and archival</strong> - Move files to cold storage (Glacier, Archive tier) after N days of inactivity. Set retention policies for compliance. Auto-delete after expiry. Use S3 lifecycle policies.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> file size limits, hot vs cold access patterns, processing needs (thumbnails, transcoding), retention/compliance, access control granularity</li>
+<li><strong>Measure:</strong> upload success rate, presigned URL expiry, CDN hit rate, storage costs, processing backlog</li>
+<li><strong>Rollout:</strong> validate presigned URL security (scoped permissions), test large file uploads (multipart), handle partial/failed uploads (cleanup jobs)</li>
+</ul>
+<p><strong>Red flag:</strong> Storing large files in database or serving them through app servers</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is file storage, so I’m optimizing for cost and global delivery. I’d use S3 for blobs, metadata DB for queries, presigned URLs for direct uploads, CDN for serving, and async processing for thumbnails.”</p>
+</blockquote>
+<hr/>
+<h2 id="10-recommendation-and-personalization-systems">10. Recommendation and Personalization Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-recommendation-and-personalization-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “recommended for you”, “personalized feed”, “product recommendations”, “people you may know”, “watch next”</p>
+<p><strong>Goal:</strong> The problem is generating relevant personalized recommendations requires heavy computation (millions of candidates, complex ML models) that’s too slow to do per request.</p>
+<ul>
+<li>The goal is fast personalized results by separating offline training (batch compute on historical data) from online serving (low-latency lookups), using candidate generation to narrow down items, then ranking for final ordering.</li>
+</ul>
+<p><strong>Mental model:</strong> “Offline heavy lifting, online fast serving”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/youtube-recommendations-1.excalidraw.svg" alt="1200"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Two-stage architecture</strong> -
+<ol>
+<li>Stage 1: Candidate generation retrieves ~1000 items quickly (collaborative filtering, content-based, popularity).  This uses lightweight ML features tuned for recall.</li>
+<li>Stage 2: Ranking model scores and sorts candidates using specialized ML model. This uses hundred of ML features (eg. user-author interaction, click probability, engagement predictions etc). This separates recall from precision.</li>
+</ol>
+</li>
+<li><strong>Feature store</strong> - Pre-compute and cache user features (age, preferences, history) and item features (category, popularity, embeddings). Serve from low-latency store (Redis, DynamoDB). Update daily or hourly.</li>
+<li><strong>Offline training</strong> - Train models on historical data (batch job, <a href="../04-spark" class="internal internal-link" data-slug="04-spark">04-Spark</a>/Airflow). Use user events (clicks, purchases, dwell time) as labels. Output model artifacts to registry. Run daily or weekly.</li>
+<li><strong>Online serving</strong> - Deploy trained model to prediction service. Fetch features, score candidates, return top-k results. Latency budget &lt;100ms. Use model serving frameworks (TensorFlow Serving, SageMaker).</li>
+<li><strong>Feedback loop</strong> - Collect online signals (clicks, impressions, conversions). Log to data lake. Feed back into training pipeline. Measure model performance (CTR, precision). Retrain periodically.</li>
+<li><strong>Cold start fallbacks</strong> - For new users/items without history, fall back to popularity-based or rules-based recommendations. Use content-based features (category, attributes) until behavior data accumulates.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> freshness needs (real-time vs daily), cold start handling, ranking signals (explicit vs implicit), exploration vs exploitation balance</li>
+<li><strong>Measure:</strong> model metrics (precision@k, recall@k, CTR), serving latency, feature lag, training job duration, online-offline metric correlation</li>
+<li><strong>Rollout:</strong> A/B test model changes, shadow mode for new models, gradual rollout with holdout group, monitor for filter bubbles or bias</li>
+</ul>
+<p><strong>Red flag:</strong> Running ML inference on millions of items per request</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is a recommendation system, so I’m optimizing for relevance and speed. I’d use two-stage architecture with candidate generation and ranking, pre-computed feature store, offline batch training, online low-latency serving, and feedback loop.”</p>
+</blockquote>
+<hr/>
+<h2 id="11-events-and-notification-systems">11. Events and Notification Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-events-and-notification-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Trigger words:</strong> “push notifications”, “email alerts”, “SMS”, “in-app messages”, “notification preferences”, “digest emails”</p>
+<p><strong>Goal:</strong> The problem is product systems directly sending notifications causes tight coupling, duplicate sends, and poor user experience (spam, inconsistent timing).</p>
+<ul>
+<li>The goal is centralized, reliable notification delivery with user preference management by decoupling event publishing from notification sending, supporting multiple channels, batching/throttling, and tracking delivery status.</li>
+</ul>
+<p><strong>Mental model:</strong> “Events in, notifications out”</p>
+<p><strong>Go-to stack:</strong></p>
+<p><img src="../excalidraw/system-design-patterns-11.excalidraw.svg" alt="1000"/></p>
+<p><strong>Ladder:</strong></p>
+<ol>
+<li><strong>Event bus</strong> - Product services publish events only (user_registered, order_shipped, payment_failed). Use <a href="../01-kafka" class="internal internal-link alias" data-slug="01-kafka">Kafka</a>/SNS for reliable delivery. Events are domain facts, not notification commands. Decouple publishers from notification logic.</li>
+<li><strong><a href="../04-notification-service" class="internal internal-link" data-slug="04-notification-service">04-Notification-Service</a></strong> - Central service subscribes to events and maps to notifications. Checks user preferences. Selects channels (email, push, SMS). Renders templates. Calls channel providers. Single responsibility for all notifications.</li>
+<li><strong>Preference store</strong> - Store per-user settings (email on/off, push categories, quiet hours, digest vs immediate). Check preferences before sending. Respect opt-outs and DND. Use database with caching.</li>
+<li><strong>Template management</strong> - Store notification templates separate from code. Support variables (user name, order ID). Use templating engine (Jinja, Handlebars). Enable non-engineers to update copy.</li>
+<li><strong>Batching and throttling</strong> - Batch multiple events into digest (daily summary, weekly newsletter). Throttle per user (max N notifications per hour). Prevent notification fatigue. Use rate limiting per user+channel.</li>
+<li><strong>Idempotency and deduplication</strong> - Use event_id as dedup key. Store sent notifications in DB for 24 hours. Skip duplicate sends. Critical for at-least-once event delivery.</li>
+<li><strong>Delivery tracking</strong> - Log every notification attempt (sent, delivered, failed, bounced). Store in database or data lake. Expose to support and users. Retry failed sends with exponential backoff.</li>
+</ol>
+<p><strong>Staff hooks (bring up if relevant):</strong></p>
+<ul>
+<li><strong>Clarify:</strong> supported channels, preference granularity (global vs per-type), batching/digest needs, delivery guarantees (best-effort vs retry), compliance (unsubscribe, GDPR)</li>
+<li><strong>Measure:</strong> delivery rate, bounce rate, open/click rates, notification volume per user, preference changes, provider SLA violations</li>
+<li><strong>Rollout:</strong> test with small cohorts, validate preference enforcement, monitor provider limits (rate limits, quotas), have fallback providers</li>
+</ul>
+<p><strong>Red flag:</strong> Product services directly calling email/push APIs</p>
+<p><strong>Interview sentence:</strong></p>
+<blockquote>
+<p>“This is a notification system, so I’m optimizing for reliability and user control. I’d use event bus for decoupling, central <a href="../04-notification-service" class="internal internal-link" data-slug="04-notification-service">04-Notification-Service</a> with preference checks, template management, batching/throttling, idempotency, and delivery tracking.”</p>
+</blockquote>
+<hr/>
+<h2 id="12-pattern-selection-guide">12. Pattern Selection Guide<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-pattern-selection-guide" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>Quick decision tree:</strong></p>
+<ol>
+<li>
+<p><strong>Traffic pattern:</strong></p>
+<ul>
+<li>90%+ reads → Read-Heavy</li>
+<li>90%+ writes → Write-Heavy</li>
+<li>Bidirectional communication → Real-Time</li>
+</ul>
+</li>
+<li>
+<p><strong>Processing needs:</strong></p>
+<ul>
+<li>Multi-stage workflow → Async Pipelines</li>
+<li>Heavy computation → Compute-Heavy</li>
+<li>Search/filters → Search and Filtering</li>
+</ul>
+</li>
+<li>
+<p><strong>Data characteristics:</strong></p>
+<ul>
+<li>Money/inventory → Transactional</li>
+<li>Global users → Multi-Region</li>
+<li>Large files → File and Media</li>
+</ul>
+</li>
+<li>
+<p><strong>User experience:</strong></p>
+<ul>
+<li>Personalized results → Recommendation</li>
+<li>Alerts/messages → Events and Notifications</li>
+</ul>
+</li>
+</ol>
+<p><strong>Patterns often combine:</strong></p>
+<ul>
+<li>Read-Heavy + Multi-Region (global news feed)</li>
+<li>Write-Heavy + Async Pipelines (analytics ingestion)</li>
+<li>Transactional + Events and Notifications (payment system)</li>
+<li>Real-Time + Recommendation (live personalized content)</li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-6b2dceed.js" type="module" data-persist="true"></script></html>

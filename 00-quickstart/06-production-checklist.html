@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>06-Production-Checklist</title><meta charset="utf-8"/><link rel="preload" href="../index-22a5354e.css" as="style"/><link rel="preload" href="../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="06-Production-Checklist"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="06-Production-Checklist"/><meta name="twitter:description" content="This checklist captures the operational considerations that separate production-grade systems from prototypes."/><meta property="og:description" content="This checklist captures the operational considerations that separate production-grade systems from prototypes."/><meta property="og:image:alt" content="This checklist captures the operational considerations that separate production-grade systems from prototypes."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/06-production-checklist"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/06-production-checklist"/><link rel="icon" href="../static/icon.png"/><meta name="description" content="This checklist captures the operational considerations that separate production-grade systems from prototypes."/><meta name="generator" content="Quartz"/><script src="../static/site.js" defer></script><link href="../index-22a5354e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/06-production-checklist-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/06-production-checklist-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/00-quickstart/06-production-checklist-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="00-quickstart/06-production-checklist" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-5" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-5" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../00-quickstart/02-system-design-patterns" class="internal">02-System-Design-Patterns</a></li><li class="overflow-end"></li></ul></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../00-quickstart/">00-QuickStart</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>06-Production-Checklist</a></div></nav><h1 class="article-title">06-Production-Checklist</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T06:50:21.268Z">Jun 10, 2026</time><span>9 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p>This checklist captures the operational considerations that separate production-grade systems from prototypes. Staff engineers are expected to design systems that are observable, reliable, and maintainable from day one.</p>
+<h2 id="1-monitoring-strategy-what-to-measure">1. Monitoring Strategy (What to Measure)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-monitoring-strategy-what-to-measure" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><img src="../excalidraw/06-production-checklist.excalidraw.svg" alt="1000"/></p>
+<h3 id="red-metrics-for-every-service">RED Metrics (For Every Service)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#red-metrics-for-every-service" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Apply these three golden signals to every user-facing service:</p>
+<ul>
+<li>
+<p><strong>Rate:</strong> Requests per second (RPS)</p>
+<ul>
+<li>Alert threshold: ±20% deviation from baseline</li>
+<li>Why: Sudden drops indicate service degradation; spikes may indicate attack or viral traffic</li>
+</ul>
+</li>
+<li>
+<p><strong>Errors:</strong> Error rate as percentage of total requests</p>
+<ul>
+<li>Alert threshold: >1% error rate sustained for 5 minutes</li>
+<li>Why: Users experiencing failures; requires immediate investigation</li>
+</ul>
+</li>
+<li>
+<p><strong>Duration:</strong> Request latency (P50, P95, P99)</p>
+<ul>
+<li>Alert threshold: P95 exceeds SLO by 50% (e.g., if SLO is 200ms, alert at 300ms)</li>
+<li>Why: Latency degradation affects user experience before complete failures occur</li>
+</ul>
+</li>
+</ul>
+<h3 id="component-specific-metrics">Component-Specific Metrics<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#component-specific-metrics" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Database:</strong></p>
+<ul>
+<li><strong>Query throughput:</strong> QPS (queries per second)</li>
+<li><strong>Connection pool utilization:</strong> Alert at >80% to prevent exhaustion</li>
+<li><strong>Replication lag:</strong> Alert if >1 second; indicates read replicas are stale</li>
+<li><strong>Disk usage:</strong> Alert at >75%; provides time for capacity planning</li>
+</ul>
+<p><strong>Cache Layer (Redis/Memcached):</strong></p>
+<ul>
+<li><strong>Hit rate:</strong> Percentage of requests served from cache
+<ul>
+<li>Target: >80% for read-heavy workloads</li>
+<li>Alert if drops below 70%; indicates cache misses or invalidation issues</li>
+</ul>
+</li>
+<li><strong>Eviction rate:</strong> Keys being removed due to memory pressure
+<ul>
+<li>Alert if >10% of operations; may need to increase cache size</li>
+</ul>
+</li>
+<li><strong>Memory usage:</strong> Alert at >85%; prevents OOM scenarios</li>
+<li><strong>Connection count:</strong> Alert at >80% of max connections</li>
+</ul>
+<p><strong>Message Queue (Kafka/SQS/RabbitMQ):</strong></p>
+<ul>
+<li><strong>Queue depth:</strong> Number of pending messages
+<ul>
+<li>Alert if consistently growing; indicates consumer lag</li>
+</ul>
+</li>
+<li><strong>Consumer lag:</strong> Time delay between message production and consumption
+<ul>
+<li>Alert if >5 minutes for real-time systems; >1 hour for batch processing</li>
+</ul>
+</li>
+<li><strong>Dead Letter Queue (DLQ) size:</strong> Failed messages requiring manual intervention
+<ul>
+<li>Alert on any DLQ growth; each message represents a failure</li>
+</ul>
+</li>
+</ul>
+<p><strong>Load Balancer:</strong></p>
+<ul>
+<li><strong>Active connections:</strong> Current open connections</li>
+<li><strong>Unhealthy target count:</strong> Backend services failing health checks
+<ul>
+<li>Alert if >25% of targets unhealthy; indicates widespread issues</li>
+</ul>
+</li>
+<li><strong>5xx error rate:</strong> Server-side errors
+<ul>
+<li>Alert at >0.5% of requests</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<h2 id="2-service-level-objectives-slos">2. Service Level Objectives (SLOs)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-service-level-objectives-slos" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="definition--purpose">Definition &amp; Purpose<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#definition--purpose" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>SLOs define the reliability targets for your service. They balance user expectations with engineering cost—tighter SLOs require more operational investment.</p>
+<h3 id="example-slos-by-use-case">Example SLOs by Use Case<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#example-slos-by-use-case" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>User-Facing API (e.g., <a href="../01-twitter" class="internal internal-link" data-slug="01-twitter">01-Twitter</a> Timeline, Uber Booking):</strong></p>
+<ul>
+<li><strong>Availability:</strong> 99.9% uptime
+<ul>
+<li>Translates to: 43 minutes downtime per month acceptable</li>
+<li>Measured over rolling 30-day window</li>
+</ul>
+</li>
+<li><strong>Latency:</strong>
+<ul>
+<li>P95 &lt; 200ms (95% of requests complete within 200ms)</li>
+<li>P99 &lt; 500ms (99% of requests complete within 500ms)</li>
+</ul>
+</li>
+<li><strong>Error rate:</strong> &lt; 0.1% of requests return 5xx errors</li>
+</ul>
+<p><strong>Backend Processing Service (e.g., Notification Delivery, Analytics Pipeline):</strong></p>
+<ul>
+<li><strong>Availability:</strong> 99.5% uptime (3.6 hours downtime per month acceptable)</li>
+<li><strong>Throughput:</strong> Process 100K events/second sustained</li>
+<li><strong>Latency:</strong> P99 &lt; 2 seconds (less critical for async processing)</li>
+<li><strong>Data freshness:</strong> Results available within 5 minutes of event occurrence</li>
+</ul>
+<p><strong>Data Consistency:</strong></p>
+<ul>
+<li><strong>Eventual consistency window:</strong> 99% of writes visible within 1 second</li>
+<li><strong>Strong consistency guarantee:</strong> For critical operations (payments, inventory)</li>
+</ul>
+<h3 id="error-budget">Error Budget<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#error-budget" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Once you define SLOs, calculate your error budget—the acceptable amount of downtime or errors:
+<strong>Example:</strong> 99.9% availability SLO</p>
+<ul>
+<li><strong>Error budget:</strong> 0.1% downtime = 43 minutes/month</li>
+<li><strong>If budget exhausted:</strong> Freeze feature launches, focus on reliability</li>
+<li><strong>If budget healthy:</strong> Safe to ship new features with acceptable risk</li>
+</ul>
+<hr/>
+<h2 id="3-recovery-objectives-rpo-and-rto">3. Recovery Objectives (RPO and RTO)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-recovery-objectives-rpo-and-rto" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><img src="../excalidraw/06-production-checklist-2.excalidraw.svg" alt="1000"/>
+Recovery objectives define how much data loss and downtime your system can tolerate. They are the single most important input to your replication, backup, and failover architecture — get them wrong and you either over-engineer (wasting cost on synchronous replication you don’t need) or under-engineer (discovering during an outage that your daily backup means 23 hours of lost transactions).</p>
+<h3 id="1-rpo-recovery-point-objective">1. RPO (Recovery Point Objective)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-rpo-recovery-point-objective" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RPO answers: <strong>how much data can you afford to lose?</strong> Measured as a time window — the maximum acceptable gap between the last durable write and the point of failure.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>RPO Target</th><th>What It Means</th><th>Required Mechanism</th><th>Example</th></tr></thead><tbody><tr><td><strong>0 (zero data loss)</strong></td><td>Every committed write survives any failure</td><td>Synchronous replication — the write is not acknowledged until replicas confirm. Spanner (Paxos), PostgreSQL synchronous standby</td><td>Financial ledgers, payment systems</td></tr><tr><td><strong>&lt; 1 minute</strong></td><td>Lose at most 1 minute of writes</td><td>Async replication with sub-minute lag + WAL shipping or CDC streaming</td><td>E-commerce orders, user-generated content</td></tr><tr><td><strong>&lt; 5 minutes</strong></td><td>Lose at most 5 minutes of writes</td><td>Async replication with relaxed lag monitoring. Alert if lag exceeds target</td><td>Social media posts, analytics events</td></tr><tr><td><strong>&lt; 24 hours</strong></td><td>Lose at most a day of writes</td><td>Daily database backups (pg_dump, mysqldump, snapshots)</td><td>Internal dashboards, batch reports</td></tr></tbody></table></div>
+<p><strong>How RPO drives architecture:</strong></p>
+<ol>
+<li><strong>RPO = 0</strong> forces synchronous replication, which adds latency to every write (cross-AZ: ~1-2ms, cross-region: ~50-200ms). You pay for consistency on every operation</li>
+<li><strong>RPO > 0</strong> allows asynchronous replication, which keeps write latency low but creates a window where data exists only on the primary. If the primary dies before replication catches up, that window of data is lost</li>
+<li><strong>The replication lag is your actual RPO</strong> — not the configured target. Monitor it continuously. A system configured for RPO=1min but running with 10min replication lag has an actual RPO of 10min</li>
+</ol>
+<h3 id="2-rto-recovery-time-objective">2. RTO (Recovery Time Objective)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-rto-recovery-time-objective" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RTO answers: <strong>how long can you afford to be down?</strong> Measured from the moment of failure to the moment the system is serving traffic again.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>RTO Target</th><th>What It Means</th><th>Required Mechanism</th><th>Example</th></tr></thead><tbody><tr><td><strong>0 (zero downtime)</strong></td><td>Users never experience an outage</td><td>Active-active multi-region with automatic failover + DNS with &lt;30s TTL</td><td>Global payment processors, stock exchanges</td></tr><tr><td><strong>&lt; 1 minute</strong></td><td>Brief blip, most users don’t notice</td><td>Warm standby with automated failover (health check triggers promotion). Pre-provisioned replicas</td><td>Ride-sharing, real-time messaging</td></tr><tr><td><strong>&lt; 15 minutes</strong></td><td>Noticeable outage, acceptable for most B2B</td><td>Automated failover with DNS cutover. Standby needs to catch up on replication lag before serving</td><td>SaaS platforms, content management</td></tr><tr><td><strong>&lt; 4 hours</strong></td><td>Extended outage, manual intervention acceptable</td><td>Cold standby or restore from backup. Operator runs runbook to spin up new infrastructure</td><td>Internal tools, batch processing</td></tr></tbody></table></div>
+<p><strong>How RTO drives architecture:</strong></p>
+<ol>
+<li><strong>RTO = 0</strong> requires active-active deployment where both regions serve traffic simultaneously. Failover is instant because the standby is already handling requests. This is the most expensive and complex option — you must handle write conflicts across regions</li>
+<li><strong>RTO &lt; 1 minute</strong> requires a warm standby that is running, replicating, and ready to be promoted. Automated health checks detect failure and trigger promotion without human intervention</li>
+<li><strong>RTO &lt; 15 minutes</strong> allows for automated but slower failover — DNS propagation, connection draining, replication catch-up</li>
+<li><strong>RTO > 1 hour</strong> means you can restore from backups. The bottleneck is usually data transfer time (restoring a 1TB database from S3 takes ~30 minutes at 500 MB/s)</li>
+</ol>
+<h3 id="3-rporto-interaction-matrix">3. RPO/RTO Interaction Matrix<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-rporto-interaction-matrix" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The combination of RPO and RTO determines your minimum architecture:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>RTO = 0</th><th>RTO &lt; 1 min</th><th>RTO &lt; 15 min</th><th>RTO &lt; 4 hrs</th></tr></thead><tbody><tr><td><strong>RPO = 0</strong></td><td>Active-active + sync replication (Spanner, CockroachDB)</td><td>Sync replication + warm standby + auto-failover</td><td>Sync replication + automated restore</td><td>Sync replication + cold standby</td></tr><tr><td><strong>RPO &lt; 5 min</strong></td><td>Active-active + async replication + conflict resolution</td><td>Async replication + warm standby + auto-failover</td><td>Async replication + DNS failover</td><td>Async replication + manual failover</td></tr><tr><td><strong>RPO &lt; 24 hrs</strong></td><td>Not practical (contradictory)</td><td>Not practical</td><td>Daily backups + automated restore</td><td>Daily backups + manual restore</td></tr></tbody></table></div>
+<h3 id="4-clarifying-rporto-in-interviews">4. Clarifying RPO/RTO in Interviews<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-clarifying-rporto-in-interviews" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Ask these questions early in any system design that involves data durability or multi-region:</p>
+<ol>
+<li><strong>“What happens if we lose the last 5 minutes of writes?”</strong> — If the answer is “users re-submit” (shopping cart), RPO=5min is fine. If the answer is “money disappears” (payments), RPO must be 0</li>
+<li><strong>“How long can users tolerate the system being down?”</strong> — A social feed being down for 5 minutes is annoying. A payment system being down for 5 minutes during Black Friday is a business crisis</li>
+<li><strong>“Is the cost of achieving these targets justified?”</strong> — RPO=0 with RTO=0 across 3 regions requires synchronous cross-region replication + active-active. This adds ~100-200ms to every write and triples infrastructure cost. Most systems don’t need it</li>
+</ol>
+<hr/>
+<h2 id="4-failure-detection--alerting">4. Failure Detection &amp; Alerting<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-failure-detection--alerting" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="health-check-endpoint">Health Check Endpoint<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#health-check-endpoint" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Every service must expose a <code>/health</code> endpoint:</p>
+<pre><code>GET /health
+Response: 200 OK if healthy, 503 Service Unavailable if unhealthy
+</code></pre>
+<p><strong>Health check criteria:</strong></p>
+<ul>
+<li>Database connection pool has available connections</li>
+<li>Downstream dependencies reachable (with timeout)</li>
+<li>Disk space >20% available</li>
+<li>Memory usage &lt;90%</li>
+</ul>
+<p><strong>Alert configuration:</strong></p>
+<ul>
+<li>Alert if 3 consecutive health check failures (prevents false positives)</li>
+<li>Health checks every 10 seconds</li>
+<li>Alert fires within 30 seconds of sustained failure</li>
+</ul>
+<h3 id="circuit-breaker-pattern">Circuit Breaker Pattern<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#circuit-breaker-pattern" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Prevent cascading failures by failing fast when downstream services degrade:</p>
+<p><strong>States:</strong></p>
+<ul>
+<li><strong>Closed:</strong> Normal operation, requests pass through</li>
+<li><strong>Open:</strong> Downstream service failing; reject requests immediately (return cached/default response)</li>
+<li><strong>Half-Open:</strong> Test if service recovered; allow 1 request to check</li>
+</ul>
+<p><strong>Configuration example:</strong></p>
+<ul>
+<li>Open circuit if 50% error rate over 10 requests</li>
+<li>Stay open for 30 seconds (cool-down period)</li>
+<li>Half-open: Try 1 request; if successful → closed, if fails → open for another 30 seconds</li>
+</ul>
+<h3 id="alert-principles">Alert Principles<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#alert-principles" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Design alerts to be <strong>actionable</strong>—each alert should require specific human intervention:</p>
+<p><strong>Good alert:</strong></p>
+<ul>
+<li>“Payment API P95 latency >500ms for 5 minutes” → Investigate slow queries, check DB load</li>
+</ul>
+<p><strong>Bad alert:</strong></p>
+<ul>
+<li>“Disk usage >50%” → No immediate action needed; remove noise</li>
+</ul>
+<p><strong>Alert fatigue prevention:</strong></p>
+<ul>
+<li>Maximum 2 alerts per week per engineer on-call</li>
+<li>If more frequent: Either raise threshold or fix root cause</li>
+<li>Page humans only for user-impacting issues</li>
+</ul>
+<hr/>
+<h2 id="5-incident-response-quick-triage-steps">5. Incident Response (Quick Triage Steps)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-incident-response-quick-triage-steps" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>When an alert fires or users report issues, follow this systematic approach:</p>
+<h3 id="step-1-check-dashboards-2-minutes">Step 1: Check Dashboards (2 minutes)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-1-check-dashboards-2-minutes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Look at your monitoring dashboards in this order:</p>
+<ul>
+<li><strong>Traffic:</strong> Is RPS normal, spiking, or dropping?</li>
+<li><strong>Errors:</strong> Are error rates elevated? Which error codes (4xx vs 5xx)?</li>
+<li><strong>Latency:</strong> Are P95/P99 latencies within SLO?</li>
+</ul>
+<h3 id="step-2-check-recent-changes-2-minutes">Step 2: Check Recent Changes (2 minutes)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-2-check-recent-changes-2-minutes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Deployments:</strong> Was code deployed in last 1 hour?</li>
+<li><strong>Configuration changes:</strong> Feature flags toggled, scaling events?</li>
+<li><strong>Infrastructure changes:</strong> Database failover, network changes?
+<strong>If recent deployment:</strong> Rollback immediately if user-impacting</li>
+</ul>
+<h3 id="step-3-check-dependencies-3-minutes">Step 3: Check Dependencies (3 minutes)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-3-check-dependencies-3-minutes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Map your service dependencies and check their health:</p>
+<ul>
+<li><strong>Database:</strong> Connection pool exhaustion? Slow query? Replication lag?</li>
+<li><strong>Cache:</strong> Redis down? Hit rate dropped? Eviction rate spiked?</li>
+<li><strong>Downstream services:</strong> Are they returning errors? High latency?</li>
+<li><strong>External APIs:</strong> Third-party service degradation?</li>
+</ul>
+<h3 id="step-4-check-logs-5-minutes">Step 4: Check Logs (5 minutes)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-4-check-logs-5-minutes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Search logs for patterns:</p>
+<ul>
+<li><strong>Error spikes:</strong> Filter for ERROR level logs</li>
+<li><strong>Stack traces:</strong> Identify failing code paths</li>
+<li><strong>Correlation IDs:</strong> Track a single user request across services</li>
+</ul>
+<h3 id="step-5-escalate-if-needed">Step 5: Escalate if Needed<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#step-5-escalate-if-needed" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Page on-call if:</strong></p>
+<ul>
+<li>Customer-impacting issue (errors >1%, latency >2× SLO)</li>
+<li>Cannot identify root cause within 10 minutes</li>
+<li>Issue affects >25% of users</li>
+</ul>
+<p><strong>Avoid premature escalation:</strong> Gather data first (dashboards, logs, recent changes)</p>
+<hr/></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../postscript-6b2dceed.js" type="module" data-persist="true"></script></html>

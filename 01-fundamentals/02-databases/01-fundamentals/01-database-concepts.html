@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>01-Database-Concepts</title><meta charset="utf-8"/><link rel="preload" href="../../../index-22a5354e.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="01-Database-Concepts"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="01-Database-Concepts"/><meta name="twitter:description" content="Database Concepts The Story Michael Stonebraker — Turing Award winner, creator of Postgres and Ingres — has been arguing since the 1980s that one-size-fits-all databases are a lie."/><meta property="og:description" content="Database Concepts The Story Michael Stonebraker — Turing Award winner, creator of Postgres and Ingres — has been arguing since the 1980s that one-size-fits-all databases are a lie."/><meta property="og:image:alt" content="Database Concepts The Story Michael Stonebraker — Turing Award winner, creator of Postgres and Ingres — has been arguing since the 1980s that one-size-fits-all databases are a lie."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="Database Concepts The Story Michael Stonebraker — Turing Award winner, creator of Postgres and Ingres — has been arguing since the 1980s that one-size-fits-all databases are a lie."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-22a5354e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/02-databases/01-fundamentals/01-database-concepts" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-36" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-36" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/02-architecture/07-multi-tenancy" class="internal">07-Multi-Tenancy</a></li><li><a href="../../../01-fundamentals/01-concepts/03-data/03-data-pipeline" class="internal">03-Data-Pipeline</a></li><li><a href="../../../01-fundamentals/02-databases/01-fundamentals/01-database-concepts" class="internal">01-Database-Concepts</a></li><li class="overflow-end"></li></ul></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/02-databases/">02-Databases</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/02-databases/01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>01-Database-Concepts</a></div></nav><h1 class="article-title">01-Database-Concepts</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T06:50:21.303Z">Jun 10, 2026</time><span>39 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="database-concepts">Database Concepts<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#database-concepts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Michael Stonebraker — Turing Award winner, creator of Postgres and Ingres — has been arguing since the 1980s that one-size-fits-all databases are a lie. In 2005, he co-authored “One Size Fits All: An Idea Whose Time Has Come and Gone,” predicting the explosion of specialized databases. The industry ignored him and kept trying to make Oracle do everything. A decade later, the NoSQL movement proved him right. Today we have purpose-built databases for OLTP, OLAP, time-series, graph, search, and key-value workloads. Stonebraker’s career is a 40-year “I told you so” backed by Turing-level credentials.</p>
+<hr/>
+<p>Every database makes a set of fundamental bets about how data will be stored, accessed, and distributed. Understanding these bets — and the tradeoffs they create — is far more valuable than memorizing feature lists. This note covers both the foundational mechanisms that appear across storage engines and replication models, and the reasoning framework for choosing between databases. Each section builds intuition for <em>why</em> the mechanism exists, not just <em>what</em> it does.</p>
+<p><strong>Related Topics</strong>: <a href="../../../ch03-storage-retrieval" class="internal internal-link" data-slug="ch03-storage-retrieval">Ch03-Storage-Retrieval</a>, <a href="../../../04-btree-sstable-lsm" class="internal internal-link" data-slug="04-btree-sstable-lsm">04-BTree-SSTable-LSM</a>, <a href="../../../08-aries-explained" class="internal internal-link" data-slug="08-aries-explained">08-ARIES-Explained</a>, <a href="../../../05-isolation-levels" class="internal internal-link" data-slug="05-isolation-levels">05-Isolation-Levels</a>, <a href="../../../06-mvcc" class="internal internal-link" data-slug="06-mvcc">06-MVCC</a>, <a href="../../../ch05-replication" class="internal internal-link" data-slug="ch05-replication">Ch05-Replication</a>, <a href="../../../03-consistency-models" class="internal internal-link" data-slug="03-consistency-models">03-Consistency-Models</a>, <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a>, <a href="../../../ch06-partitioning" class="internal internal-link" data-slug="ch06-partitioning">Ch06-Partitioning</a>, <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a>, <a href="../../../03-dynamodb" class="internal internal-link" data-slug="03-dynamodb">03-DynamoDB</a>, <a href="../../../01-01-redis" class="internal internal-link" data-slug="01-01-redis">01-01-Redis</a>, <a href="../../../05-mongodb" class="internal internal-link" data-slug="05-mongodb">05-MongoDB</a>, <a href="../../../07-spanner" class="internal internal-link" data-slug="07-spanner">07-Spanner</a></p>
+<hr/>
+<h2 id="1-what-makes-databases-different">1. What Makes Databases Different<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-what-makes-databases-different" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>When you strip away marketing language, databases differ along four independent dimensions. Every design choice a database makes is a position on one of these axes.</p>
+<p><img src="../../../excalidraw/database-concepts-4.excalidraw.svg" alt="1000"/></p>
+<h3 id="1-data-model">1. Data Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-data-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>How the database organizes information, and what kinds of queries are natural versus expensive. Your data model choice determines which queries are O(1) and which are O(n). A social graph in a relational database requires recursive JOINs; in a graph database, it is a pointer chase. Conversely, running an analytical aggregation across a graph database is painful because the data is scattered across adjacency lists rather than organized in contiguous storage.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Data Model</th><th>Core Abstraction</th><th>Natural Queries</th><th>Expensive Queries</th></tr></thead><tbody><tr><td><strong>Relational</strong></td><td>Tables with foreign keys</td><td>JOINs, aggregations, ad-hoc queries</td><td>Deeply nested or hierarchical data</td></tr><tr><td><strong>Document</strong></td><td>Self-contained JSON documents</td><td>Single-entity reads, hierarchical data</td><td>Cross-document JOINs</td></tr><tr><td><strong>Wide-Column</strong></td><td>Rows with dynamic column families</td><td>Partition-key lookups, range scans within a partition</td><td>Arbitrary secondary queries, cross-partition scans</td></tr><tr><td><strong>Key-Value</strong></td><td>Opaque blobs by key</td><td>Single-key lookups</td><td>Everything else — the database has no understanding of the value</td></tr><tr><td><strong>Graph</strong></td><td>Nodes and edges</td><td>Relationship traversals, path queries</td><td>Full-table scans, aggregations</td></tr></tbody></table></div>
+<h3 id="2-storage-engine">2. Storage Engine<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-storage-engine" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>How the database physically writes and reads data on disk. This is the dimension most engineers overlook, but it determines read/write performance at a fundamental level. See <a href="../../../04-btree-sstable-lsm" class="internal internal-link" data-slug="04-btree-sstable-lsm">04-BTree-SSTable-LSM</a> for the full treatment.</p>
+<ul>
+<li><strong>B-Trees</strong> optimize for reads. They maintain a sorted, balanced tree structure that supports efficient point lookups and range scans. The cost is that every write must find the correct leaf page and update it in place — random I/O. Databases like PostgreSQL, MySQL, and MongoDB use B-Trees.</li>
+<li><strong>LSM Trees</strong> optimize for writes. All writes go to an in-memory buffer (memtable) and are periodically flushed as sorted, immutable files (SSTables). Reads must check multiple levels of SSTables, mitigated by bloom filters and compaction. Databases like <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a>, RocksDB, and HBase use LSM Trees.</li>
+</ul>
+<p>The tradeoff is direct: B-Trees give you faster reads and slower writes; LSM Trees give you faster writes and slower reads. This is not a minor implementation detail — it is a 10-100x difference in write throughput for write-heavy workloads.</p>
+<h3 id="3-consistency-model">3. Consistency Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-consistency-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>What guarantees the database provides about the state of data after concurrent operations. See <a href="../../../03-consistency-models" class="internal internal-link" data-slug="03-consistency-models">03-Consistency-Models</a> and <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a> for deeper treatment.</p>
+<ul>
+<li><strong>Strong consistency</strong> means every read returns the most recent write. This requires coordination — either all writes go through a single leader, or the system uses a consensus protocol like Paxos or Raft across replicas. Coordination adds latency and reduces availability during partitions. PostgreSQL, MySQL, and <a href="../../../07-spanner" class="internal internal-link" data-slug="07-spanner">07-Spanner</a> provide strong consistency.</li>
+<li><strong>Eventual consistency</strong> means replicas may temporarily diverge but will converge given enough time. This avoids coordination, enabling higher throughput and availability, but the application must handle stale reads and write conflicts. <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a> and <a href="../../../03-dynamodb" class="internal internal-link" data-slug="03-dynamodb">03-DynamoDB</a> default to eventual consistency.</li>
+</ul>
+<p>The real question is not “which is better?” but “what happens to your business if a user reads stale data?” For a bank balance, stale reads are unacceptable. For a social media like count, they are invisible.</p>
+<h3 id="4-scaling-approach">4. Scaling Approach<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-scaling-approach" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>How the database handles growth beyond a single machine.</p>
+<ul>
+<li><strong>Vertical scaling</strong> means buying a bigger machine. Simple, no distributed systems complexity, but there is a ceiling. Traditional SQL databases (PostgreSQL, MySQL) scale vertically most naturally.</li>
+<li><strong>Horizontal scaling</strong> means adding more machines. This requires partitioning data across nodes, which introduces the fundamental challenge: how do you execute queries that span multiple partitions? See <a href="../../../ch06-partitioning" class="internal internal-link" data-slug="ch06-partitioning">Ch06-Partitioning</a> for details.</li>
+</ul>
+<p>Horizontal scaling is not free. It forces you to give up something:</p>
+<ol>
+<li><strong>Cross-partition JOINs</strong> become expensive or impossible</li>
+<li><strong>Distributed transactions</strong> require coordination protocols like 2PC</li>
+<li><strong>Operational complexity</strong> increases dramatically (rebalancing, hotspots, split-brain)</li>
+</ol>
+<p>The question is whether your data volume and throughput requirements <em>actually</em> demand horizontal scaling.</p>
+<hr/>
+<h2 id="2-the-sql-vs-nosql-dichotomy-is-misleading">2. The SQL vs NoSQL Dichotomy is Misleading<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-sql-vs-nosql-dichotomy-is-misleading" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The framing of “SQL vs NoSQL” suggests two distinct camps with opposing philosophies. In reality, the boundaries have blurred so thoroughly that the distinction is nearly useless for making technical decisions.</p>
+<ol>
+<li><strong>NoSQL databases adopted SQL features.</strong> MongoDB added multi-document ACID transactions in v4.0. Cassandra offers CQL, a SQL-like query language. DynamoDB added PartiQL for SQL-compatible queries.</li>
+<li><strong>SQL databases adopted NoSQL features.</strong> PostgreSQL supports JSONB columns with indexing, letting you store document-style data inside a relational database. MySQL 8.0 added a document store. Vitess, CockroachDB, and TiDB provide horizontally-sharded SQL.</li>
+<li><strong>NewSQL emerged as the hybrid.</strong> <a href="../../../07-spanner" class="internal internal-link" data-slug="07-spanner">07-Spanner</a>, CockroachDB, and TiDB provide the relational model with horizontal scaling and strong consistency. They prove that the original “SQL can’t scale” assumption was an engineering limitation, not a fundamental constraint.</li>
+</ol>
+<p>The more useful mental model: databases sit on a spectrum. At one end is “maximum flexibility and developer control over consistency and partitioning” (DynamoDB). At the other end is “the database handles everything — transactions, distribution, consistency — and you write SQL” (Spanner). Every database in between makes a specific tradeoff between these extremes.</p>
+<hr/>
+<h2 id="3-acid">3. ACID<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-acid" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Every database transaction operates under a set of guarantees. ACID names the four properties that together prevent data corruption. But the name alone hides the engineering challenges underneath each property. Understanding the <em>mechanisms</em> that enforce each property is what separates surface-level knowledge from staff-engineer depth.</p>
+<h3 id="1-atomicity">1. Atomicity<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-atomicity" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction either applies entirely or not at all. If a bank transfer debits account A and credits account B, both operations commit together, or neither does.</p>
+<p>The naive approach would be to write changes directly to disk as they happen. But what if the system crashes after writing the debit but before the credit? The data is now in an invalid state: money vanished.</p>
+<p><strong>The mechanism: undo logging via WAL.</strong> Before the database modifies any page on disk, it first writes a log record to the <a href="../../../08-aries-explained" class="internal internal-link alias" data-slug="08-aries-explained">write-ahead log (WAL)</a> describing the change. Critically, the WAL entry is written <em>before</em> the actual data page is modified. This is the “write-ahead” guarantee. If the system crashes mid-transaction, the recovery process reads the WAL, finds any uncommitted transactions, and <em>undoes</em> their changes by restoring original values from the log.</p>
+<p>Why a log and not just “be careful”? Because crashes are arbitrary. The system can fail between any two instructions. The only way to guarantee rollback is to have a durable record of what needs to be undone, written <em>before</em> the change itself. This is a fundamental pattern in systems engineering: you cannot atomically do two things at once, so you record your intent first, then execute.</p>
+<p><img src="../../../excalidraw/database-concepts-1.excalidraw.svg" alt="1000"/></p>
+<p>If the crash happens after modifying A’s page but before the COMMIT record reaches the WAL, recovery replays the undo records and restores A to its original value. The transaction effectively never happened.</p>
+<h3 id="2-consistency">2. Consistency<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-consistency" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction moves the database from one valid state to another. “Valid” means all constraints hold:</p>
+<ol>
+<li>Primary keys are unique</li>
+<li>Foreign keys reference existing rows</li>
+<li>CHECK constraints pass</li>
+<li>Application-level invariants are satisfied</li>
+</ol>
+<p>This is the only ACID property that is <em>partially</em> the application’s responsibility:</p>
+<ul>
+<li><strong>Database enforces:</strong> structural constraints (uniqueness, referential integrity, NOT NULL)</li>
+<li><strong>Application must enforce:</strong> business rules like “account balances must not go negative” — unless expressed as constraints or triggers</li>
+</ul>
+<p>Important — ACID consistency is entirely different from CAP consistency:</p>
+<ul>
+<li><strong>ACID consistency:</strong> invariant preservation within a single database</li>
+<li><strong>CAP consistency:</strong> all replicas in a distributed system returning the same value for a read (see <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a>)</li>
+<li>Conflating these is a common interview mistake</li>
+</ul>
+<h3 id="3-isolation">3. Isolation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-isolation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Concurrent transactions must not interfere with each other. Without isolation, two transactions reading and modifying the same row can produce results that no serial execution would produce: lost updates, dirty reads, phantom rows.</p>
+<p>There are two fundamentally different approaches to enforcing isolation:</p>
+<p><strong>1. Pessimistic: locking.</strong> Before a transaction reads or writes a row, it acquires a lock on that row. Other transactions that need the same row must wait. This is simple to reason about — if you hold the lock, nobody else can touch the data — but it limits concurrency. Two transactions that touch the same row are serialized even if they could safely run in parallel. <a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">Two-phase locking (2PL)</a> is the classical implementation: acquire locks during the transaction, release them all at commit.
+<strong>2. Optimistic: MVCC.</strong> Instead of blocking concurrent readers, the database keeps multiple versions of each row. A transaction sees a consistent snapshot of the database as of its start time, regardless of what other transactions are doing. Writers create new versions rather than overwriting existing ones. This means readers never block writers and writers never block readers — a massive concurrency win for read-heavy workloads. PostgreSQL, MySQL/InnoDB, and Oracle all use <a href="../../../06-mvcc" class="internal internal-link" data-slug="06-mvcc">06-MVCC</a>.</p>
+<p>The choice between locking and MVCC is not binary. Most production databases use MVCC for reads and acquire locks only for writes (to prevent lost updates). The <a href="../../../05-isolation-levels" class="internal internal-link alias" data-slug="05-isolation-levels">isolation level</a> you configure determines how much anomaly the database tolerates, which in turn determines how aggressively it must lock or how many versions it must track.</p>
+<h3 id="4-durability">4. Durability<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-durability" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Once a transaction commits, its changes survive any subsequent failure — crashes, power loss, disk corruption.</p>
+<p>The mechanism is deceptively simple: <strong>fsync the WAL to disk before returning the commit acknowledgment.</strong> Two key properties make this fast:</p>
+<ol>
+<li><strong>WAL writes are sequential</strong> (append-only) — fast even on spinning disks</li>
+<li><strong>Data pages can be written lazily</strong> — this is called “stealing” in database terminology. Dirty pages can be flushed before commit, and pages modified by a committed transaction don’t need to be flushed immediately, because the WAL has everything needed for recovery</li>
+</ol>
+<p>Why not just fsync the data pages themselves? Because:</p>
+<ul>
+<li>Data pages are scattered across disk → <strong>random I/O</strong> (slow)</li>
+<li>WAL records are append-only → <strong>sequential I/O</strong> (fast)</li>
+<li>Writing a 100-byte WAL record sequentially is orders of magnitude faster than fsyncing a 4KB-8KB data page to a random location</li>
+</ul>
+<p>This is the same sequential-vs-random I/O tradeoff that drives the entire <a href="../../../ch03-storage-retrieval" class="internal internal-link alias" data-slug="ch03-storage-retrieval">storage engine design space</a>.</p>
+<p>The durability guarantee has a subtle caveat: it assumes the storage medium is reliable. A single disk can suffer silent corruption, head crashes, or firmware bugs. Production systems add redundancy layers:</p>
+<ul>
+<li>RAID for disk-level redundancy</li>
+<li>Replicated WAL for node-level redundancy</li>
+<li>Storage checksums for detecting silent corruption</li>
+</ul>
+<hr/>
+<h2 id="4-compaction">4. Compaction<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-compaction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>In LSM-tree-based storage engines (<a href="../../../04-btree-sstable-lsm" class="internal internal-link alias" data-slug="04-btree-sstable-lsm">SSTables and LSM-Trees</a>), writes go to an in-memory buffer (memtable), which periodically flushes to disk as an immutable sorted file (SSTable). Over time, you accumulate many SSTables. Each key may exist in multiple files — the most recent version in a newer file, older versions and tombstones (delete markers) in older files.</p>
+<p>Compaction is the background process that merges these files. It performs three operations:</p>
+<ol>
+<li><strong>Merge-sort</strong> to deduplicate keys across SSTables</li>
+<li><strong>Remove tombstones</strong> (delete markers) for deleted data</li>
+<li><strong>Write consolidated files</strong> that replace the input SSTables</li>
+</ol>
+<p>Without compaction, three problems compound over time:</p>
+<ol>
+<li><strong>Read performance degrades</strong> — you must check more files per read</li>
+<li><strong>Disk usage grows unboundedly</strong> — old versions and tombstones occupy space forever</li>
+<li><strong>Bloom filter effectiveness drops</strong> — more files means more false positives</li>
+</ol>
+<h3 id="two-compaction-strategies">Two Compaction Strategies<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#two-compaction-strategies" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The key design question is: <em>which files do you merge, and when?</em> The two dominant strategies make fundamentally different tradeoffs.</p>
+<h4 id="1-size-tiered-compaction">1. Size-Tiered Compaction<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-size-tiered-compaction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Newer, smaller SSTables are merged together when enough of similar size accumulate. Think of it as grouping files into “tiers” by size. When a tier has enough files (typically 4), they merge into a single larger file that moves to the next tier.</p>
+<p><img src="../../../excalidraw/database-concepts-2.excalidraw.svg" alt="1000"/></p>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li><strong>Write-optimized.</strong> Each byte of data is rewritten approximately O(log N) times across tiers, but compaction runs are infrequent and large, amortizing the I/O cost.</li>
+<li><strong>Space amplification is high.</strong> A key can exist in multiple tiers simultaneously until they merge. In the worst case, you may temporarily use 2x the logical data size.</li>
+<li><strong>Read amplification is moderate.</strong> You may need to check one file per tier (mitigated by bloom filters).</li>
+<li><strong>Best for write-heavy workloads</strong> where you can tolerate temporary space overhead and slightly slower point reads. Cassandra uses size-tiered compaction by default.</li>
+</ul>
+<h4 id="2-leveled-compaction">2. Leveled Compaction<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-leveled-compaction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Data is organized into levels (L0, L1, L2, …), where each level is a target size (e.g., L1 = 10MB, L2 = 100MB, L3 = 1GB — each level is 10x the previous). Within each level (except L0), key ranges do not overlap — each key exists in exactly one file per level.</p>
+<p>When a level exceeds its size target, one file from that level is selected and merged with all overlapping files in the next level. This maintains the non-overlapping invariant.</p>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li><strong>Read-optimized.</strong> Because key ranges don’t overlap within a level, a point lookup checks at most one file per level. With bloom filters, this typically means 1-2 disk reads.</li>
+<li><strong>Space amplification is low.</strong> Each key exists in at most one file per level (plus possibly L0). Temporary space overhead during compaction is roughly one file’s worth.</li>
+<li><strong>Write amplification is high.</strong> A single file merge at level L can cascade into rewriting large portions of level L+1 to maintain the non-overlapping invariant. Write amplification of 10-30x is common.</li>
+<li><strong>Best for read-heavy workloads</strong> or when disk space is constrained. RocksDB defaults to leveled compaction. LevelDB (its predecessor) uses it exclusively.</li>
+</ul>
+<h3 id="choosing-a-strategy">Choosing a Strategy<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#choosing-a-strategy" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Factor</th><th>Size-Tiered</th><th>Leveled</th></tr></thead><tbody><tr><td>Write throughput</td><td>Higher</td><td>Lower</td></tr><tr><td>Read latency</td><td>Higher (more files to check)</td><td>Lower (non-overlapping keys)</td></tr><tr><td>Space amplification</td><td>Higher (up to 2x)</td><td>Lower</td></tr><tr><td>Write amplification</td><td>Lower</td><td>Higher (10-30x)</td></tr><tr><td>Best workload</td><td>Write-heavy, time-series</td><td>Read-heavy, point lookups</td></tr></tbody></table></div>
+<hr/>
+<h2 id="5-sparse-index">5. Sparse Index<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-sparse-index" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A <strong>dense index</strong> stores a pointer for every key in the dataset. A <strong>sparse index</strong> stores pointers for only a subset of keys — typically one entry per block or per Nth key. This is the standard indexing strategy for SSTables in LSM-tree databases.</p>
+<h3 id="1-why-sparse-works-sorted-data">1. Why Sparse Works: Sorted Data<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-sparse-works-sorted-data" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Sparse indexes only work when data is sorted. If you know the data between keys “apple” and “banana” is contiguous on disk (because the file is sorted), you can index just “apple” and “banana” and scan the block between them for any key in that range. If data were unsorted, you’d have no way to narrow the search without a dense index.</p>
+<h3 id="2-the-lookup-cost-model">2. The Lookup Cost Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-lookup-cost-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Suppose an SSTable has N keys, and the sparse index stores one entry per B keys (i.e., one entry per block of B keys).</p>
+<ol>
+<li><strong>Binary search on the sparse index.</strong> The index has N/B entries. Binary search costs O(log(N/B)) comparisons. Since the index is small enough to fit in memory, each comparison is a memory access (nanoseconds).</li>
+<li><strong>Scan within the block.</strong> Once you find the right block, you scan up to B keys. If keys within the block are sorted, you can binary search within the block too: O(log B). But blocks are typically small enough that a sequential scan is faster due to cache-line prefetching.</li>
+</ol>
+<p><strong>Concrete example:</strong> An SSTable with 10 million keys, indexed every 100th key:</p>
+<ol>
+<li>Sparse index has 100,000 entries (fits comfortably in memory)</li>
+<li>Binary search on index: log2(100,000) = ~17 comparisons (in memory)</li>
+<li>Scan within block: up to 100 key comparisons (from a single 4KB-8KB disk read, already in the OS page cache in most cases)</li>
+<li><strong>Total: ~17 memory comparisons + 1 disk read + ~100 comparisons within the block</strong></li>
+</ol>
+<p>Compare to a dense index with 10 million entries: requires ~200MB of memory (assuming 20 bytes per entry) versus ~2MB for the sparse index. The sparse index trades a single block scan for a 100x reduction in memory usage.</p>
+<h3 id="3-where-the-tradeoff-breaks-down">3. Where the Tradeoff Breaks Down<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-where-the-tradeoff-breaks-down" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Sparse indexes lose their advantage when:</p>
+<ul>
+<li><strong>Data is not sorted</strong> — you cannot guarantee the target key lies within the identified block.</li>
+<li><strong>Blocks are very large</strong> — if B is 10,000, the in-block scan dominates lookup time.</li>
+<li><strong>Workloads are point-lookup-heavy with strict latency requirements</strong> — the extra block scan adds ~0.1ms of latency per read, which matters at the p99 for high-QPS services. In these cases, bloom filters supplement the sparse index: check the bloom filter first to avoid reading a block that doesn’t contain the key at all.</li>
+</ul>
+<hr/>
+<h2 id="6-partition-index-and-compression-offset-map">6. Partition Index and Compression Offset Map<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-partition-index-and-compression-offset-map" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>An SSTable is an immutable, sorted file. But it can be hundreds of megabytes. To locate a specific partition without scanning the entire file, the SSTable ships with two auxiliary structures written at flush time.</p>
+<h3 id="1-partition-index">1. Partition Index<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-partition-index" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The <strong>partition index</strong> is a sorted mapping from partition key (or its hash) to the byte offset where that partition’s data begins in the SSTable data file. When a read targets a specific partition, Cassandra binary-searches this index to find the exact file offset, then seeks directly to it. In older Cassandra versions this is a flat sorted file; in Cassandra 4.0+ it uses a <strong>trie-based partition index</strong> that compresses shared prefixes, reducing memory footprint by 50-80% compared to the flat index while maintaining O(log N) lookup.
+The partition index is memory-mapped or cached in the key cache. A cache hit means the read skips the index entirely and jumps straight to the data offset — a single disk seek.</p>
+<h3 id="2-compression-offset-map">2. Compression Offset Map<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-compression-offset-map" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Cassandra compresses SSTable data in fixed-size chunks (default 64 KB). Because compression produces variable-length output, you cannot calculate “byte offset of chunk N” arithmetically. The <strong>compression offset map</strong> stores the on-disk byte offset of each compressed chunk. To read a partition at logical offset X, Cassandra divides X by the chunk size to find the chunk number, looks up that chunk’s physical offset in the map, reads and decompresses just that one chunk.
+This design means Cassandra never decompresses the entire SSTable — it reads and decompresses only the relevant chunk. The compression offset map itself is small (one 8-byte entry per chunk) and stays in memory.</p>
+<p><strong>How They Work Together</strong>
+A partition read in an SSTable follows this sequence:</p>
+<ol>
+<li><strong>Bloom filter</strong> says “maybe present”</li>
+<li><strong>Partition index</strong> gives the logical byte offset</li>
+<li><strong>Compression offset map</strong> translates that to a physical offset in the compressed file</li>
+<li><strong>Cassandra reads and decompresses</strong> one chunk</li>
+<li><strong>Scans within the chunk</strong> for the target rows</li>
+</ol>
+<hr/>
+<h2 id="7-column-oriented-databases">7. Column-Oriented Databases<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-column-oriented-databases" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>
+<p>Row-oriented databases store all fields of a row together on disk. When you <code>SELECT AVG(salary) FROM employees</code>, the engine reads entire rows — names, addresses, phone numbers — even though it only needs the salary column. For analytical queries that aggregate a few columns across millions of rows, this wastes enormous I/O bandwidth.</p>
+</li>
+<li>
+<p>Column-oriented databases invert the storage layout: all values for a single column are stored contiguously. The salary column is one file (or segment), the name column is another, and so on. A query that touches only salary reads only the salary file, skipping everything else.</p>
+</li>
+</ul>
+<h3 id="1-why-columnar-compression-is-exceptionally-effective">1. Why Columnar Compression is Exceptionally Effective<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-columnar-compression-is-exceptionally-effective" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Values within a single column share a data type and often share a value distribution. A “country” column in a billion-row table might contain only 200 distinct values. An “age” column contains integers between 0 and 150. This homogeneity enables compression techniques that row-oriented storage cannot exploit.</p>
+<h4 id="1-dictionary-encoding">1. Dictionary Encoding<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-dictionary-encoding" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Replace each distinct value with a small integer ID. A country column with 200 distinct countries is replaced by a column of integers 0-199, plus a 200-entry dictionary mapping IDs to country names. If the original string averages 10 bytes, you’ve reduced it to 1 byte per row — a 10x compression ratio before any further encoding.</p>
+<h4 id="2-run-length-encoding-rle">2. Run-Length Encoding (RLE)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-run-length-encoding-rle" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>If the column is sorted (or has long runs of the same value), store each value once along with a count of consecutive occurrences. A sorted status column with values <code>[active, active, active, ..., inactive, inactive, ...]</code> compresses from millions of entries to a handful of (value, count) pairs.</p>
+<h4 id="3-bit-packing">3. Bit-Packing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-bit-packing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>If the dictionary has K distinct values, you need only ceil(log2(K)) bits per entry. A column with 8 distinct values needs only 3 bits per row instead of 32 bits for an integer or 64+ bits for a string. Pack these tightly with no wasted bits.</p>
+<h4 id="4-bitmap-encoding">4. Bitmap Encoding<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-bitmap-encoding" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>For low-cardinality columns, create one bitmap per distinct value. Each bitmap has one bit per row: 1 if the row has that value, 0 otherwise. Bitmaps compress extremely well with run-length encoding and support bitwise AND/OR operations that make WHERE clause filtering blazing fast — filter by country AND status using two bitwise ANDs with no row-level processing.</p>
+<h3 id="2-vectorized-execution">2. Vectorized Execution<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-vectorized-execution" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Columnar storage pairs naturally with vectorized query execution. Instead of processing one row at a time (the “volcano model”), the engine processes a batch of column values — typically 1024 or 4096 — in a tight loop. Three advantages compound:</p>
+<ol>
+<li><strong>CPU SIMD instructions</strong> — process multiple values in a single CPU instruction</li>
+<li><strong>No per-row function-call overhead</strong> — amortized across the batch</li>
+<li><strong>Cache-line efficiency</strong> — contiguous column data stays in CPU cache</li>
+</ol>
+<p>The combination of columnar storage and vectorized execution is why analytical databases like ClickHouse can scan billions of rows per second on a single machine.</p>
+<h3 id="3-materialized-row-reconstruction">3. Materialized Row Reconstruction<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-materialized-row-reconstruction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The cost of columnar storage appears when you need full rows. A <code>SELECT *</code> query must read every column file and stitch values back together by position — column file 1, position 47 is the same row as column file 2, position 47. This “tuple reconstruction” is expensive and is the primary reason columnar databases are poor at OLTP workloads where you frequently read or update entire rows.</p>
+<p><strong>Examples</strong>: ClickHouse, Apache Druid, Amazon Redshift, Google BigQuery, Snowflake, Apache Parquet (columnar file format)</p>
+<hr/>
+<h2 id="8-wide-column-stores">8. Wide Column Stores<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-wide-column-stores" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Wide column stores are frequently confused with column-oriented databases because of the word “column” in their name. They are fundamentally different storage systems solving different problems.</p>
+<h3 id="1-the-confusion-clarified">1. The Confusion, Clarified<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-confusion-clarified" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A column-oriented database stores all values for column X together on disk: <code>[salary1, salary2, salary3, ...]</code>. It is optimized for analytical aggregations across millions of rows.</p>
+<p>A wide column store stores data <strong>row-by-row within each column family</strong>. A column family is a group of columns that are frequently accessed together. Cassandra stores a row’s columns within the same column family contiguously on disk. It is optimized for key-based lookups and high write throughput.</p>
+<p>The mental model: a wide column store is a <strong>two-dimensional key-value store</strong>:</p>
+<ol>
+<li><strong>First key</strong> = row key (partition key)</li>
+<li><strong>Second key</strong> = column name</li>
+<li><strong>Value</strong> = cell contents</li>
+</ol>
+<p>Rows can have different columns — there is no fixed schema — which is why they’re called “wide”: a single row can have thousands of columns.</p>
+<h3 id="2-physical-storage-layout">2. Physical Storage Layout<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-physical-storage-layout" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><img src="../../../excalidraw/database-concepts-3.excalidraw.svg" alt="1300"/></p>
+<p>Notice that each row has a different set of columns. user123 has city, user456 has email, user789 has phone. The schema is flexible per row. On disk, Cassandra stores each row’s columns together, sorted by column name within the row. This makes reading all columns for a given row key very fast (single sequential read), but scanning a specific column across all rows is slow (must read every row).</p>
+<p><strong>Cassandra/HBase storage model:</strong></p>
+<ul>
+<li>Data is partitioned by row key (partition key) across nodes using consistent hashing.</li>
+<li>Within a partition, rows are stored sorted by clustering columns.</li>
+<li>Physically, data is written using an LSM-tree: writes go to a memtable, which flushes to SSTables. Compaction merges SSTables over time.</li>
+<li>Column families map to separate LSM-trees, so columns frequently accessed together share the same compaction and caching behavior.</li>
+</ul>
+<h3 id="3-when-to-use-each">3. When to Use Each<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-when-to-use-each" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Question</th><th>Column-Oriented</th><th>Wide Column Store</th></tr></thead><tbody><tr><td>What queries?</td><td>Analytics: SUM, AVG, GROUP BY</td><td>Key lookups, range scans within a partition</td></tr><tr><td>Write pattern?</td><td>Bulk loads, append-only</td><td>High-throughput single-row writes</td></tr><tr><td>Schema?</td><td>Fixed columns, defined upfront</td><td>Flexible, varies per row</td></tr><tr><td>Scalability model?</td><td>Scale by adding compute/memory</td><td>Scale by adding nodes (horizontal)</td></tr><tr><td>Examples</td><td>ClickHouse, Redshift, BigQuery</td><td>Cassandra, HBase, Bigtable</td></tr></tbody></table></div>
+<hr/>
+<h2 id="9-crdts-conflict-free-replicated-data-types">9. CRDTs (Conflict-Free Replicated Data Types)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-crdts-conflict-free-replicated-data-types" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>In distributed systems with <a href="../../../ch05-replication#2-multi-leader-replication" class="internal internal-link alias" data-slug="ch05-replication">multi-leader</a> or leaderless replication, concurrent writes to the same data can conflict. The traditional approach — last-write-wins (LWW) — silently drops one of the conflicting writes. This is data loss masquerading as conflict resolution.</p>
+<p>CRDTs are data structures mathematically designed so that concurrent updates always merge deterministically without coordination and without data loss.</p>
+<h3 id="1-the-mathematical-foundation">1. The Mathematical Foundation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-mathematical-foundation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A CRDT forms a <strong>join-semilattice</strong>: a set with a merge operation that is:</p>
+<ul>
+<li><strong>Commutative</strong>: merge(A, B) = merge(B, A) — order of receiving updates doesn’t matter</li>
+<li><strong>Associative</strong>: merge(merge(A, B), C) = merge(A, merge(B, C)) — grouping doesn’t matter</li>
+<li><strong>Idempotent</strong>: merge(A, A) = A — applying the same update twice has no extra effect</li>
+</ul>
+<p>These three properties guarantee that replicas converge to the same state regardless of the order or number of times updates are delivered. No coordination protocol (consensus, distributed locking) is needed. Replicas simply apply updates as they arrive and merge states whenever they communicate.</p>
+<h3 id="2-state-based-vs-operation-based">2. State-Based vs Operation-Based<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-state-based-vs-operation-based" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>State-based CRDTs (CvRDTs):</strong></p>
+<ul>
+<li>Each replica maintains its full state</li>
+<li>Replicas periodically send their <strong>entire state</strong> to other replicas</li>
+<li>Receiver merges using the join operation (must satisfy semilattice properties)</li>
+<li><strong>Pro:</strong> tolerant of message loss and reordering</li>
+<li><strong>Con:</strong> bandwidth-expensive (sends full state every time)</li>
+</ul>
+<p><strong>Operation-based CRDTs (CmRDTs):</strong></p>
+<ul>
+<li>Replicas broadcast <strong>individual operations</strong> (increment, add, remove) rather than full state</li>
+<li><strong>Pro:</strong> more bandwidth-efficient</li>
+<li><strong>Con:</strong> requires the delivery layer to guarantee at-least-once delivery</li>
+<li>Idempotency of the merge function handles duplicate deliveries</li>
+</ul>
+<h3 id="3-g-counter-a-worked-example">3. G-Counter: A Worked Example<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-g-counter-a-worked-example" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The simplest non-trivial CRDT is the <strong>grow-only counter</strong> (G-Counter). It only supports increment — no decrement.</p>
+<p><strong>Naive approach (broken):</strong> Each node maintains a single integer counter. When a node increments, it updates its local value and broadcasts it. But if two nodes both increment from value 5 to 6 and then merge, the result is 6 — one increment is lost.</p>
+<p><strong>G-Counter design:</strong></p>
+<ol>
+<li>Each node maintains a <strong>vector of counts</strong>, one entry per node in the cluster</li>
+<li>Node i only increments its own entry <code>counts[i]</code></li>
+<li>The counter’s <strong>value</strong> = sum of all entries</li>
+<li>The <strong>merge function</strong> = element-wise maximum of two vectors</li>
+</ol>
+<pre><code>Node A: [3, 0, 0]   -- A incremented 3 times
+Node B: [0, 2, 0]   -- B incremented 2 times
+Node C: [0, 0, 1]   -- C incremented 1 time
+
+Merge(A, B) = [max(3,0), max(0,2), max(0,0)] = [3, 2, 0]
+Value = 3 + 2 + 0 = 5
+
+After C propagates:
+Merge([3, 2, 0], [0, 0, 1]) = [3, 2, 1]
+Value = 6
+</code></pre>
+<p>This satisfies all three semilattice properties:</p>
+<ul>
+<li>Commutativity: element-wise max is commutative</li>
+<li>Associativity: element-wise max is associative</li>
+<li>Idempotency: max(x, x) = x</li>
+</ul>
+<p>To support decrement, you use a <strong>PN-Counter</strong>: two G-Counters, one for increments and one for decrements. The value is the difference.</p>
+<h3 id="4-or-set-handling-add-and-remove">4. OR-Set: Handling Add and Remove<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-or-set-handling-add-and-remove" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Sets are harder than counters because of the add-remove conflict. If node A adds element X and node B concurrently removes element X, what should the merged result contain?</p>
+<p>A naive set has no correct answer: add and remove are not commutative. The <strong>Observed-Remove Set (OR-Set)</strong> solves this by tagging each add operation with a unique identifier (typically a UUID).</p>
+<ul>
+<li><strong>Add(X):</strong> Generate a unique tag <code>t</code>. Store <code>(X, t)</code> in the set.</li>
+<li><strong>Remove(X):</strong> Remove all <code>(X, t)</code> pairs that this replica has <em>observed</em> (seen). Only removes tags this replica knows about.</li>
+<li><strong>Merge:</strong> Union of all <code>(X, t)</code> pairs from both replicas.</li>
+</ul>
+<p>If node A adds X with tag <code>t1</code> and node B concurrently removes X (removing whatever tags B has seen, which does not include <code>t1</code>), the merge preserves <code>(X, t1)</code> — the add wins. This “add-wins” semantic is intuitive: if someone added X and someone else removed it concurrently, the system preserves the add because the remover couldn’t have intended to remove something it hadn’t seen yet.</p>
+<h3 id="5-limitations">5. Limitations<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-limitations" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Memory growth.</strong> Many CRDTs accumulate metadata (tombstones, tags, version vectors) that grows over time. Garbage collection requires coordination — the exact thing CRDTs are designed to avoid — so it is typically done during anti-entropy or protocol-specific pruning.</li>
+<li><strong>Expressiveness.</strong> Not every data structure has a natural CRDT encoding. Operations like “set to value X” require a register CRDT with last-writer-wins or multi-value semantics, which can surprise developers.</li>
+<li><strong>Debugging.</strong> Merge results can be non-intuitive. When two replicas diverge significantly and then merge, the result may not match what either replica had.</li>
+</ul>
+<p><strong>Where used</strong>: Riak (sets, counters, maps), Redis Enterprise (Active-Active geo-distribution), collaborative editors (Yjs, Automerge), and distributed databases that offer conflict-free eventually consistent data types.</p>
+<hr/>
+<h2 id="10-multi-leader-replication">10. Multi-Leader Replication<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-multi-leader-replication" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Multi-leader replication allows multiple nodes to accept writes simultaneously. This improves write availability (no single leader as a bottleneck or single point of failure) and reduces write latency in geo-distributed deployments (clients write to the nearest datacenter).</p>
+<p>The fundamental challenge is <strong>write conflicts</strong>: two leaders may concurrently modify the same row, and there is no single authority to determine the correct outcome. Conflict resolution becomes unavoidable and shapes the entire design.</p>
+<p>This topic is covered in depth in <a href="../../../ch05-replication#2-multi-leader-replication" class="internal internal-link alias" data-slug="ch05-replication">Chapter 5: Replication</a>, including:</p>
+<ul>
+<li>Conflict detection strategies (synchronous vs asynchronous)</li>
+<li>Conflict resolution approaches (LWW, application-level, CRDTs)</li>
+<li>Topology patterns (star, circular, all-to-all) and their failure modes</li>
+<li>The subtle problems with multi-leader replication (write ordering, causality violations)</li>
+</ul>
+<p>For system design interviews, the key points to remember:</p>
+<ol>
+<li><strong>Use case:</strong> multi-datacenter deployments where each datacenter has its own leader, or offline-first applications (each device is its own leader) such as calendar apps and collaborative editors.</li>
+<li><strong>Conflict resolution is the hard problem.</strong> LWW is simple but loses data. CRDTs avoid data loss but add complexity. Application-level resolution is most flexible but pushes complexity to the developer.</li>
+<li><strong>Most applications should prefer single-leader replication</strong> unless they have explicit requirements for multi-datacenter writes or offline operation. The complexity cost of multi-leader is substantial.</li>
+</ol>
+<hr/>
+<h2 id="11-choosing-a-database">11. Choosing a Database<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-choosing-a-database" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Instead of starting with a database and asking “does it fit?”, start with your workload requirements and narrow down.</p>
+<h3 id="1-by-data-model">1. By Data Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-by-data-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Start here.</strong> The data model is the hardest thing to change later because it shapes your entire application’s data access layer.</p>
+<ol>
+<li><strong>Choose relational</strong> when:
+<ul>
+<li>Your data has many-to-many relationships that need referential integrity</li>
+<li>You need ad-hoc queries (analytics, reporting)</li>
+<li>Correctness matters more than development speed</li>
+<li>The relational model is the most general-purpose — when in doubt, start here</li>
+</ul>
+</li>
+<li><strong>Choose document</strong> when:
+<ul>
+<li>Your data is naturally hierarchical (user profiles, product catalogs, content management)</li>
+<li>Most queries retrieve a single entity by ID</li>
+<li>The document model eliminates JOINs by embedding related data, trading write complexity for read simplicity</li>
+<li><em>Caution:</em> as relationships between documents grow, you end up reinventing foreign keys in application code</li>
+</ul>
+</li>
+<li><strong>Choose wide-column</strong> when:
+<ul>
+<li>Your access pattern is partition-key-oriented with high write throughput</li>
+<li>Wide-column stores like <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a> force you to model data around your queries — you cannot add a new query pattern without potentially adding a new table</li>
+<li>This constraint is the price of extreme write performance</li>
+</ul>
+</li>
+<li><strong>Choose graph</strong> only when:
+<ul>
+<li>Relationship traversal is the primary query pattern — social networks, fraud detection, knowledge graphs</li>
+<li>Graph databases provide O(1) traversal between connected nodes via index-free adjacency, but sacrifice efficient scans and aggregations</li>
+<li>If your queries look like “find all friends of friends who liked product X within the last week”, a graph database is worth the specialization</li>
+</ul>
+</li>
+<li><strong>Choose key-value</strong> when:
+<ul>
+<li>You need the lowest possible latency for single-key lookups and the value is opaque to the database</li>
+<li>Caching layers (<a href="../../../01-01-redis" class="internal internal-link" data-slug="01-01-redis">01-01-Redis</a>, <a href="../../../02-memcached" class="internal internal-link" data-slug="02-memcached">02-Memcached</a>) and session stores are the canonical use cases</li>
+<li>The tradeoff is total: maximum read/write speed but zero query capability beyond exact key match</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-by-consistency-requirements">2. By Consistency Requirements<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-by-consistency-requirements" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Three levels, each with distinct use cases:</p>
+<ol>
+<li><strong>Strong consistency</strong> — non-negotiable for:
+<ul>
+<li>Financial transactions</li>
+<li>Inventory that must not oversell</li>
+<li>Any system where concurrent conflicting operations have real-world consequences (double-booking a seat, transferring money)</li>
+</ul>
+</li>
+<li><strong>Eventual consistency</strong> — acceptable when:
+<ul>
+<li>Stale reads have no business impact (social media feeds, analytics dashboards, recommendation systems)</li>
+<li>The application can resolve conflicts (last-write-wins for user preferences, CRDTs for collaborative editing)</li>
+</ul>
+</li>
+<li><strong>Tunable consistency</strong> — the middle ground, offered by <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a> and <a href="../../../03-dynamodb" class="internal internal-link" data-slug="03-dynamodb">03-DynamoDB</a>:
+<ul>
+<li>You choose the consistency level per operation: write to one replica for speed, or write to a quorum for safety</li>
+<li>Flexibility to use strong consistency for critical paths and eventual consistency for everything else</li>
+<li><em>Caution:</em> the operational complexity of reasoning about mixed consistency levels is significant</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-by-readwrite-ratio">3. By Read/Write Ratio<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-by-readwrite-ratio" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>This determines your storage engine requirements and replication topology.</p>
+<ol>
+<li><strong>Read-heavy workloads</strong> (100:1 read/write ratio):
+<ul>
+<li>B-Tree storage engines + single-leader replication with read replicas</li>
+<li>Add more replicas to scale reads</li>
+<li>PostgreSQL, MySQL, and MongoDB fit naturally here</li>
+<li>Caching with <a href="../../../01-01-redis" class="internal internal-link" data-slug="01-01-redis">01-01-Redis</a> further amplifies read throughput</li>
+</ul>
+</li>
+<li><strong>Write-heavy workloads</strong> (high ingestion rates, event streams, time-series):
+<ul>
+<li>LSM Tree storage engines + multi-leader or leaderless replication</li>
+<li><a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a> and HBase are designed for this — every node accepts writes, and the LSM Tree converts random writes to sequential I/O</li>
+<li>Cost: more complex reads and eventual consistency</li>
+</ul>
+</li>
+<li><strong>Balanced workloads</strong> (significant reads and writes):
+<ul>
+<li>Hardest to optimize</li>
+<li><a href="../../../07-spanner" class="internal internal-link" data-slug="07-spanner">07-Spanner</a> and CockroachDB shine here — strong consistency with horizontal scaling</li>
+<li>Cost: higher latency per operation due to consensus protocols</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-by-scale-requirements">4. By Scale Requirements<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-by-scale-requirements" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Be honest about your actual scale. Most applications do not need horizontal scaling — a single PostgreSQL instance handles thousands of transactions per second and terabytes of data.</p>
+<p><strong>Single-node is sufficient</strong> for most applications with less than ~10TB of data and fewer than ~10K transactions per second. PostgreSQL or MySQL with read replicas covers an enormous range of use cases.</p>
+<p><strong>Horizontal scaling is necessary</strong> when data volume exceeds what a single node can store, or when write throughput exceeds what a single leader can handle. At this point, you must choose between:</p>
+<ul>
+<li><strong>Sharded SQL</strong> (Vitess, CockroachDB, Spanner) — keeps the relational model but adds distribution complexity</li>
+<li><strong>Natively distributed NoSQL</strong> (Cassandra, DynamoDB) — trades the relational model for simpler distribution</li>
+</ul>
+<p>The hidden costs of horizontal scaling are operational:</p>
+<ul>
+<li>Rebalancing partitions when nodes join or leave</li>
+<li>Handling hotspots from skewed access patterns</li>
+<li>Managing split-brain scenarios during network partitions</li>
+<li>Coordinating schema changes across nodes</li>
+</ul>
+<p>Only pay this cost when the data demands it.</p>
+<h3 id="5-a-framework-for-database-selection">5. A Framework for Database Selection<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-a-framework-for-database-selection" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The following sequence reflects how experienced engineers actually reason through database choices in system design.</p>
+<p><img src="../../../excalidraw/database-concepts-5.excalidraw.svg" alt="800"/></p>
+<p><strong>Step 1: Identify the dominant access pattern.</strong> This narrows the data model. Most systems have one access pattern that accounts for 80%+ of operations.</p>
+<p><strong>Step 2: Determine consistency requirements.</strong> If you need ACID transactions across entities, you need a relational database or a NewSQL system like Spanner. If eventual consistency is acceptable, you unlock the full range of distributed NoSQL options.</p>
+<p><strong>Step 3: Estimate scale.</strong> If a single PostgreSQL node handles your throughput and storage, stop here. Do not introduce distributed systems complexity for theoretical future scale. If you genuinely need horizontal scaling, your consistency choice from Step 2 determines whether you use sharded SQL or natively distributed NoSQL.</p>
+<p><strong>Step 4: Consider operational requirements.</strong> A technically optimal database that your team cannot operate is worse than a suboptimal one they know well. Managed services (DynamoDB, Cloud Spanner, Aurora) trade cost for operational simplicity. Self-managed systems (Cassandra, HBase) trade operational burden for control and cost efficiency.</p>
+<p><strong>Step 5: Plan for multiple databases.</strong> Production systems almost always use more than one database. The common pattern is a primary data store (PostgreSQL, DynamoDB) for the source of truth, a cache layer (Redis) for hot data, and a specialized store (Elasticsearch for search, ClickHouse for analytics) for derived workloads. The key architectural question becomes how data flows between these systems — see <a href="../../../01-fundamentals/01-concepts/03-data/03-data-pipeline" class="internal internal-link" data-slug="01-fundamentals/01-concepts/03-data/03-data-pipeline">03-Data-Pipeline</a> and <a href="../../../ch11-stream-processing" class="internal internal-link" data-slug="ch11-stream-processing">Ch11-Stream-Processing</a> for change data capture patterns.</p>
+<hr/>
+<h2 id="12-database-profiles">12. Database Profiles<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-database-profiles" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Each profile covers the key insight that differentiates the database, when it is the right choice, and what you give up. Dedicated notes contain full architectural detail.</p>
+<h3 id="1-postgresql">1. PostgreSQL<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-postgresql" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> extensibility — JSONB columns, PostGIS (geospatial), pg_vector (similarity search), MVCC (snapshot isolation without read locks)</li>
+<li><strong>Best for:</strong> any workload where you are unsure which database to use. Handles OLTP, light OLAP, document storage, and full-text search within a single system</li>
+<li><strong>Limitation:</strong> vertical scaling — once you outgrow a single node’s write capacity, you need sharding (Citus, Vitess) or a different architecture</li>
+<li>See <a href="../../../01-fundamentals/02-databases/01-fundamentals/01-database-concepts#3-acid" class="internal internal-link alias" data-slug="01-fundamentals/02-databases/01-fundamentals/01-database-concepts">01-Database-Concepts > 3. ACID</a> and <a href="../../../06-mvcc" class="internal internal-link" data-slug="06-mvcc">06-MVCC</a> for the consistency guarantees that make PostgreSQL the default for transactional workloads</li>
+</ul>
+<h3 id="2-mongodb">2. MongoDB<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-mongodb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> data locality — embedding related data in a single document eliminates JOINs and makes single-entity reads a single disk seek</li>
+<li><strong>Best for:</strong> user profiles, content management, product catalogs — workloads where you always read and write a complete entity</li>
+<li><strong>Strength:</strong> since v4.0, multi-document ACID transactions close the gap with relational databases</li>
+<li><strong>Limitation:</strong> as cross-document relationships grow, you recreate relational patterns in application code — at which point PostgreSQL with JSONB may be simpler</li>
+<li><strong>Scaling:</strong> horizontal sharding is built-in but requires careful shard key selection</li>
+<li>See <a href="../../../05-mongodb" class="internal internal-link" data-slug="05-mongodb">05-MongoDB</a> for architecture details</li>
+</ul>
+<h3 id="3-cassandra">3. Cassandra<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-cassandra" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> every node is equal — no leader, any node can accept any write</li>
+<li><strong>Mechanism:</strong> <a href="../../../01-fundamentals/01-concepts/04-caching/02-consistent-hashing" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/04-caching/02-consistent-hashing">consistent hashing</a> for data distribution + LSM Trees for write performance → near-linear horizontal write scaling and no single point of failure</li>
+<li><strong>Best for:</strong> write throughput and availability are the dominant requirements — event logging, time-series ingestion, messaging at massive scale</li>
+<li><strong>Price (severe):</strong>
+<ul>
+<li>Must model data around query patterns (no ad-hoc queries)</li>
+<li>Conflict resolution defaults to last-write-wins (potential data loss)</li>
+<li>Reads are slower than writes (must reconcile across SSTables and replicas)</li>
+</ul>
+</li>
+<li>See <a href="../../../04-cassandra" class="internal internal-link" data-slug="04-cassandra">04-Cassandra</a> for the full architecture</li>
+</ul>
+<h3 id="4-dynamodb">4. DynamoDB<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-dynamodb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> operational simplicity at scale — fully managed, serverless key-value and document store</li>
+<li><strong>Managed for you:</strong> partitioning, replication, failover. You specify read/write capacity units (or on-demand pricing)</li>
+<li><strong>Best for:</strong> predictable single-digit millisecond latency at any scale, when access patterns fit the partition-key model</li>
+<li><strong>Tradeoff:</strong> rigid access patterns — efficient queries require a partition key, cross-partition scans are expensive</li>
+<li><strong>Features:</strong> tunable consistency (eventually consistent by default, strongly consistent optional), DynamoDB Streams for CDC</li>
+<li>See <a href="../../../03-dynamodb" class="internal internal-link" data-slug="03-dynamodb">03-DynamoDB</a> for details</li>
+</ul>
+<h3 id="5-redis">5. Redis<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-redis" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> data structures in memory solve problems disk-based databases handle poorly</li>
+<li><strong>Data structures:</strong> sorted sets (leaderboards), HyperLogLog (cardinality), Streams (event processing), Pub/sub (real-time messaging) — all at sub-millisecond latency</li>
+<li><strong>Limitation:</strong> capacity is bounded by RAM, and you pay for it. Redis Cluster adds horizontal scaling but cross-slot operations are limited</li>
+<li><strong>Role:</strong> rarely your primary database; it is the acceleration layer in front of one</li>
+<li>See <a href="../../../01-01-redis" class="internal internal-link" data-slug="01-01-redis">01-01-Redis</a> for architecture and persistence options</li>
+</ul>
+<h3 id="6-spanner">6. Spanner<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-spanner" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Key insight:</strong> strong consistency and horizontal scaling are not mutually exclusive — if you pay the latency cost of synchronized clocks</li>
+<li><strong>Mechanism:</strong> TrueTime API (atomic clocks + GPS) → globally meaningful timestamps → external consistency (linearizability) across continents. Paxos replicates synchronously across datacenters</li>
+<li><strong>Result:</strong> horizontally-scaled relational database with full SQL, ACID transactions, and global consistency</li>
+<li><strong>Best for:</strong> global distribution with strong consistency — financial systems, multi-region applications where correctness is non-negotiable</li>
+<li><strong>Cost:</strong>
+<ul>
+<li>Latency (synchronous cross-datacenter replication adds milliseconds)</li>
+<li>Operational complexity (requires Google’s infrastructure or Cloud Spanner)</li>
+<li>Price</li>
+</ul>
+</li>
+<li>See <a href="../../../07-spanner" class="internal internal-link" data-slug="07-spanner">07-Spanner</a> for TrueTime and architecture details</li>
+</ul>
+<h3 id="7-specialized-databases">7. Specialized Databases<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-specialized-databases" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li><strong>Time-series databases</strong> (InfluxDB, TimescaleDB) optimize for append-heavy, time-ordered data. They use LSM Trees for write throughput, time-based partitioning for efficient range queries, and aggressive compression (delta encoding, gorilla encoding) for storage efficiency. The specialization is narrow: metrics, logs, IoT sensor data, and monitoring systems.</li>
+<li><strong>Graph databases</strong> (Neo4j, Amazon Neptune) store relationships as first-class citizens via index-free adjacency — each node holds a direct pointer to its neighbors, making traversals O(1) per hop rather than O(log n) per JOIN. This matters when your queries are relationship-centric: social networks, fraud detection rings, dependency graphs. Outside these use cases, the operational overhead and limited ecosystem make them a poor general-purpose choice.</li>
+<li><strong>Vector databases</strong> (Pinecone, Weaviate, pgvector) index high-dimensional embeddings for approximate nearest-neighbor (ANN) search using algorithms like HNSW and IVF. They power semantic search, recommendation systems, and retrieval-augmented generation (RAG). The key tradeoff: results are approximate, and tuning the recall/latency balance requires understanding the index structure. For many workloads, PostgreSQL with pgvector is sufficient before reaching for a dedicated vector database.</li>
+</ol>
+<hr/>
+<h2 id="13-common-pairings-in-production-systems">13. Common Pairings in Production Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#13-common-pairings-in-production-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>System Type</th><th>Primary Store</th><th>Cache</th><th>Specialized Store</th></tr></thead><tbody><tr><td>E-commerce</td><td>PostgreSQL</td><td>Redis</td><td>Elasticsearch (search), ClickHouse (analytics)</td></tr><tr><td>Social media</td><td>Cassandra / DynamoDB</td><td>Redis</td><td>Neo4j (graph), Elasticsearch (search)</td></tr><tr><td>Financial</td><td>PostgreSQL / Spanner</td><td>Redis</td><td>TimescaleDB (time-series)</td></tr><tr><td>IoT / Monitoring</td><td>Cassandra / InfluxDB</td><td>Redis</td><td>ClickHouse (dashboards)</td></tr><tr><td>Content platform</td><td>MongoDB</td><td>Redis</td><td>Elasticsearch (search), Pinecone (recommendations)</td></tr></tbody></table></div>
+<p>These pairings are not prescriptive rules. They reflect a common pattern: use a general-purpose database as the source of truth, then project data into specialized stores optimized for specific query patterns.</p>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>Databases differ along four dimensions: <strong>data model</strong>, <strong>storage engine</strong>, <strong>consistency model</strong>, and <strong>scaling approach</strong>. Every database is a specific position on these axes.</li>
+<li>The SQL vs NoSQL dichotomy is outdated. NoSQL databases added transactions; SQL databases added horizontal scaling. The real spectrum runs from “maximum developer control” (DynamoDB) to “the database handles everything” (Spanner).</li>
+<li><strong>Data model</strong> is the most consequential choice because it determines which queries are cheap and which are expensive. Start here when selecting a database.</li>
+<li><strong>Storage engine</strong> (B-Tree vs LSM Tree) determines read/write performance. B-Trees favor reads; LSM Trees favor writes. This is a 10-100x difference for write-heavy workloads.</li>
+<li><strong>Atomicity</strong> is enforced by WAL-based undo logging: record intent before making changes, so incomplete transactions can always be rolled back after a crash.</li>
+<li><strong>Isolation</strong> is achieved through either pessimistic locking (2PL) or optimistic multi-versioning (MVCC). Most production databases use MVCC for reads and locks for write-write conflicts.</li>
+<li><strong>Durability</strong> requires fsyncing the WAL before acknowledging a commit. Sequential WAL writes are fast; data pages are flushed lazily.</li>
+<li><strong>Compaction</strong> in LSM-trees comes in two strategies: size-tiered (write-optimized, higher space amplification) and leveled (read-optimized, higher write amplification). Choose based on your workload.</li>
+<li><strong>Sparse indexes</strong> trade a small block scan for 100x memory savings. Lookup cost is O(log(N/B)) binary search on the index plus O(B) scan within a block.</li>
+<li><strong>Column-oriented databases</strong> store columns contiguously, enabling dictionary encoding, RLE, bit-packing, and bitmap encoding. They are OLAP engines, not OLTP databases.</li>
+<li><strong>Wide column stores</strong> are not columnar databases. They store data row-by-row within column families, optimized for key-based lookups and high write throughput. Think “two-dimensional key-value store.”</li>
+<li><strong>CRDTs</strong> achieve conflict-free eventual consistency through the mathematical properties of join-semilattices (commutative, associative, idempotent merge). G-Counters use element-wise max; OR-Sets use unique tags to resolve add-remove conflicts.</li>
+<li><strong>Multi-leader replication</strong> enables multi-datacenter writes and offline operation at the cost of complex conflict resolution. Prefer single-leader unless you have a specific requirement.</li>
+<li><strong>Horizontal scaling is not free.</strong> It eliminates cross-partition JOINs, requires distributed transaction protocols, and adds operational complexity. Only pay this cost when data volume demands it.</li>
+<li>Most production systems use <strong>multiple databases</strong>: a primary store for the source of truth, a cache for hot data, and specialized stores for search, analytics, or graph queries.</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>If the WAL disk fills up during a long-running transaction, what happens? How does the database handle this without violating atomicity?
+Ans:</li>
+<li>MVCC avoids reader-writer contention, but what happens during write-write conflicts under snapshot isolation? How does the database detect and resolve them?
+Ans:</li>
+<li>In leveled compaction, a single write to L0 can trigger cascading merges through L1, L2, L3. What is the worst-case write amplification, and how does this affect SSD endurance? How does RocksDB mitigate this in practice?
+Ans:</li>
+<li>If you set the sparse index interval too large (say, every 10,000th key), what happens to read latency? What if you set it too small (every key, making it dense)?
+Ans:</li>
+<li>Dictionary encoding breaks down when a column has high cardinality (e.g., user IDs). What encoding strategy would you use instead, and why?
+Ans:</li>
+<li>Why can bitmap indexes be combined with bitwise operations to evaluate multi-column WHERE clauses extremely efficiently? What happens to this efficiency as column cardinality increases?
+Ans:</li>
+<li>A developer hears “Cassandra is a column store” and tries to run analytical aggregation queries across all rows. Why will this perform poorly? What is the correct analytical tool for this workload?
+Ans:</li>
+<li>In a G-Counter, the vector grows with the number of nodes. What happens when nodes are dynamically added and removed? How do production systems handle this?
+Ans:</li>
+<li>An OR-Set accumulates unique tags that are never garbage collected. In a high-churn set (frequent adds and removes), how does memory usage grow over time? What strategies exist to prune metadata without violating the CRDT convergence guarantee?
+Ans:</li>
+<li>Under what conditions does multi-leader replication produce a state that no sequential execution of the same writes could have produced? Give a concrete example involving two leaders and two concurrent transactions.
+Ans:</li>
+<li>You are designing a system that needs both strong consistency for financial transactions and eventual consistency for a user-facing activity feed. How would you architect the data layer, and what problems arise at the boundary between the two consistency models?
+Ans:</li>
+<li>A team chose MongoDB for a system that started as a simple document store but evolved to require many cross-document relationships. What symptoms would appear as the system grows, and at what point should they consider migrating to PostgreSQL?
+Ans:</li>
+<li>Why does Spanner need atomic clocks (TrueTime) to provide external consistency? What would happen if clock synchronization degraded — how would the system behave, and what tradeoff does it make?
+Ans:</li>
+<li>You have a workload that is 90% reads and 10% writes, but the writes are bursty (10x normal rate during peak). How does this pattern affect your storage engine choice, and what would happen to a B-Tree-based database during the write bursts?
+Ans:</li>
+<li>DynamoDB’s partition-key model forces you to design your data model around access patterns. What happens when a new product feature requires an access pattern that does not align with the existing partition key? What are your options, and what are the costs of each?
+Ans:</li>
+<li>At what data volume and query throughput does it become wrong to default to PostgreSQL? What signals indicate that the workload has outgrown a single-node relational database, and what is the typical migration path?
+Ans:</li>
+<li>A wide-column store like Cassandra and a time-series database like InfluxDB both handle high write throughput. Under what circumstances would you choose one over the other, and what does the time-series database provide that Cassandra does not?
+Ans:</li>
+<li>How does the choice of replication topology (single-leader, multi-leader, leaderless) interact with the choice of consistency model? Can you have strong consistency with leaderless replication, and if so, at what cost?
+Ans:</li>
+</ol></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-6b2dceed.js" type="module" data-persist="true"></script></html>
