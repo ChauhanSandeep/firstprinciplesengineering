@@ -319,6 +319,46 @@
     document.body.appendChild(overlay)
   }
 
+  function ensureRichFooter() {
+    const footer = document.querySelector("footer")
+    if (!footer) return
+    if (footer.querySelector(".fpe-footer-rich")) return
+
+    const basePath = (document.body && document.body.dataset && document.body.dataset.basepath) || ""
+    const home = (basePath || "") + "/"
+    const rss = (basePath || "") + "/index.xml"
+    const tags = (basePath || "") + "/tags/"
+    const ghRepo = "https://github.com/chauhansandeep/firstprinciplesengineering"
+
+    const rich = document.createElement("div")
+    rich.className = "fpe-footer-rich"
+    rich.innerHTML =
+      '<div class="fpe-footer-col fpe-footer-brand">' +
+        '<div class="fpe-footer-title">First Principles Engineering</div>' +
+        '<p class="fpe-footer-tagline">Notes on distributed systems, system design, databases, networking, and the fundamentals that survive every architecture trend.</p>' +
+        '<p class="fpe-footer-byline">By <strong>Sandeep Chauhan</strong> — Senior Software Engineer @ LinkedIn</p>' +
+      '</div>' +
+      '<div class="fpe-footer-col fpe-footer-browse">' +
+        '<div class="fpe-footer-col-title">Browse</div>' +
+        '<ul>' +
+          '<li><a href="' + home + '">Home</a></li>' +
+          '<li><a href="' + tags + '">Tags</a></li>' +
+          '<li><a href="' + rss + '">RSS Feed</a></li>' +
+        '</ul>' +
+      '</div>' +
+      '<div class="fpe-footer-col fpe-footer-connect">' +
+        '<div class="fpe-footer-col-title">Connect</div>' +
+        '<ul>' +
+          '<li><a href="' + ghRepo + '" target="_blank" rel="noopener">GitHub</a></li>' +
+          '<li><a href="' + ghRepo + '/issues/new" target="_blank" rel="noopener">Open an issue</a></li>' +
+          '<li><a href="' + rss + '">RSS</a></li>' +
+        '</ul>' +
+      '</div>'
+
+    footer.insertBefore(rich, footer.firstChild)
+    footer.classList.add("fpe-footer-enhanced")
+  }
+
   function init() {
     hydrateCodeBlocks(document)
     ensureProgressBar()
@@ -329,6 +369,7 @@
     ensureBackToTop()
     ensurePrevNext()
     ensureShareRow()
+    ensureRichFooter()
   }
 
   if (document.readyState === "loading") {
