@@ -211,6 +211,7 @@ plugins:
       links:
         GitHub: https://github.com/chauhansandeep/firstprinciplesengineering
         Source (Quartz): https://github.com/jackyzha0/quartz
+        RSS Feed: /firstprinciplesengineering/index.xml
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer
