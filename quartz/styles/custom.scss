@@ -731,7 +731,7 @@ a.internal.tag-link {
 .fpe-hero {
   margin: 1rem 0 2.5rem;
   padding: 2.5rem 0 2rem;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid var(--lightgray);
 
   h1 {
@@ -744,7 +744,7 @@ a.internal.tag-link {
     line-height: 1.15;
   }
   .fpe-hero-byline {
-    margin: 0.25rem auto 0.75rem;
+    margin: 0.25rem 0 0.75rem;
     font-size: 0.95rem;
     color: var(--gray);
     letter-spacing: 0.01em;
@@ -754,9 +754,6 @@ a.internal.tag-link {
       font-weight: 600;
     }
 
-    // On narrow phones the role line is too long for one line; let the
-    // separator dot collapse onto its own break so the line wraps cleanly
-    // between name and role instead of mid-phrase.
     @media all and ($mobile) {
       font-size: 0.88rem;
       max-width: 32ch;
@@ -766,9 +763,81 @@ a.internal.tag-link {
   }
   p {
     max-width: 56ch;
-    margin: 0.75rem auto 0;
+    margin: 0.75rem 0 0;
     color: var(--darkgray);
     font-size: 1.05rem;
+  }
+}
+
+// ---- Signature hero diagram (homepage above the fold) -------------------
+// Renders a clickable figure showing off the site's hand-drawn diagrams as
+// the first visual artifact a visitor sees. The Excalidraw SVGs ship with a
+// dark Catppuccin background built in, so we deliberately do NOT wrap them
+// in another colored card — the SVG provides its own framing and we just
+// add a thin border + rounded corners to anchor it on the page.
+.fpe-hero-figure {
+  display: block;
+  margin: 1.5rem 0 2.75rem;
+  text-decoration: none !important;
+  color: inherit;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover, &:focus-visible {
+    transform: translateY(-2px);
+    outline: none;
+
+    img, svg {
+      box-shadow: 0 10px 30px color-mix(in srgb, var(--dark) 18%, transparent);
+    }
+    .fpe-hero-figure-title {
+      text-decoration: underline;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
+    }
+  }
+
+  img, svg {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--lightgray);
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--dark) 8%, transparent);
+    transition: box-shadow 180ms ease;
+    // Excalidraw exports ship with a hardcoded dark rect as their internal
+    // background, but the title/header text sits ABOVE that rect on a
+    // transparent canvas. On a cream page this makes the title invisible.
+    // Painting the same dark color on the img element fills the transparent
+    // region so the title reads cleanly.
+    background: #1e1e2e;
+  }
+
+  .fpe-hero-figure-caption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0.85rem 0.25rem 0;
+    font-size: 0.88rem;
+  }
+  .fpe-hero-figure-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+  }
+  .fpe-hero-figure-title {
+    color: var(--secondary);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .fpe-hero-figure-desc {
+    color: var(--darkgray);
+    line-height: 1.55;
+    margin-top: 0.15rem;
   }
 }
 
@@ -1005,6 +1074,7 @@ li.section-li {
 
 // ---- Subtle header polish -----------------------------------------------
 .page > #quartz-body > .sidebar.left {
+  & h2.page-title,
   & h2.page-title-text,
   & .page-title a {
     background: linear-gradient(135deg, var(--secondary), var(--tertiary));
@@ -1012,6 +1082,25 @@ li.section-li {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 700;
+  }
+
+  // Brand mark: chess knight before the site title. Implemented as a
+  // background-image (mask-image) so we can recolor via currentColor on the
+  // pseudo-element without forking the upstream page-title plugin.
+  & h2.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    &::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 1.6em;
+      height: 1.6em;
+      background-color: var(--secondary);
+      -webkit-mask: url("static/brand-knight.svg") center / contain no-repeat;
+      mask: url("static/brand-knight.svg") center / contain no-repeat;
+    }
   }
 }
 

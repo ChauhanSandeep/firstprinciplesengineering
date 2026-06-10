@@ -13,6 +13,15 @@ publish: true
 
 </div>
 
+<a class="fpe-hero-figure" href="01-Fundamentals/02-Databases/01-Fundamentals/01-Database-Concepts">
+  <img src="Excalidraw/Database-Concepts-4.excalidraw.svg" alt="Database Design Dimensions — four axes (data model, storage engine, consistency, scaling) with databases plotted as coordinates" loading="eager" />
+  <span class="fpe-hero-figure-caption">
+    <span class="fpe-hero-figure-eyebrow">From: Database Concepts</span>
+    <span class="fpe-hero-figure-title">Database Design Dimensions</span>
+    <span class="fpe-hero-figure-desc">Every database is a coordinate across four independent axes. Stop asking "which database is best" — start asking which tradeoff you can afford.</span>
+  </span>
+</a>
+
 ## Featured
 
 <div class="fpe-featured-grid">
