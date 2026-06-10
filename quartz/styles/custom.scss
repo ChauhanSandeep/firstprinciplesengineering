@@ -378,28 +378,21 @@ img[src$=".excalidraw.svg"] {
   max-width: 100%;
   box-sizing: border-box;
   background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 10px;
+  border-radius: 0;
   // Generous matting so labels positioned at the SVG's own viewBox edges
   // (which Excalidraw often does for axis ticks, corner annotations, and
-  // tightly-cropped diagrams) have breathing room from the frame border.
+  // tightly-cropped diagrams) have breathing room from the frame edge.
   padding: 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
   // Dark-mode "paper figure" — same warm cream as light-mode page so the
   // diagram reads as a printed plate set on the dark page. Tonally
-  // consistent with the rest of the warm hybrid palette; avoids the cool
-  // white frame that previously clashed with the warm-dark surround.
+  // consistent with the rest of the warm hybrid palette.
   :root[saved-theme="dark"] & {
     background: #fbf6e9;
-    border-color: color-mix(in srgb, #fbf6e9 35%, var(--lightgray));
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 28px rgba(0, 0, 0, 0.3);
   }
-}
-
-img[src$=".excalidraw.svg"]:hover {
-  border-color: color-mix(in srgb, var(--secondary) 40%, var(--lightgray));
 }
 
 // ---- Generic article images (PNG / JPG / non-Excalidraw SVG) -------------
