@@ -72,8 +72,8 @@ plugins:
     enabled: true
     options:
       theme:
-        light: vitesse-light
-        dark: vitesse-dark
+        light: rose-pine-dawn
+        dark: rose-pine-moon
       keepBackground: false
     order: 20
   - source: github:quartz-community/obsidian-flavored-markdown
