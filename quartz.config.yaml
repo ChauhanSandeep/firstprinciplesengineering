@@ -23,32 +23,36 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Inter
-      body: Atkinson Hyperlegible
-      code: JetBrains Mono
+      # fly.io-inspired hybrid: serif headers (Fraunces, free Mackinac
+      # analogue) + humanist-grotesque body (Inter, Fricolage analogue)
+      # + clean mono (IBM Plex Mono, closer to Fragment Mono than the
+      # thicker JetBrains Mono).
+      header: Fraunces
+      body: Inter
+      code: IBM Plex Mono
     colors:
-      # Catppuccin Latte — light mode
+      # fly.io-inspired light mode — warm cream + near-black + fly blue
       lightMode:
-        light: "#eff1f5"          # Base — page background
-        lightgray: "#ccd0da"      # Surface0 — borders / muted surfaces
-        gray: "#9ca0b0"           # Overlay0 — muted text / icons
-        darkgray: "#5c5f77"       # Subtext1 — secondary text
-        dark: "#4c4f69"           # Text — primary text
-        secondary: "#8839ef"      # Mauve — primary accent / links
-        tertiary: "#fe640b"       # Peach — secondary accent
-        highlight: rgba(136, 57, 239, 0.10)
-        textHighlight: rgba(254, 100, 11, 0.28)
-      # Catppuccin Mocha — dark mode
+        light: "#fbf6e9"          # warm cream — page background
+        lightgray: "#eae2d2"      # cream surfaces / borders / card bg
+        gray: "#8c7e6a"           # warm muted — secondary text / icons
+        darkgray: "#5a4f40"       # warm subtext
+        dark: "#1f1b16"           # near-black, warm — primary text
+        secondary: "#4d7cfe"      # fly blue — primary accent / links
+        tertiary: "#c44a1b"       # warm rust — second accent (sparingly)
+        highlight: rgba(77, 124, 254, 0.08)
+        textHighlight: rgba(77, 124, 254, 0.28)
+      # Warm-dark companion — same palette, inverted with lifted blue
       darkMode:
-        light: "#1e1e2e"          # Base
-        lightgray: "#313244"      # Surface0
-        gray: "#7f849c"           # Overlay1
-        darkgray: "#bac2de"       # Subtext1
-        dark: "#cdd6f4"           # Text
-        secondary: "#cba6f7"      # Mauve
-        tertiary: "#fab387"       # Peach
-        highlight: rgba(203, 166, 247, 0.15)
-        textHighlight: rgba(250, 179, 135, 0.30)
+        light: "#1a1714"          # warm near-black — page background
+        lightgray: "#2c2823"      # lifted surfaces / borders / card bg
+        gray: "#8b8273"           # warm muted
+        darkgray: "#b8afa0"       # warm subtext
+        dark: "#ede6d6"           # warm off-white — primary text
+        secondary: "#7b9dff"      # lifted blue for dark-mode contrast
+        tertiary: "#e07a4a"       # rust, lifted for dark
+        highlight: rgba(123, 157, 255, 0.12)
+        textHighlight: rgba(123, 157, 255, 0.32)
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
