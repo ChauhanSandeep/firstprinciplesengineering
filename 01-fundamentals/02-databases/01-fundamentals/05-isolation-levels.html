@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Isolation Levels</title><meta charset="utf-8"/><link rel="preload" href="../../../index-253a1999.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="Isolation Levels"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Isolation Levels"/><meta name="twitter:description" content="The Story Most production databases run at Read Committed or Snapshot Isolation, not Serializable, because Serializable is too slow."/><meta property="og:description" content="The Story Most production databases run at Read Committed or Snapshot Isolation, not Serializable, because Serializable is too slow."/><meta property="og:image:alt" content="The Story Most production databases run at Read Committed or Snapshot Isolation, not Serializable, because Serializable is too slow."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels"/><link rel="icon" type="image/png" sizes="32x32" href="../../../static/favicon-32.png"/><link rel="apple-touch-icon" sizes="180x180" href="../../../static/apple-touch-icon.png"/><link rel="alternate" type="application/rss+xml" title="First Principles Engineering — RSS" href="https://chauhansandeep.github.io/firstprinciplesengineering/index.xml"/><meta name="description" content="The Story Most production databases run at Read Committed or Snapshot Isolation, not Serializable, because Serializable is too slow."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-253a1999.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/02-databases/01-fundamentals/05-isolation-levels" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n  if (!node || node.displayName == null) return;\n  const cleaned = String(node.displayName)\n    .replace(/^\\d+[-_]/, \&quot;\&quot;)\n    .replace(/[-_]/g, \&quot; \&quot;)\n    .trim();\n  if (cleaned) node.displayName = cleaned;\n}\n&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-31" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-31" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/02-databases/">02-Databases</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/02-databases/01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Isolation Levels</a></div></nav><h1 class="article-title">Isolation Levels</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T18:41:19.757Z">Jun 11, 2026</time><span>23 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Most production databases run at Read Committed or Snapshot Isolation, not Serializable, because Serializable is too slow. But these weaker levels allow write skew — where two transactions each read valid state, make valid decisions, but the combined result violates an invariant. A real example: two doctors each check that at least one doctor is on-call, see each other listed, and both remove themselves. Now nobody is on-call. Both transactions were individually correct. The system is wrong. This isn’t hypothetical — it happens in scheduling systems, inventory management, and seat booking constantly. The isolation level you choose determines which bugs are possible, and most engineers don’t know what they’ve signed up for.</p>
+<hr/>
+<p>The fundamental problem of transaction isolation is a tension between two goals that directly oppose each other. On one side is <strong>correctness</strong>: if every transaction ran alone, one at a time, there would be no concurrency bugs at all. On the other side is <strong>performance</strong>: serial execution wastes hardware capacity. Real systems have hundreds or thousands of transactions in flight simultaneously, and making them wait in line destroys throughput.</p>
+<p>Every isolation level is a point on the spectrum between these two extremes. Weaker levels allow more concurrency but expose transactions to anomalies — situations where interleaved operations produce results that could never occur under serial execution. Stronger levels eliminate more anomalies but pay for it with locking, aborts, or reduced parallelism.</p>
+<p>Understanding isolation levels requires understanding three things in order:</p>
+<ol>
+<li><strong>What can go wrong</strong> — the anomalies that arise from concurrent execution</li>
+<li><strong>What guarantees each level provides</strong> — which anomalies each level prevents and which it allows</li>
+<li><strong>How the database enforces those guarantees</strong> — the mechanisms (<a href="../../../01-fundamentals/02-databases/01-fundamentals/06-mvcc" class="internal internal-link" data-slug="01-fundamentals/02-databases/01-fundamentals/06-mvcc">06-MVCC</a>, <a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">2PL</a>, SSI) that implement each level</li>
+</ol>
+<hr/>
+<h2 id="1-common-read-and-write-anomalies">1. Common Read and Write Anomalies<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-common-read-and-write-anomalies" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Isolation levels exist because concurrent transactions can interleave their operations in ways that produce incorrect results. Each anomaly below has a specific <strong>mechanism</strong> — a precise sequence of interleaved reads and writes that produces the problem. Understanding the mechanism is essential because it reveals exactly what the isolation level must prevent.</p>
+<h3 id="1-dirty-reads">1. Dirty Reads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-dirty-reads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction reads data written by another transaction that has not yet committed. If the writing transaction later aborts, the reading transaction acted on data that never existed.</p>
+<p><strong>Mechanism — step-by-step trace:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A</th><th>Txn B</th><th>account.balance</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td></td><td>10,000</td></tr><tr><td>2</td><td>UPDATE balance = 2,000</td><td></td><td>2,000 (uncommitted)</td></tr><tr><td>3</td><td></td><td>BEGIN</td><td></td></tr><tr><td>4</td><td></td><td>READ balance -> <strong>2,000</strong></td><td></td></tr><tr><td>5</td><td></td><td>Shows “low funds” warning</td><td></td></tr><tr><td>6</td><td>ROLLBACK</td><td></td><td>10,000 (restored)</td></tr></tbody></table></div>
+<p>Txn B read a value that was never committed. If Txn B made decisions based on that value (transferred money, sent an alert, denied a purchase), those decisions are based on a phantom state of the database.</p>
+<p><strong>Why it matters beyond simple reads:</strong> Dirty reads are particularly dangerous with dirty writes. If two transactions both try to update the same row, and Txn B overwrites Txn A’s uncommitted write, then Txn A’s rollback may undo Txn B’s change as well — producing a lost update that neither transaction intended.</p>
+<p><strong>Prevented by:</strong> Read Committed and all stronger levels. The database ensures a transaction only sees committed values, typically by returning the old committed value for any row that has an uncommitted write.</p>
+<h3 id="2-non-repeatable-reads-read-skew">2. Non-Repeatable Reads (Read Skew)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-non-repeatable-reads-read-skew" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction reads the same row twice and gets different values because another transaction modified and committed the row between the two reads. The first transaction’s view of the database is inconsistent within its own execution.</p>
+<p><strong>Mechanism — step-by-step trace:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A (long report)</th><th>Txn B (transfer)</th><th>accounts</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td></td><td>savings=500, checking=500</td></tr><tr><td>2</td><td>READ savings -> <strong>500</strong></td><td></td><td></td></tr><tr><td>3</td><td></td><td>BEGIN</td><td></td></tr><tr><td>4</td><td></td><td>UPDATE savings = 400</td><td></td></tr><tr><td>5</td><td></td><td>UPDATE checking = 600</td><td></td></tr><tr><td>6</td><td></td><td>COMMIT</td><td>savings=400, checking=600</td></tr><tr><td>7</td><td>READ checking -> <strong>600</strong></td><td></td><td></td></tr><tr><td>8</td><td>Total = 500 + 600 = <strong>1100</strong></td><td></td><td></td></tr></tbody></table></div>
+<p>Txn A sees the account balances at two different points in time. It reads savings <em>before</em> the transfer and checking <em>after</em> the transfer, producing a total of 1100 when the actual total is always 1000. This is called <strong>read skew</strong> because the transaction’s reads are skewed across time.</p>
+<p><strong>Why it matters:</strong> This anomaly is especially dangerous for:</p>
+<ul>
+<li><strong>Backup operations</strong> — a backup that reads some tables before a transfer and other tables after will contain an internally inconsistent snapshot</li>
+<li><strong>Analytical queries</strong> — aggregate reports that scan large datasets will produce nonsensical totals</li>
+<li><strong>Integrity checks</strong> — a query verifying that debits equal credits across all accounts will fail spuriously</li>
+</ul>
+<p><strong>Prevented by:</strong> Repeatable Read (Snapshot Isolation) and all stronger levels. The database gives each transaction a consistent snapshot, so all reads within the transaction see the same committed state.</p>
+<h3 id="3-phantom-reads">3. Phantom Reads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-phantom-reads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction runs a range query twice and gets different sets of rows because another transaction inserted or deleted rows matching the range condition between the two queries. Unlike non-repeatable reads (which affect a specific row), phantom reads affect the <em>set of rows</em> matching a predicate.</p>
+<p><strong>Mechanism — step-by-step trace:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A (reporting)</th><th>Txn B (new order)</th><th>orders table</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td></td><td>3 pending orders, total=50,000</td></tr><tr><td>2</td><td>SELECT SUM(amount) WHERE status=‘pending’ -> <strong>50,000</strong></td><td></td><td></td></tr><tr><td>3</td><td></td><td>BEGIN</td><td></td></tr><tr><td>4</td><td></td><td>INSERT order(amount=10,000, status=‘pending’)</td><td></td></tr><tr><td>5</td><td></td><td>COMMIT</td><td>4 pending orders, total=60,000</td></tr><tr><td>6</td><td>SELECT SUM(amount) WHERE status=‘pending’ -> <strong>60,000</strong></td><td></td><td></td></tr></tbody></table></div>
+<p>The critical distinction from non-repeatable reads: Txn A’s original rows were not modified. A <em>new</em> row appeared that matches the query predicate. Row-level locks on the original three rows would not prevent this because the new row did not exist when the locks were acquired.</p>
+<p><strong>Why it matters for locking:</strong> This is why preventing phantoms requires more than row-level locking. The database must lock the <em>predicate</em> — the condition <code>status='pending'</code> — or the <em>index range</em> that the query scanned. This is fundamentally harder than locking individual rows and is one reason why Serializable isolation is more expensive than Repeatable Read.</p>
+<p><strong>Prevented by:</strong> Serializable isolation. Under <a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">2PL</a>, this is achieved with <strong>index-range locks</strong> (also called next-key locks) that lock not just the rows but the gaps between index entries, preventing insertions into the scanned range.</p>
+<h3 id="4-write-skew">4. Write Skew<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-write-skew" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Write skew is the subtlest concurrency anomaly and the one most frequently misunderstood. It occurs when two transactions read the same set of rows, each makes a write decision based on what it read, and together the two writes violate an invariant — even though each write, considered individually, was valid.</p>
+<p>The key insight: <strong>neither transaction modifies the rows the other transaction read.</strong> Each transaction reads overlapping data but writes to different rows. This is why snapshot isolation misses it — there is no write-write conflict to detect.</p>
+<p><strong>Pattern:</strong> Write skew always follows the same structure:</p>
+<ol>
+<li>Both transactions read the same set of rows (checking a precondition)</li>
+<li>Each transaction decides its write is safe based on what it read</li>
+<li>Each transaction writes to a <em>different</em> row</li>
+<li>The combined effect of both writes violates the precondition</li>
+</ol>
+<h4 id="example-1-doctor-on-call">Example 1: Doctor On-Call<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#example-1-doctor-on-call" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Invariant: at least one doctor must be on call at all times.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A (Dr. X)</th><th>Txn B (Dr. Y)</th><th>on_call table</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td>BEGIN</td><td>{Dr. X: on, Dr. Y: on}</td></tr><tr><td>2</td><td>SELECT COUNT(*) WHERE on_call=true -> <strong>2</strong></td><td></td><td></td></tr><tr><td>3</td><td></td><td>SELECT COUNT(*) WHERE on_call=true -> <strong>2</strong></td><td></td></tr><tr><td>4</td><td>”2 doctors on call, safe to leave”</td><td></td><td></td></tr><tr><td>5</td><td></td><td>”2 doctors on call, safe to leave”</td><td></td></tr><tr><td>6</td><td>UPDATE SET on_call=false WHERE doctor=‘X’</td><td></td><td></td></tr><tr><td>7</td><td></td><td>UPDATE SET on_call=false WHERE doctor=‘Y’</td><td></td></tr><tr><td>8</td><td>COMMIT</td><td></td><td>{Dr. X: off, Dr. Y: on}</td></tr><tr><td>9</td><td></td><td>COMMIT</td><td>{Dr. X: off, Dr. Y: off}</td></tr></tbody></table></div>
+<p>Result: zero doctors on call. The invariant is violated.</p>
+<p>Under snapshot isolation, there is no conflict detected because Txn A wrote to Dr. X’s row and Txn B wrote to Dr. Y’s row — different rows, no write-write conflict. Each transaction’s snapshot showed 2 doctors on call, so each independently concluded it was safe to go off call.</p>
+<h4 id="example-2-meeting-room-double-booking">Example 2: Meeting Room Double-Booking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#example-2-meeting-room-double-booking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Invariant: no two meetings may overlap in the same room.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A</th><th>Txn B</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td>BEGIN</td></tr><tr><td>2</td><td>SELECT COUNT(*) FROM bookings WHERE room=‘101’ AND time overlaps 2-3pm -> <strong>0</strong></td><td></td></tr><tr><td>3</td><td></td><td>SELECT COUNT(*) FROM bookings WHERE room=‘101’ AND time overlaps 2-3pm -> <strong>0</strong></td></tr><tr><td>4</td><td>INSERT booking(room=‘101’, 2-3pm)</td><td></td></tr><tr><td>5</td><td></td><td>INSERT booking(room=‘101’, 2-3pm)</td></tr><tr><td>6</td><td>COMMIT</td><td>COMMIT</td></tr></tbody></table></div>
+<p>Result: two overlapping bookings for room 101. Each transaction checked for conflicts, found none, and inserted. Neither write conflicts with the other’s write (both are inserts to different rows), so snapshot isolation allows both.</p>
+<p>This variant is especially insidious because it involves <strong>phantoms</strong>: the rows that would indicate a conflict do not exist yet at the time of the check. The transaction is reading the <em>absence</em> of rows and making a decision based on that absence.</p>
+<h4 id="example-3-serializable-account-constraint">Example 3: Serializable Account Constraint<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#example-3-serializable-account-constraint" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Invariant: the sum of checking + savings must never go below zero.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A</th><th>Txn B</th><th>checking</th><th>savings</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td>BEGIN</td><td>100</td><td>100</td></tr><tr><td>2</td><td>READ checking=100, savings=100, total=200</td><td></td><td></td><td></td></tr><tr><td>3</td><td></td><td>READ checking=100, savings=100, total=200</td><td></td><td></td></tr><tr><td>4</td><td>UPDATE checking = checking - 200</td><td></td><td></td><td></td></tr><tr><td>5</td><td></td><td>UPDATE savings = savings - 200</td><td></td><td></td></tr><tr><td>6</td><td>”total was 200, withdrawing 200 leaves 0, OK”</td><td></td><td></td><td></td></tr><tr><td>7</td><td></td><td>”total was 200, withdrawing 200 leaves 0, OK”</td><td></td><td></td></tr><tr><td>8</td><td>COMMIT</td><td>COMMIT</td><td>-100</td><td>-100</td></tr></tbody></table></div>
+<p>Result: total balance is -200, violating the constraint. Each transaction read the same balances, independently concluded the withdrawal was safe, but wrote to different rows (one to checking, one to savings).</p>
+<h4 id="the-general-pattern">The General Pattern<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-general-pattern" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Write skew is a generalization of the lost update problem. In a lost update, two transactions write to the <em>same</em> row and one overwrites the other. In write skew, they write to <em>different</em> rows but the combination violates a multi-row constraint. This is why it requires serializable isolation to prevent — the database must understand that the transactions’ reads and writes are logically connected across multiple rows.</p>
+<p><strong>Prevented by:</strong> Serializable isolation only. Under <a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">2PL</a>, the shared locks acquired during the read phase prevent the other transaction’s write. Under SSI, the conflict detection identifies the read-write dependency cycle and aborts one transaction. Under snapshot isolation, there is no mechanism to detect this because the writes target different rows.</p>
+<hr/>
+<h2 id="2-isolation-levels-and-their-guarantees">2. Isolation Levels and Their Guarantees<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-isolation-levels-and-their-guarantees" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Each isolation level defines a contract: the database promises to prevent certain anomalies. Moving up the hierarchy prevents more anomalies but costs more in locking, blocking, or aborts.</p>
+<p><img class="excalidraw-light" width="1200" src="../../../excalidraw/isolation-levels-1.excalidraw.light.svg" alt="1200"/><img aria-hidden="true" class="excalidraw-dark" width="1200" src="../../../excalidraw/isolation-levels-1.excalidraw.dark.svg" alt=""/></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Anomaly</th><th style="text-align:center;">Read Uncommitted</th><th style="text-align:center;">Read Committed</th><th style="text-align:center;">Repeatable Read / SI</th><th style="text-align:center;">Serializable</th></tr></thead><tbody><tr><td>Dirty Reads</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Prevented</td><td style="text-align:center;">Prevented</td><td style="text-align:center;">Prevented</td></tr><tr><td>Non-Repeatable Reads</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Prevented</td><td style="text-align:center;">Prevented</td></tr><tr><td>Phantom Reads</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Prevented*</td><td style="text-align:center;">Prevented</td></tr><tr><td>Write Skew</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Allowed</td><td style="text-align:center;">Prevented</td></tr></tbody></table></div>
+<p><em>Snapshot Isolation prevents phantoms for read-only queries (the snapshot is consistent), but does not prevent the write skew variant of phantoms where a transaction reads the absence of rows and then inserts.</em></p>
+<h3 id="1-read-uncommitted">1. Read Uncommitted<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-read-uncommitted" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The weakest level. A transaction can see uncommitted writes from other transactions. Almost no database uses this as the default because it provides nearly no useful guarantees. Its only advantage is zero overhead — no locks, no version tracking.</p>
+<p><strong>Mechanism:</strong> No read locks, no snapshot. A read simply returns the current value of the row, whether committed or not.</p>
+<h3 id="2-read-committed">2. Read Committed<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-read-committed" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The most widely used default isolation level (PostgreSQL, SQL Server, Oracle). It provides two guarantees:</p>
+<ul>
+<li><strong>No dirty reads:</strong> A transaction only sees committed data. When reading a row that has an uncommitted write, the database returns the previous committed version.</li>
+<li><strong>No dirty writes:</strong> A transaction can only overwrite committed data. This is enforced with row-level exclusive locks held for the duration of the write (until commit).</li>
+</ul>
+<p><strong>Mechanism:</strong> The database maintains two versions of each modified row — the old committed value and the new uncommitted value. Reads from other transactions always see the old committed version until the writing transaction commits. Critically, each SQL statement within a transaction gets its own fresh view of committed data. If another transaction commits between two statements, the second statement sees the new value.</p>
+<p><strong>What it does NOT prevent:</strong> Because each statement sees a fresh snapshot, two reads of the same row within one transaction may return different values if another transaction committed in between. This is the non-repeatable read anomaly.</p>
+<h3 id="3-repeatable-read-snapshot-isolation">3. Repeatable Read (Snapshot Isolation)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-repeatable-read-snapshot-isolation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>This level gives each transaction a <strong>consistent snapshot</strong> of the entire database as of the transaction’s start time. Every read within the transaction sees the same committed state, regardless of what other transactions commit during its execution.</p>
+<p><strong>Mechanism:</strong> <a href="../../../01-fundamentals/02-databases/01-fundamentals/06-mvcc" class="internal internal-link alias" data-slug="01-fundamentals/02-databases/01-fundamentals/06-mvcc">MVCC</a> is the standard implementation. When a transaction begins, it receives a transaction ID. When reading a row, the database applies visibility rules: it returns the latest version of the row that was committed before the transaction’s snapshot. Uncommitted writes and writes committed after the snapshot are invisible.</p>
+<p>The SQL standard defines “Repeatable Read” as a level that prevents dirty reads and non-repeatable reads. In practice, most databases implement it using snapshot isolation (SI), which is slightly different from the standard’s lock-based definition. SI provides a consistent snapshot for the entire transaction, which as a side effect also prevents phantom reads for read-only queries.</p>
+<blockquote>
+<p><strong>Critical caveat:</strong> Snapshot Isolation is not Serializable. SI prevents dirty reads, non-repeatable reads, and phantom reads on existing rows, but it <strong>does not prevent write skew</strong>. Two transactions can read overlapping data, write to different rows, and both commit successfully — violating multi-row invariants. This is the most important distinction in the isolation level hierarchy.</p>
+</blockquote>
+<p><strong>What it does NOT prevent:</strong> Write skew (see examples above). The snapshot ensures each transaction sees a consistent view, but the database does not detect that two transactions’ writes, when combined, violate an invariant. There is no write-write conflict because they write to different rows. The core issue is that each transaction reads a predicate (e.g., “how many doctors are on call?”), makes a decision based on the result, and then writes — but between the read and the write, another transaction invalidated the precondition the first transaction relied on. SI does not catch this because it only checks for write-write conflicts at commit time, not for read-then-write dependency violations where the data a transaction read was logically stale when the transaction wrote. This is exactly the gap SSI closes: it tracks these read-write dependencies and aborts a transaction if the predicate it relied on was changed by a concurrent commit.</p>
+<h3 id="4-serializable-isolation">4. Serializable Isolation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-serializable-isolation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The strongest level. It guarantees that the result of concurrent execution is equivalent to <em>some</em> serial ordering of those transactions. This prevents all anomalies, including write skew and every edge case of phantom reads.</p>
+<p>The price is higher: more locking, more aborts, or reduced concurrency. But the correctness guarantee is absolute — any invariant that would be maintained under serial execution is also maintained under Serializable isolation.</p>
+<p>There are three fundamentally different approaches to implementing it:</p>
+<h4 id="approach-1-actual-serial-execution">Approach 1: Actual Serial Execution<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#approach-1-actual-serial-execution" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>The simplest conceptual approach — eliminate concurrency entirely. Execute all transactions sequentially on a single thread.
+This sounds absurd for performance, but it became practical when:</p>
+<ul>
+<li>Active datasets began fitting entirely in RAM (no disk I/O stalls)</li>
+<li>Transactions were submitted as <strong>stored procedures</strong> (eliminating network round-trip latency between statements)</li>
+<li>OLTP transactions are typically short and fast</li>
+</ul>
+<p><strong>Limitations:</strong> Throughput is bounded by a single CPU core. Cross-partition transactions require coordination across threads, destroying the single-thread advantage. Any transaction that performs disk I/O or waits for external input blocks the entire pipeline. Used in VoltDB and Redis (single-threaded command execution).</p>
+<h4 id="approach-2-two-phase-locking-2pl">Approach 2: Two-Phase Locking (2PL)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#approach-2-two-phase-locking-2pl" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">Two-Phase Locking</a> is a <strong>pessimistic</strong> approach that prevents conflicts by making transactions acquire locks before accessing data and holding all locks until the transaction ends.</p>
+<p><strong>How it prevents each anomaly:</strong></p>
+<ul>
+<li><strong>Dirty reads / Non-repeatable reads:</strong> A reader acquires a shared lock on the row. A writer must acquire an exclusive lock, which conflicts with the shared lock. So a writer waits for readers to finish, and readers wait for writers to finish. This means <strong>readers block writers and writers block readers</strong> — the fundamental cost of 2PL.</li>
+<li><strong>Phantom reads:</strong> 2PL uses <strong>index-range locks</strong> (next-key locks). Instead of locking individual rows, it locks ranges in the index. If a transaction scans all rows where <code>status='pending'</code>, it locks the index range for that predicate. Any insert into that range must acquire a conflicting lock and wait.</li>
+<li><strong>Write skew:</strong> The shared locks acquired during the read phase prevent the other transaction from writing. In the doctor on-call example, both transactions acquire shared locks on the on_call rows. When Txn A tries to update Dr. X’s row to off-call, it needs an exclusive lock, which conflicts with Txn B’s shared lock. One must wait, and when it resumes, it re-evaluates with the updated data.</li>
+</ul>
+<p><strong>Downside:</strong> Reduced concurrency (readers block writers), frequent <strong>deadlocks</strong> (two transactions each waiting for the other’s lock, requiring one to be aborted), and unpredictable latency under contention. This is the traditional implementation used by <strong>MySQL InnoDB SERIALIZABLE</strong>.</p>
+<h4 id="approach-3-serializable-snapshot-isolation-ssi">Approach 3: Serializable Snapshot Isolation (SSI)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#approach-3-serializable-snapshot-isolation-ssi" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>SSI is an <strong>optimistic</strong> approach. It allows transactions to proceed without blocking, running on top of snapshot isolation. At commit time, the database checks whether the transaction participated in a serialization conflict. If so, it aborts the transaction.</p>
+<blockquote>
+<p><strong>SI vs SSI — the critical distinction:</strong> Snapshot Isolation gives each transaction a consistent <a href="../../../01-fundamentals/02-databases/01-fundamentals/06-mvcc" class="internal internal-link" data-slug="01-fundamentals/02-databases/01-fundamentals/06-mvcc">06-MVCC</a> snapshot. Readers never block writers. SI prevents dirty reads, non-repeatable reads, and read-only phantoms. But SI <strong>does not prevent write skew</strong> because it has no mechanism to detect read-write dependency cycles. <strong>SSI = SI + conflict detection at commit time</strong>, closing the write skew gap and achieving full serializability.</p>
+</blockquote>
+<p>SSI is implemented in <strong>PostgreSQL SERIALIZABLE</strong> (v9.1+) and FoundationDB. MySQL’s SERIALIZABLE level uses 2PL, not SSI.</p>
+<hr/>
+<h2 id="3-ssi-conflict-detection-in-depth">3. SSI Conflict Detection in Depth<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-ssi-conflict-detection-in-depth" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>SSI tracks two patterns that indicate a non-serializable execution. Both patterns detect situations where a transaction made a decision based on data that was concurrently invalidated.</p>
+<h3 id="1-pattern-1-stale-mvcc-reads">1. Pattern 1: Stale MVCC Reads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-pattern-1-stale-mvcc-reads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction read from its snapshot, but a concurrent transaction has since committed a write that changes the data the first transaction read. The first transaction’s read is now stale — it acted on outdated information.</p>
+<p><strong>Step-by-step scenario:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A (order placement)</th><th>Txn B (inventory drain)</th><th>stock row</th></tr></thead><tbody><tr><td>1</td><td></td><td>BEGIN</td><td>stock = 10</td></tr><tr><td>2</td><td></td><td>UPDATE stock = 0</td><td>0 (uncommitted)</td></tr><tr><td>3</td><td>BEGIN (snapshot taken)</td><td></td><td></td></tr><tr><td>4</td><td>READ stock -> <strong>10</strong> (from snapshot, ignoring Txn B’s uncommitted write)</td><td></td><td></td></tr><tr><td>5</td><td></td><td>COMMIT</td><td>stock = 0 (committed)</td></tr><tr><td>6</td><td>”stock is 10, safe to place order”</td><td></td><td></td></tr><tr><td>7</td><td>INSERT order for 5 units</td><td></td><td></td></tr><tr><td>8</td><td>COMMIT attempt</td><td></td><td></td></tr><tr><td>9</td><td><strong>ABORT</strong> — SSI detects Txn A’s read of stock=10 is stale</td><td></td><td></td></tr></tbody></table></div>
+<p><strong>How SSI detects this:</strong> When Txn A took its snapshot at step 3, Txn B’s write to the stock row was already in progress but uncommitted. The database records that Txn A’s snapshot <em>ignored</em> an uncommitted write by Txn B. When Txn B commits (step 5) and then Txn A attempts to commit (step 8), SSI checks: did Txn A read any data that was concurrently modified by a now-committed transaction? The stock row was read by Txn A and written by Txn B. SSI detects the stale read and aborts Txn A.</p>
+<p><strong>Data structure:</strong> The database maintains a record of which transactions have uncommitted writes on which rows. When a transaction reads a row and skips an uncommitted version (because it is not yet visible per MVCC rules), this fact is noted. Later, if the skipped transaction commits, the reading transaction is marked as having a potentially stale read.</p>
+<h3 id="2-pattern-2-writes-affecting-prior-reads">2. Pattern 2: Writes Affecting Prior Reads<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-pattern-2-writes-affecting-prior-reads" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A transaction writes to data that another active transaction has already read. This creates a read-write dependency: the reading transaction made decisions based on data that the writing transaction is about to change.</p>
+<p><strong>Step-by-step scenario (Doctor On-Call):</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Step</th><th>Txn A (Dr. X leaves)</th><th>Txn B (Dr. Y leaves)</th><th>on_call</th></tr></thead><tbody><tr><td>1</td><td>BEGIN</td><td>BEGIN</td><td>{X: on, Y: on}</td></tr><tr><td>2</td><td>READ on_call WHERE on_call=true -> {X, Y}</td><td></td><td></td></tr><tr><td>3</td><td></td><td>READ on_call WHERE on_call=true -> {X, Y}</td><td></td></tr><tr><td>4</td><td>UPDATE Dr. X SET on_call=false</td><td></td><td></td></tr><tr><td>5</td><td></td><td>UPDATE Dr. Y SET on_call=false</td><td></td></tr><tr><td>6</td><td>COMMIT (succeeds — first committer wins)</td><td></td><td>{X: off, Y: on}</td></tr><tr><td>7</td><td></td><td>COMMIT attempt</td><td></td></tr><tr><td>8</td><td></td><td><strong>ABORT</strong> — SSI detects conflict cycle</td><td></td></tr></tbody></table></div>
+<p><strong>How SSI detects this:</strong> The database tracks which rows each transaction has read. At step 4, when Txn A writes to Dr. X’s row, the database checks: has any other active transaction read this row? Yes — Txn B read the on_call set at step 3, which included Dr. X’s row. The database records a dependency: Txn B’s read depends on data that Txn A is modifying. Similarly, at step 5, when Txn B writes to Dr. Y’s row, Txn A has already read it. Now there is a bidirectional dependency cycle: A read data B wrote, and B read data A wrote. When the second transaction (Txn B) tries to commit, SSI detects the cycle and aborts it.</p>
+<p><strong>Data structure:</strong> The database maintains an index from each row (or index range) to the set of transactions that have read it. When a transaction writes to a row, it looks up all readers and records a read-write dependency edge. At commit time, SSI checks for cycles in these dependency edges. If a cycle exists, one of the transactions must be aborted.</p>
+<p><img class="excalidraw-light" width="1000" src="../../../excalidraw/isolation-levels-2.excalidraw.light.svg" alt="1000"/><img aria-hidden="true" class="excalidraw-dark" width="1000" src="../../../excalidraw/isolation-levels-2.excalidraw.dark.svg" alt=""/></p>
+<h3 id="3-ssi-performance-characteristics">3. SSI Performance Characteristics<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-ssi-performance-characteristics" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>No blocking between readers and writers</strong> — transactions run concurrently on MVCC snapshots. Latency is predictable under low contention.</li>
+<li><strong>Aborts under contention</strong> — when conflicts are detected, the database aborts one transaction. Under high contention (many transactions reading and writing overlapping data), the abort rate increases significantly.</li>
+<li><strong>Granularity tradeoff</strong> — tracking reads at row-level precision is expensive in memory. Databases often track at page or index-range granularity, which reduces memory cost but increases false positives (unnecessary aborts).</li>
+<li><strong>Not linearizable</strong> — SSI reads from a snapshot, so a read may not return the absolute latest committed value. This is a weaker guarantee than linearizability, which requires reads to always reflect the most recent write. For systems that need both serializability and linearizability (strict serializability), additional mechanisms are needed.</li>
+</ul>
+<hr/>
+<h2 id="4-why-postgresql-chose-ssi-and-mysql-chose-2pl">4. Why PostgreSQL Chose SSI and MySQL Chose 2PL<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-why-postgresql-chose-ssi-and-mysql-chose-2pl" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>This is one of the most important implementation differences in the database world, and it reflects fundamentally different engineering philosophies.</p>
+<p><strong>PostgreSQL</strong> has been built around <a href="../../../01-fundamentals/02-databases/01-fundamentals/06-mvcc" class="internal internal-link" data-slug="01-fundamentals/02-databases/01-fundamentals/06-mvcc">06-MVCC</a> since its earliest versions. Its storage engine natively maintains multiple versions of every row. Adding SSI on top of this existing MVCC infrastructure was a natural extension — the snapshot mechanism was already in place, and conflict detection could be layered on top without rearchitecting the storage engine. PostgreSQL’s approach favors <strong>read-heavy workloads</strong>: readers never block writers, analytical queries run alongside OLTP transactions, and the cost of serializability is paid only through occasional aborts rather than pervasive locking.</p>
+<p><strong>MySQL InnoDB</strong> was designed with a lock-based concurrency model from the start. While InnoDB does use MVCC for snapshot isolation at the Repeatable Read level, its SERIALIZABLE level falls back to <strong>lock-based enforcement</strong> — specifically, 2PL with gap locks. This reflects InnoDB’s heritage as a write-optimized engine: locking prevents conflicts deterministically rather than detecting them after the fact, which can be advantageous for write-heavy workloads with predictable access patterns.</p>
+<p><strong>Practical implications:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Dimension</th><th>PostgreSQL SSI</th><th>MySQL InnoDB 2PL</th></tr></thead><tbody><tr><td>Readers block writers?</td><td>No</td><td>Yes (shared locks block exclusive locks)</td></tr><tr><td>Performance under read-heavy load</td><td>Excellent — readers run freely</td><td>Degraded — readers compete for shared locks</td></tr><tr><td>Performance under write-heavy contention</td><td>Degrades — high abort rate</td><td>More predictable — transactions wait rather than abort</td></tr><tr><td>Deadlocks</td><td>No deadlocks (aborts instead)</td><td>Frequent deadlocks under contention</td></tr><tr><td>Phantom prevention</td><td>Conflict detection at commit</td><td>Index-range (gap) locks during execution</td></tr><tr><td>Retry logic required?</td><td>Yes — application must retry aborted transactions</td><td>Yes — for deadlock victims</td></tr><tr><td>Default isolation level</td><td>Read Committed</td><td>Repeatable Read (snapshot isolation)</td></tr></tbody></table></div>
+<p>The choice between SSI and 2PL is not about one being strictly better. SSI is better when reads vastly outnumber writes and contention is moderate. 2PL is better when write conflicts are frequent and predictable, because waiting for a lock is cheaper than doing all the work and then being aborted at commit time.</p>
+<hr/>
+<h2 id="5-synthesis-mechanisms-and-the-levels-they-implement">5. Synthesis: Mechanisms and the Levels They Implement<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-synthesis-mechanisms-and-the-levels-they-implement" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The three concurrency control mechanisms — <a href="../../../01-fundamentals/02-databases/01-fundamentals/06-mvcc" class="internal internal-link" data-slug="01-fundamentals/02-databases/01-fundamentals/06-mvcc">06-MVCC</a>, <a href="../../../07-two-phase-locking" class="internal internal-link alias" data-slug="07-two-phase-locking">2PL</a>, and SSI — are not isolation levels themselves. They are <strong>implementation strategies</strong> that databases use to enforce the guarantees of specific isolation levels.</p>
+<p><img class="excalidraw-light" width="1000" src="../../../excalidraw/isolation-levels-3.excalidraw.light.svg" alt="1000"/><img aria-hidden="true" class="excalidraw-dark" width="1000" src="../../../excalidraw/isolation-levels-3.excalidraw.dark.svg" alt=""/></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Isolation Level</th><th>Mechanism</th><th>How It Works</th></tr></thead><tbody><tr><td>Read Committed</td><td>MVCC with per-statement snapshots</td><td>Each SQL statement sees the latest committed data at the time the statement begins. Two statements in the same transaction may see different committed states.</td></tr><tr><td>Repeatable Read (SI)</td><td>MVCC with per-transaction snapshots</td><td>The entire transaction sees a single consistent snapshot taken at transaction start. All reads return data as of that snapshot, regardless of concurrent commits.</td></tr><tr><td>Serializable (PostgreSQL)</td><td>SSI = SI + conflict detection</td><td>Runs on top of snapshot isolation. At commit time, checks for stale reads and read-write dependency cycles. Aborts transactions that would produce non-serializable results.</td></tr><tr><td>Serializable (MySQL)</td><td>2PL with index-range locks</td><td>Acquires shared locks on reads and exclusive locks on writes. Gap locks prevent phantom inserts. All locks held until commit. Writers block readers and vice versa.</td></tr></tbody></table></div>
+<p>The key insight is that MVCC alone provides Read Committed and Repeatable Read. To reach Serializable, the database must add either pessimistic locking (2PL) or optimistic conflict detection (SSI) on top of MVCC. This is why SSI is sometimes described as “Snapshot Isolation plus” — it inherits all of SI’s benefits (non-blocking reads, consistent snapshots) and adds the missing piece: detection of write skew and serialization anomalies.</p>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>Isolation is a spectrum</strong> between serial execution (perfect correctness, no concurrency) and no isolation (maximum concurrency, many anomalies). Every isolation level trades some correctness for performance.</li>
+<li><strong>Four anomalies to know:</strong> Dirty reads (reading uncommitted data), non-repeatable reads (same row changes between reads), phantom reads (new rows appear in range queries), and write skew (two transactions violate a multi-row invariant by writing to different rows).</li>
+<li><strong>Write skew is the critical anomaly</strong> that separates Snapshot Isolation from Serializable. It occurs when transactions read overlapping data but write to different rows, so there is no write-write conflict for SI to detect. The pattern: check a precondition, act on it, but a concurrent transaction invalidates the precondition.</li>
+<li><strong>Read Committed</strong> uses per-statement MVCC snapshots. <strong>Repeatable Read / SI</strong> uses per-transaction MVCC snapshots. <strong>Serializable</strong> adds either 2PL (pessimistic, locks) or SSI (optimistic, conflict detection at commit).</li>
+<li><strong>SSI detects two patterns:</strong> stale MVCC reads (a transaction’s snapshot missed a concurrent committed write) and writes affecting prior reads (a transaction writes to data another active transaction already read, creating a dependency cycle).</li>
+<li><strong>PostgreSQL SERIALIZABLE = SSI</strong> (optimistic, readers never block writers, aborts on conflict). <strong>MySQL SERIALIZABLE = 2PL</strong> (pessimistic, readers block writers, waits instead of aborts). The choice reflects different storage engine architectures and workload assumptions.</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>
+<p><strong>Write skew mechanism:</strong> In the doctor on-call example under Snapshot Isolation, walk through exactly what each transaction sees at each step and explain precisely why SI’s write-write conflict detection fails to catch the problem. What would need to change in SI’s conflict detection to catch it?
+Ans:</p>
+</li>
+<li>
+<p><strong>SSI abort cascades:</strong> If Txn A reads rows R1 and R2, Txn B writes R1, and Txn C writes R2, and both B and C commit, will SSI abort Txn A? What if only B commits but C is still in progress when A tries to commit?
+Ans:</p>
+</li>
+<li>
+<p><strong>SSI vs 2PL throughput crossover:</strong> Describe a specific workload pattern where SSI would have a higher abort rate than the deadlock rate under 2PL, making 2PL the better choice. What characteristics of the workload cause this crossover?
+Ans:</p>
+</li>
+<li>
+<p><strong>Phantom reads and index-range locks:</strong> Explain why row-level locks are insufficient to prevent phantoms. A transaction locks all rows matching <code>WHERE department='engineering'</code>. Another transaction inserts a new engineering employee. Why doesn’t the lock prevent this? How do index-range locks (gap locks) solve this problem?
+Ans:</p>
+</li>
+<li>
+<p><strong>Read Committed vs Snapshot Isolation for backups:</strong> A backup process reads a 100GB database under Read Committed isolation. During the backup, application transactions are modifying data. Explain the specific consistency problem that will occur and why Snapshot Isolation fixes it.
+Ans:</p>
+</li>
+<li>
+<p><strong>SSI memory overhead:</strong> SSI must track which transactions read which data. If a transaction runs a full table scan of a 10-million-row table, what is the memory cost of tracking this at row-level granularity? How do real implementations (PostgreSQL) reduce this cost, and what is the tradeoff?
+Ans:</p>
+</li>
+<li>
+<p><strong>Write skew in the wild:</strong> A ticketing system checks available seats with <code>SELECT COUNT(*) FROM seats WHERE event_id=42 AND status='available'</code>, then inserts a reservation if seats are available. Under Snapshot Isolation, how can this lead to overselling? Trace the exact interleaving. What isolation level or application-level mechanism would prevent it?
+Ans:</p>
+</li>
+<li>
+<p><strong>Serializable and linearizable:</strong> SSI provides serializability but not linearizability. Describe a concrete scenario where a system using SSI produces a result that is serializable but not linearizable. Why might this matter for a distributed system using SSI across multiple nodes?
+Ans:</p>
+</li>
+</ol></div></article><hr/><div class="page-footer"><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal">Consensus Algorithm</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal">Distributed Transactions</a></li><li><a href="../../../01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking" class="internal">Optimistic Pessimistic Locking</a></li><li><a href="../../../01-fundamentals/02-databases/01-fundamentals/01-database-concepts" class="internal">Database Concepts</a></li><li class="overflow-end"></li></ul></div></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-31" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-0"><a href="#1-common-read-and-write-anomalies" data-for="1-common-read-and-write-anomalies">1. Common Read and Write Anomalies</a></li><li class="depth-1"><a href="#1-dirty-reads" data-for="1-dirty-reads">1. Dirty Reads</a></li><li class="depth-1"><a href="#2-non-repeatable-reads-read-skew" data-for="2-non-repeatable-reads-read-skew">2. Non-Repeatable Reads (Read Skew)</a></li><li class="depth-1"><a href="#3-phantom-reads" data-for="3-phantom-reads">3. Phantom Reads</a></li><li class="depth-1"><a href="#4-write-skew" data-for="4-write-skew">4. Write Skew</a></li><li class="depth-0"><a href="#2-isolation-levels-and-their-guarantees" data-for="2-isolation-levels-and-their-guarantees">2. Isolation Levels and Their Guarantees</a></li><li class="depth-1"><a href="#1-read-uncommitted" data-for="1-read-uncommitted">1. Read Uncommitted</a></li><li class="depth-1"><a href="#2-read-committed" data-for="2-read-committed">2. Read Committed</a></li><li class="depth-1"><a href="#3-repeatable-read-snapshot-isolation" data-for="3-repeatable-read-snapshot-isolation">3. Repeatable Read (Snapshot Isolation)</a></li><li class="depth-1"><a href="#4-serializable-isolation" data-for="4-serializable-isolation">4. Serializable Isolation</a></li><li class="depth-0"><a href="#3-ssi-conflict-detection-in-depth" data-for="3-ssi-conflict-detection-in-depth">3. SSI Conflict Detection in Depth</a></li><li class="depth-1"><a href="#1-pattern-1-stale-mvcc-reads" data-for="1-pattern-1-stale-mvcc-reads">1. Pattern 1: Stale MVCC Reads</a></li><li class="depth-1"><a href="#2-pattern-2-writes-affecting-prior-reads" data-for="2-pattern-2-writes-affecting-prior-reads">2. Pattern 2: Writes Affecting Prior Reads</a></li><li class="depth-1"><a href="#3-ssi-performance-characteristics" data-for="3-ssi-performance-characteristics">3. SSI Performance Characteristics</a></li><li class="depth-0"><a href="#4-why-postgresql-chose-ssi-and-mysql-chose-2pl" data-for="4-why-postgresql-chose-ssi-and-mysql-chose-2pl">4. Why PostgreSQL Chose SSI and MySQL Chose 2PL</a></li><li class="depth-0"><a href="#5-synthesis-mechanisms-and-the-levels-they-implement" data-for="5-synthesis-mechanisms-and-the-levels-they-implement">5. Synthesis: Mechanisms and the Levels They Implement</a></li><li class="depth-0"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-0"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li><li><a href="/firstprinciplesengineering/index.xml">RSS</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-83c11c57.js" type="module" data-persist="true"></script></html>

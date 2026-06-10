@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>Kafka</title><meta charset="utf-8"/><link rel="preload" href="../../index-253a1999.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="Kafka"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Kafka"/><meta name="twitter:description" content="The Story Before Kafka, LinkedIn had seven different bespoke data pipelines connecting various internal systems — each with different bugs, different delivery guarantees, and different teams maintaining them."/><meta property="og:description" content="The Story Before Kafka, LinkedIn had seven different bespoke data pipelines connecting various internal systems — each with different bugs, different delivery guarantees, and different teams maintaining them."/><meta property="og:image:alt" content="The Story Before Kafka, LinkedIn had seven different bespoke data pipelines connecting various internal systems — each with different bugs, different delivery guarantees, and different teams maintaining them."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka"/><link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon-32.png"/><link rel="apple-touch-icon" sizes="180x180" href="../../static/apple-touch-icon.png"/><link rel="alternate" type="application/rss+xml" title="First Principles Engineering — RSS" href="https://chauhansandeep.github.io/firstprinciplesengineering/index.xml"/><meta name="description" content="The Story Before Kafka, LinkedIn had seven different bespoke data pipelines connecting various internal systems — each with different bugs, different delivery guarantees, and different teams maintaining them."/><meta name="generator" content="Quartz"/><script src="../../static/site.js" defer></script><link href="../../index-253a1999.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/03-technologies/01-kafka" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n  if (!node || node.displayName == null) return;\n  const cleaned = String(node.displayName)\n    .replace(/^\\d+[-_]/, \&quot;\&quot;)\n    .replace(/[-_]/g, \&quot; \&quot;)\n    .trim();\n  if (cleaned) node.displayName = cleaned;\n}\n&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-36" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-36" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../01-fundamentals/03-technologies/">03-Technologies</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>Kafka</a></div></nav><h1 class="article-title">Kafka</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T18:41:19.770Z">Jun 11, 2026</time><span>23 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Before Kafka, LinkedIn had seven different bespoke data pipelines connecting various internal systems — each with different bugs, different delivery guarantees, and different teams maintaining them. Jay Kreps didn’t set out to build a messaging system. He built a commit log and realized that if you expose the database’s internal write-ahead log as a first-class architectural component, you can derive everything else from it. The reframing — “the log is the architecture” — was the actual innovation, not the software. He named it after Franz Kafka because “it is a system optimized for writing.” By 2019, LinkedIn’s Kafka cluster was processing 7 trillion messages per day.</p>
+<hr/>
+<p>Apache Kafka is a distributed event streaming platform built around a single powerful abstraction: the <strong>append-only commit log</strong>. Understanding why this abstraction matters — and how Kafka implements it at scale — is the key to reasoning about Kafka in system design.</p>
+<p><strong>Related Topics</strong>: <a href="../../02-zookeeper" class="internal internal-link" data-slug="02-zookeeper">02-Zookeeper</a>, <a href="../../01-fundamentals/01-concepts/03-data/01-big-data-stream-processing" class="internal internal-link" data-slug="01-fundamentals/01-concepts/03-data/01-big-data-stream-processing">01-Big-Data-Stream-Processing</a>, <a href="../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions">05-Distributed-Transactions</a>, <a href="../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">03-Consensus-Algorithm</a></p>
+<hr/>
+<h2 id="1-the-distributed-log-abstraction">1. The Distributed Log Abstraction<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-distributed-log-abstraction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The core problem Kafka solves is this: in a distributed system with dozens of services, how do you reliably move data between producers and consumers with ordering guarantees, durability, and replay capability?</p>
+<p>Traditional message brokers (like RabbitMQ) model this as a queue: messages arrive, get delivered to a consumer, and are deleted. This works for task distribution, but it breaks down when you need multiple consumers to independently process the same stream of events, or when you need to replay history.</p>
+<p>Kafka’s insight is that an <strong>append-only log</strong> is a better primitive for event streaming than a queue. A log is an ordered, immutable sequence of records. Producers append to the end. Consumers read from any position by maintaining their own offset. The log is retained for a configurable duration — messages are not deleted after consumption.</p>
+<p>This changes the relationship between producers and consumers fundamentally:</p>
+<ul>
+<li><strong>Consumers are decoupled from production rate</strong> — they read at their own pace</li>
+<li><strong>Multiple consumers read the same log independently</strong> — no message duplication needed</li>
+<li><strong>Replay is trivial</strong> — reset the consumer offset to any position</li>
+<li><strong>The log is the source of truth</strong> — it captures the complete history of events</li>
+</ul>
+<p>Every design decision in Kafka flows from this commitment to the log abstraction.</p>
+<hr/>
+<h2 id="2-core-messaging-models">2. Core Messaging Models<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-core-messaging-models" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-queue-model-point-to-point">1. Queue Model (Point-to-Point)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-queue-model-point-to-point" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Messages placed in a queue, where each message is consumed by exactly one consumer. Good for load balancing work across workers.</p>
+<h3 id="2-publisher-subscriber-model">2. Publisher-Subscriber Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-publisher-subscriber-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Messages published to topics, where every subscriber receives a copy. Good for broadcasting the same event to multiple services.</p>
+<p><strong>Kafka unifies both patterns.</strong> A single consumer group reading a topic behaves like a queue (each message goes to one consumer). Multiple consumer groups reading the same topic behave like pub-sub (each group gets all messages). This dual capability from a single mechanism is what makes Kafka so versatile.</p>
+<hr/>
+<h2 id="3-kafka-architecture-components">3. Kafka Architecture Components<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-kafka-architecture-components" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><object data="kafka-architecture.svg" type="image/svg+xml" width="auto" height="auto" aria-label></object></p>
+<p><img class="excalidraw-light" width="1000" src="../../excalidraw/kafka-1.excalidraw.light.svg" alt="1000"/><img aria-hidden="true" class="excalidraw-dark" width="1000" src="../../excalidraw/kafka-1.excalidraw.dark.svg" alt=""/></p>
+<h3 id="1-broker">1. Broker<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-broker" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A single Kafka server instance that stores topic partitions and handles read/write requests. Each broker is the leader for some partitions and a follower for others. A typical production cluster starts with 3-5 brokers and scales horizontally as throughput demands grow.</p>
+<h3 id="2-topic">2. Topic<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-topic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A logical channel for a stream of related events (e.g., “user-clicks”, “payment-events”, “system-logs”). Topics are divided into partitions for parallelism.</p>
+<h3 id="3-partition">3. Partition<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-partition" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>An ordered, immutable, append-only log of records. Each record within a partition has a unique sequential <strong>offset</strong>. Partitions are the unit of parallelism — the fundamental lever for scaling both production and consumption.</p>
+<h3 id="4-segment-files-and-storage-engine">4. Segment Files and Storage Engine<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-segment-files-and-storage-engine" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Each partition is stored on disk as a series of <strong>segment files</strong>. A segment is a pair of files:</p>
+<ul>
+<li><strong>Log segment</strong> (<code>.log</code>): the actual message data, written sequentially</li>
+<li><strong>Index file</strong> (<code>.index</code>): a sparse index mapping offsets to byte positions in the log segment</li>
+</ul>
+<p>When a segment reaches a configured size (default 1 GB) or age, Kafka rolls to a new active segment. Only the active segment accepts writes; older segments are immutable. This design enables efficient sequential writes (append-only to one file) and fast lookups (binary search in the sparse index, then sequential scan).</p>
+<p><strong>Why sequential I/O matters</strong>: Kafka’s throughput comes from writing to disk sequentially rather than randomly. Sequential writes on modern disks achieve 600+ MB/s, approaching memory speed. Combined with the OS page cache and zero-copy transfers (sendfile syscall), Kafka avoids copying data between kernel and user space, achieving millions of messages per second.</p>
+<h3 id="5-log-compaction-strategies">5. Log Compaction Strategies<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-log-compaction-strategies" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Kafka supports two retention strategies:</p>
+<p><strong>Delete retention</strong> (default): Segments older than the retention period (or exceeding size limits) are deleted. Simple and predictable. Used for event streams where history beyond the retention window is not needed.</p>
+<p><strong>Compact retention</strong>: Kafka retains the latest value for each key, discarding older records with the same key. A background compaction thread reads old segments, keeps only the most recent record per key, and writes a new compacted segment. This is essential for changelog topics where you need the current state of every key (e.g., a user profile topic where you always want the latest profile).</p>
+<p>You can combine both strategies (<code>cleanup.policy=compact,delete</code>) — compact first, then delete segments beyond the retention period.</p>
+<hr/>
+<h2 id="4-topic-partitioning">4. Topic Partitioning<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-topic-partitioning" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Partitioning is Kafka’s primary scalability mechanism. Understanding how to reason about partition count, key selection, and the parallelism implications is critical for system design.</p>
+<p><object data="kafka-partitions.svg" type="image/svg+xml" width="auto" height="auto" aria-label></object></p>
+<h3 id="1-partition-key-routing">1. Partition Key Routing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-partition-key-routing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>When a producer sends a message, it determines the target partition by:</p>
+<ol>
+<li><strong>Explicit partition</strong> — the producer specifies the partition number directly</li>
+<li><strong>Key-based hashing</strong> — <code>hash(key) % num_partitions</code> routes messages with the same key to the same partition, preserving per-key ordering</li>
+<li><strong>Round-robin</strong> — when no key is provided, messages are distributed evenly across partitions (with sticky partitioning in newer clients for better batching)</li>
+</ol>
+<p><strong>Key design decision</strong>: choosing the right partition key is one of the most important decisions in a Kafka-based architecture. The key determines ordering guarantees and load distribution. A poor choice (e.g., a key with extreme skew like <code>country_code</code>) creates hot partitions that limit throughput.</p>
+<h3 id="2-why-partitioning-matters">2. Why Partitioning Matters<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-why-partitioning-matters" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Parallelism</strong>: maximum consumer parallelism equals the partition count. A topic with 12 partitions allows at most 12 concurrent consumers in a group.</li>
+<li><strong>Scalability</strong>: partitions distribute across brokers, spreading storage and network load. No single broker becomes a bottleneck.</li>
+<li><strong>Ordering</strong>: messages within a partition are strictly ordered. No global ordering exists across partitions. If you need ordering for a logical entity (user, order, device), use that entity’s ID as the partition key.</li>
+</ul>
+<h3 id="3-partition-count-selection">3. Partition Count Selection<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-partition-count-selection" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Choosing the right partition count requires balancing several factors:</p>
+<ul>
+<li><strong>Throughput target</strong>: measure single-partition throughput (producer and consumer side), then divide your target throughput by that number. If a single partition sustains 50 MB/s and you need 200 MB/s, you need at least 4 partitions.</li>
+<li><strong>Consumer parallelism</strong>: partition count is the upper bound on consumers in a group. Plan for future growth — it is easy to increase partitions but doing so breaks key-based ordering guarantees for existing keys. The reason is the routing formula: <code>partition = hash(key) % num_partitions</code>. When partitions change from 12 to 24, a key that previously hashed to partition 3 might now hash to partition 15. Existing messages for that key remain on partition 3 while new messages land on partition 15, so a consumer reading partition 15 sees only the new messages and has no way to reconstruct cross-partition ordering. This is why partition count for keyed topics should be set high initially and treated as immutable.</li>
+<li><strong>Broker resource overhead</strong>: each partition requires memory for index buffers, file handles, and replication threads. Thousands of partitions per broker increase leader election time during failures and ZooKeeper/KRaft metadata overhead.</li>
+<li><strong>End-to-end latency</strong>: more partitions mean more replication traffic and potentially higher commit latency with <code>acks=all</code>.</li>
+</ul>
+<p>A common starting point is <strong>2-3x the expected number of consumers</strong>, with a replication factor of 3.</p>
+<hr/>
+<h2 id="5-partition-replication-and-isr">5. Partition Replication and ISR<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-partition-replication-and-isr" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Replication exists for fault tolerance and durability — not for read scaling. Only the partition leader handles reads and writes. Followers replicate data to take over if the leader fails.</p>
+<h3 id="1-in-sync-replicas-isr-mechanics">1. In-Sync Replicas (ISR) Mechanics<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-in-sync-replicas-isr-mechanics" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The ISR set is the subset of replicas that are “caught up” with the leader within a configurable lag threshold. Understanding ISR dynamics is essential for reasoning about Kafka’s availability and durability guarantees.</p>
+<p>A replica stays in the ISR as long as:</p>
+<ol>
+<li>It has fetched messages from the leader within <code>replica.lag.time.max.ms</code> (default 30 seconds)</li>
+<li>It is connected to ZooKeeper/KRaft</li>
+</ol>
+<p>A replica <strong>falls out of ISR</strong> when it cannot keep up — typically due to:</p>
+<ul>
+<li>Slow disk I/O on the follower</li>
+<li>Network congestion between leader and follower</li>
+<li>GC pauses or high CPU load on the follower broker</li>
+<li>The follower broker being temporarily down</li>
+</ul>
+<p>When a replica falls out of ISR, the leader removes it from the ISR list and updates the metadata. The replica continues fetching and rejoins ISR once it catches up.</p>
+<h3 id="2-mininsyncreplicas">2. min.insync.replicas<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-mininsyncreplicas" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>This broker/topic configuration sets the minimum number of replicas (including the leader) that must acknowledge a write for it to succeed when <code>acks=all</code>. This is the critical knob for the <strong>durability vs. availability tradeoff</strong>:</p>
+<ul>
+<li><code>replication.factor=3</code>, <code>min.insync.replicas=2</code>, <code>acks=all</code>: writes succeed as long as 2 of 3 replicas are in sync. Can tolerate 1 broker failure without becoming unavailable. This is the standard production configuration.</li>
+<li><code>replication.factor=3</code>, <code>min.insync.replicas=3</code>: maximum durability but any single replica falling behind makes the partition unavailable for writes.</li>
+<li><code>replication.factor=3</code>, <code>min.insync.replicas=1</code>: a write is durable on the leader alone. Fast but risks data loss if the leader dies before replication.</li>
+</ul>
+<p><strong>The key insight</strong>: <code>min.insync.replicas</code> does nothing unless <code>acks=all</code>. With <code>acks=1</code>, the leader acknowledges immediately regardless of ISR size.</p>
+<h3 id="3-unclean-leader-election">3. Unclean Leader Election<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-unclean-leader-election" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>If all ISR replicas are unavailable, Kafka faces a choice:</p>
+<ul>
+<li><strong>Wait for an ISR replica to recover</strong> (unavailable but no data loss) — the default (<code>unclean.leader.election.enable=false</code>)</li>
+<li><strong>Elect a non-ISR replica as leader</strong> (available but may lose data that was not yet replicated)</li>
+</ul>
+<p>This is a direct tradeoff between availability and consistency, and the right choice depends on the use case.</p>
+<hr/>
+<h2 id="6-producer-internals">6. Producer Internals<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-producer-internals" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Understanding how producers work internally helps reason about throughput, latency, and delivery guarantees.</p>
+<h3 id="1-batching-and-compression">1. Batching and Compression<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-batching-and-compression" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The producer does not send each message individually. Messages are accumulated in a per-partition buffer and sent as a batch. Two settings control when a batch is sent:</p>
+<ul>
+<li><code>batch.size</code> (default 16 KB): the producer sends when the batch reaches this size</li>
+<li><code>linger.ms</code> (default 0): the producer waits this long for more messages to arrive before sending an incomplete batch</li>
+</ul>
+<p>Setting <code>linger.ms</code> to 5-10ms significantly improves throughput by allowing batches to fill up, at the cost of a small latency increase. In high-throughput scenarios, the batch fills up before the linger timer expires anyway.</p>
+<p>Compression (<code>compression.type</code>: none, gzip, snappy, lz4, zstd) is applied per batch. Snappy and LZ4 offer the best throughput-to-compression ratio. Zstd provides the best compression ratio at higher CPU cost. Compression reduces network bandwidth and disk storage, and since Kafka stores compressed batches as-is, the broker does minimal extra work.</p>
+<h3 id="2-acknowledgment-modes">2. Acknowledgment Modes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-acknowledgment-modes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The <code>acks</code> setting controls durability guarantees:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>acks</th><th>Behavior</th><th>Durability</th><th>Throughput</th></tr></thead><tbody><tr><td><code>0</code></td><td>Producer does not wait for any acknowledgment</td><td>Messages can be lost (fire-and-forget)</td><td>Highest</td></tr><tr><td><code>1</code></td><td>Leader acknowledges after writing to its local log</td><td>Messages lost if leader dies before replication</td><td>High</td></tr><tr><td><code>all</code> (<code>-1</code>)</td><td>Leader waits for all ISR replicas to acknowledge</td><td>No data loss as long as ISR >= <code>min.insync.replicas</code></td><td>Lower</td></tr></tbody></table></div>
+<p>For most production systems, <code>acks=all</code> with <code>min.insync.replicas=2</code> is the standard choice. The throughput reduction is modest (typically 10-20%) because replication happens in parallel.</p>
+<h3 id="3-idempotent-producer">3. Idempotent Producer<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-idempotent-producer" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Network failures can cause the producer to retry, potentially creating duplicate messages. The idempotent producer (<code>enable.idempotence=true</code>, default since Kafka 3.0) solves this by assigning each producer a <strong>Producer ID (PID)</strong> and each message a <strong>sequence number</strong>. The broker deduplicates by tracking the latest sequence number per PID per partition. If a retry arrives with a sequence number the broker has already seen, it is silently discarded.</p>
+<p>Idempotent producers guarantee exactly-once delivery <strong>per partition per producer session</strong>. They do not provide cross-partition or cross-session guarantees — that requires the transactional producer.</p>
+<h3 id="4-transactional-producer">4. Transactional Producer<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-transactional-producer" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>For atomic writes across multiple partitions (e.g., writing to both an output topic and the consumer offsets topic in a stream processing application), Kafka provides transactions:</p>
+<ol>
+<li>The producer registers a <code>transactional.id</code> with a <strong>Transaction Coordinator</strong> (a broker)</li>
+<li>The producer calls <code>beginTransaction()</code>, sends messages to multiple partitions, then calls <code>commitTransaction()</code> or <code>abortTransaction()</code></li>
+<li>The Transaction Coordinator writes transaction markers to a special <code>__transaction_state</code> topic and to each participating partition</li>
+<li>Consumers reading with <code>isolation.level=read_committed</code> only see messages from committed transactions</li>
+</ol>
+<p>This is the foundation of Kafka’s exactly-once semantics (EOS): idempotent producer (no duplicates within a partition) + transactional producer (atomic writes across partitions) + read_committed consumers (no reads of uncommitted data).</p>
+<hr/>
+<h2 id="7-consumer-group-protocol">7. Consumer Group Protocol<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-consumer-group-protocol" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><object data="kafka-consumer-group.svg" type="image/svg+xml" width="auto" height="auto" aria-label></object></p>
+<p>A consumer group is a set of consumers that collectively read a topic, where each partition is assigned to exactly one consumer within the group. This provides both parallel consumption and fault tolerance.</p>
+<h3 id="1-group-coordinator-and-partition-assignment">1. Group Coordinator and Partition Assignment<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-group-coordinator-and-partition-assignment" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Each consumer group is managed by a <strong>Group Coordinator</strong> — a broker responsible for that group (determined by hashing the group ID to a partition of <code>__consumer_offsets</code>). When a consumer joins:</p>
+<ol>
+<li>The consumer sends a <code>JoinGroup</code> request to the coordinator</li>
+<li>The coordinator selects one consumer as the <strong>group leader</strong></li>
+<li>The leader receives the list of all members and topic partitions</li>
+<li>The leader computes the partition assignment using the configured <strong>assignment strategy</strong> and sends it back via a <code>SyncGroup</code> request</li>
+<li>The coordinator distributes assignments to all members</li>
+</ol>
+<h3 id="2-partition-assignment-strategies">2. Partition Assignment Strategies<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-partition-assignment-strategies" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Strategy</th><th>Behavior</th><th>Best For</th></tr></thead><tbody><tr><td><strong>Range</strong></td><td>Assigns contiguous partition ranges per topic to each consumer</td><td>Co-partitioned topics (joins across topics with same key)</td></tr><tr><td><strong>RoundRobin</strong></td><td>Distributes partitions across consumers in round-robin fashion across all subscribed topics</td><td>Even distribution when consumers subscribe to same topics</td></tr><tr><td><strong>Sticky</strong></td><td>Like RoundRobin but minimizes partition movement during rebalances</td><td>Reducing rebalance overhead; preserving consumer-local state</td></tr><tr><td><strong>CooperativeSticky</strong></td><td>Sticky assignment with cooperative (incremental) rebalancing</td><td>Production default — minimizes disruption</td></tr></tbody></table></div>
+<h3 id="3-rebalancing-eager-vs-cooperative">3. Rebalancing: Eager vs Cooperative<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-rebalancing-eager-vs-cooperative" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Eager rebalancing</strong> (legacy default): when a rebalance triggers (consumer joins, leaves, or crashes), all consumers in the group stop consuming, revoke all partition assignments, and rejoin the group for a completely fresh assignment. During this “stop-the-world” phase, no messages are processed. For large groups with many partitions, this can cause seconds to minutes of downtime.</p>
+<p><strong>Cooperative (incremental) rebalancing</strong>: only the partitions that need to move are revoked. The rebalance happens in two phases:</p>
+<ol>
+<li>First rebalance: consumers that need to give up partitions revoke only those specific partitions. All other partitions continue being consumed.</li>
+<li>Second rebalance: the revoked partitions are assigned to their new owners.</li>
+</ol>
+<p>This dramatically reduces disruption. A consumer joining the group causes zero interruption to existing consumers — only newly assigned partitions are affected. Cooperative rebalancing is the recommended approach for all production deployments.</p>
+<h3 id="4-consumer-offset-management">4. Consumer Offset Management<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-consumer-offset-management" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Consumers track their position using offsets stored in the internal <code>__consumer_offsets</code> topic. Offset commits can be:</p>
+<ul>
+<li><strong>Auto-committed</strong> (<code>enable.auto.commit=true</code>): offsets committed periodically (default every 5 seconds). Simple but risks duplicate processing (crash between process and commit) or data loss (commit before process).</li>
+<li><strong>Manually committed</strong>: the application explicitly calls <code>commitSync()</code> or <code>commitAsync()</code> after processing. This gives precise control over at-least-once or exactly-once guarantees.</li>
+</ul>
+<hr/>
+<h2 id="8-exactly-once-semantics-eos">8. Exactly-Once Semantics (EOS)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-exactly-once-semantics-eos" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Exactly-once is one of the hardest problems in distributed systems. Kafka achieves it through the combination of three mechanisms:</p>
+<ol>
+<li><strong>Idempotent producer</strong>: eliminates duplicates caused by retries within a single partition and producer session</li>
+<li><strong>Transactional producer</strong>: enables atomic writes across multiple partitions, ensuring that either all messages in a transaction are visible or none are</li>
+<li><strong>Consumer <code>read_committed</code> isolation</strong>: consumers skip messages from aborted transactions and only read committed data</li>
+</ol>
+<p>EOS is most commonly used in Kafka Streams applications where the pattern is consume-process-produce. The transactional producer atomically commits both the output messages and the consumer offset update, ensuring that the consume and produce are treated as a single atomic operation.</p>
+<p><strong>Performance cost</strong>: EOS adds latency (transaction commit is a two-phase operation) and reduces throughput (transaction markers consume log space, and the coordinator becomes a bottleneck under high transaction rates). For many use cases, idempotent producers with at-least-once delivery and idempotent consumers is a simpler and more performant alternative.</p>
+<hr/>
+<h2 id="9-backpressure-and-flow-control">9. Backpressure and Flow Control<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-backpressure-and-flow-control" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Kafka does not push messages to consumers — consumers pull at their own pace. This pull-based model provides natural backpressure: a slow consumer simply falls behind, and the log retains messages until they are consumed or expire.</p>
+<p>However, backpressure can appear in other places:</p>
+<ol>
+<li><strong>Producer-side backpressure</strong>: if the producer’s internal buffer fills up (<code>buffer.memory</code>, default 32 MB), the <code>send()</code> call blocks (up to <code>max.block.ms</code>). This signals that the producer is generating messages faster than they can be sent. Solutions: increase buffer size, increase batch size, add more partitions, or reduce production rate.</li>
+<li><strong>Consumer lag</strong>: the gap between the latest offset in a partition and the consumer’s committed offset. Persistent lag means the consumer cannot keep up with the production rate. Solutions: add more consumers (up to partition count), increase <code>max.poll.records</code>, optimize processing logic, or add more partitions.</li>
+<li><strong>Broker-side pressure</strong>: when replication cannot keep up, replicas fall out of ISR. When disk I/O saturates, request latency increases for both producers and consumers. Kafka provides quotas (<code>quota.producer.default</code>, <code>quota.consumer.default</code>) to limit the bandwidth each client can use, preventing any single client from monopolizing broker resources.</li>
+</ol>
+<hr/>
+<h2 id="10-zookeeper-and-kraft">10. ZooKeeper and KRaft<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-zookeeper-and-kraft" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-zookeeper-dependency-legacy">1. ZooKeeper Dependency (Legacy)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-zookeeper-dependency-legacy" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Historically, Kafka relied on <a href="../../02-zookeeper" class="internal internal-link" data-slug="02-zookeeper">02-Zookeeper</a> for:</p>
+<ul>
+<li>Broker registration and liveness detection</li>
+<li>Controller election (the broker that manages partition leadership)</li>
+<li>Topic and partition metadata storage</li>
+<li>ACL and configuration storage</li>
+</ul>
+<p>ZooKeeper became the operational bottleneck for large Kafka clusters. It limited the number of partitions (ZK watches scale poorly beyond ~200K partitions), added deployment complexity (a separate distributed system to manage), and created a single point of failure for metadata operations.</p>
+<h3 id="2-kraft-mode-kafka-raft">2. KRaft Mode (Kafka Raft)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-kraft-mode-kafka-raft" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>KRaft replaces ZooKeeper with a built-in Raft-based consensus protocol for metadata management. A subset of brokers (typically 3 or 5) act as <strong>controllers</strong> and form a Raft quorum. One controller is the <strong>active controller</strong>; the others are standbys.</p>
+<p>Key improvements:</p>
+<ul>
+<li><strong>Simplified operations</strong>: no separate ZooKeeper cluster to deploy and monitor</li>
+<li><strong>Higher partition limits</strong>: KRaft can handle millions of partitions per cluster</li>
+<li><strong>Faster failover</strong>: controller failover happens in milliseconds instead of seconds</li>
+<li><strong>Single security model</strong>: no need to secure both Kafka and ZooKeeper separately</li>
+</ul>
+<p>KRaft has been production-ready since Kafka 3.3 and is the default for new deployments. ZooKeeper support is being removed entirely.</p>
+<hr/>
+<h2 id="11-kafka-core-apis">11. Kafka Core APIs<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-kafka-core-apis" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-producer-api">1. Producer API<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-producer-api" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Applications publish streams of records to topics. The producer handles serialization, partitioning, batching, compression, and retry logic.</p>
+<h3 id="2-consumer-api">2. Consumer API<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-consumer-api" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Applications subscribe to topics and process records. The consumer handles deserialization, offset management, group coordination, and rebalancing.</p>
+<h3 id="3-streams-api">3. Streams API<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-streams-api" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A client library for building stream processing applications. Transforms input topics into output topics with operations like filter, map, aggregate, join, and windowing. Streams applications are just Kafka consumers and producers internally — no separate cluster needed. This makes it lightweight compared to Flink or Spark Streaming but limited to Kafka-to-Kafka processing.</p>
+<h3 id="4-connector-api-kafka-connect">4. Connector API (Kafka Connect)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-connector-api-kafka-connect" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A framework for building reusable connectors that move data between Kafka and external systems. Source connectors pull data in (e.g., CDC from databases), sink connectors push data out (e.g., to S3, Elasticsearch, HDFS). Connectors run in a distributed Connect cluster with automatic task distribution and fault tolerance.</p>
+<hr/>
+<h2 id="12-kafka-vs-rabbitmq">12. Kafka vs RabbitMQ<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-kafka-vs-rabbitmq" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The comparison between Kafka and RabbitMQ is fundamentally about two different messaging philosophies, and understanding the tradeoffs helps you choose the right tool.</p>
+<p><object data="kafka-vs-rabbit-mq.svg" type="image/svg+xml" width="auto" height="auto" aria-label></object></p>
+<h3 id="1-architecture-philosophy">1. Architecture Philosophy<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-architecture-philosophy" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>RabbitMQ</strong> follows a “smart broker, dumb consumer” model. The broker manages complex routing (exchanges, bindings, routing keys), tracks which messages have been delivered, and deletes messages after acknowledgment. The consumer simply receives messages pushed by the broker.</p>
+<p><strong>Kafka</strong> follows a “dumb broker, smart consumer” model. The broker stores messages in an append-only log and serves reads at requested offsets. The consumer is responsible for tracking its own position and deciding what to read. The broker’s job is to store data durably and serve it efficiently.</p>
+<h3 id="2-delivery-guarantees">2. Delivery Guarantees<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-delivery-guarantees" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RabbitMQ provides at-most-once (no acks), at-least-once (publisher confirms + consumer acks), and effectively-once (deduplication at the application layer). It does not natively support exactly-once.</p>
+<p>Kafka provides at-most-once (<code>acks=0</code>), at-least-once (<code>acks=all</code> + consumer commits after processing), and exactly-once (idempotent + transactional producers + read_committed consumers). Kafka’s EOS is a built-in, first-class feature.</p>
+<h3 id="3-message-ordering">3. Message Ordering<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-message-ordering" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RabbitMQ guarantees ordering per queue but loses ordering when messages are redelivered (nacked and requeued) or when competing consumers process at different speeds.</p>
+<p>Kafka guarantees strict ordering per partition with no exceptions — even on retries (with idempotent producers). This makes Kafka far more suitable for event sourcing and systems that require causal ordering.</p>
+<h3 id="4-replay-capability">4. Replay Capability<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-replay-capability" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RabbitMQ deletes messages after acknowledgment. Replaying history requires a separate mechanism (e.g., storing messages in a database).</p>
+<p>Kafka retains messages for a configurable period. Any consumer can replay from any offset at any time. This makes Kafka ideal for rebuilding state, reprocessing after bug fixes, or onboarding new downstream services.</p>
+<h3 id="5-detailed-comparison">5. Detailed Comparison<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-detailed-comparison" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Feature</th><th>RabbitMQ</th><th>Kafka</th></tr></thead><tbody><tr><td><strong>Model</strong></td><td>Queue, pub-sub, request-reply</td><td>Pub-sub with consumer groups</td></tr><tr><td><strong>Broker role</strong></td><td>Routes, tracks, deletes</td><td>Stores and serves</td></tr><tr><td><strong>Message flow</strong></td><td>Push to consumer</td><td>Consumer pulls</td></tr><tr><td><strong>Retention</strong></td><td>Deleted after ack</td><td>Time/size-based retention</td></tr><tr><td><strong>Replay</strong></td><td>Not supported</td><td>Full replay from any offset</td></tr><tr><td><strong>Ordering</strong></td><td>Per queue (breaks on redeliver)</td><td>Per partition (strict, always)</td></tr><tr><td><strong>Throughput</strong></td><td>10K-50K msg/s</td><td>100K-1M+ msg/s</td></tr><tr><td><strong>Latency</strong></td><td>Sub-millisecond</td><td>Sub-10ms (tunable to ~2ms)</td></tr><tr><td><strong>Exactly-once</strong></td><td>Application-level</td><td>Native support</td></tr><tr><td><strong>Routing</strong></td><td>Complex (exchanges, bindings)</td><td>Topic + partition key</td></tr><tr><td><strong>Priority queues</strong></td><td>Supported</td><td>Not supported</td></tr><tr><td><strong>Best for</strong></td><td>Task queues, RPC, complex routing</td><td>Event streaming, data pipelines, replay</td></tr></tbody></table></div>
+<h3 id="6-when-to-choose-each">6. When to Choose Each<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-when-to-choose-each" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Choose RabbitMQ</strong> when you need complex routing logic, message priorities, request-response patterns, or task distribution with moderate throughput. RabbitMQ excels when messages represent tasks to be completed and deleted, not events to be recorded.</p>
+<p><strong>Choose Kafka</strong> when you need high throughput, event replay, strict ordering, exactly-once semantics, or when multiple independent consumers need the same data stream. Kafka excels when messages represent events that form a durable history.</p>
+<p>They are not competitors — they solve different problems. Many production systems use both: Kafka for the core event backbone and RabbitMQ for task distribution and RPC patterns.</p>
+<hr/>
+<h2 id="13-production-tuning-guidelines">13. Production Tuning Guidelines<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#13-production-tuning-guidelines" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-cluster-sizing">1. Cluster Sizing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-cluster-sizing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Brokers</strong>: start with 3 (minimum for replication factor 3). Add brokers when disk, network, or CPU becomes the bottleneck.</li>
+<li><strong>Replication factor</strong>: 3 is standard. Use 2 only for non-critical topics where some data loss is acceptable.</li>
+<li><strong>Retention</strong>: based on replay needs. 7 days is common for event streams. Use compaction for state topics.</li>
+</ul>
+<h3 id="2-consumer-lag-monitoring">2. Consumer Lag Monitoring<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-consumer-lag-monitoring" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Consumer lag is the most important operational metric. Persistent lag indicates the consumer cannot keep up, and unbounded lag eventually leads to data loss when messages expire past the retention window.</p>
+<p>Monitor lag per partition per consumer group. Tools like Kafka’s built-in <code>kafka-consumer-groups.sh</code>, Burrow, or custom JMX exporters expose lag metrics. Alert when lag exceeds a threshold that correlates to your SLO (e.g., if your SLO requires processing within 5 minutes, alert when lag represents more than 3 minutes of data).</p>
+<h3 id="3-key-tuning-parameters">3. Key Tuning Parameters<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-key-tuning-parameters" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Parameter</th><th>Default</th><th>Guidance</th></tr></thead><tbody><tr><td><code>num.partitions</code></td><td>1</td><td>Set to 2-3x expected consumers. Increase is easy, decrease is not.</td></tr><tr><td><code>replication.factor</code></td><td>1</td><td>Always 3 in production</td></tr><tr><td><code>min.insync.replicas</code></td><td>1</td><td>Set to 2 with <code>acks=all</code> for durability</td></tr><tr><td><code>linger.ms</code></td><td>0</td><td>Set to 5-20ms for throughput</td></tr><tr><td><code>batch.size</code></td><td>16384</td><td>Increase to 64-256 KB for high-throughput producers</td></tr><tr><td><code>compression.type</code></td><td>none</td><td>Use lz4 or zstd in production</td></tr><tr><td><code>fetch.min.bytes</code></td><td>1</td><td>Increase to 1-64 KB to reduce fetch frequency</td></tr><tr><td><code>max.poll.records</code></td><td>500</td><td>Tune based on processing time per record</td></tr><tr><td><code>session.timeout.ms</code></td><td>45000</td><td>Lower values detect failures faster but risk false positives</td></tr></tbody></table></div>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>Kafka’s core abstraction is the <strong>append-only commit log</strong> — producers append, consumers read at their own offset, messages are retained. This single design choice enables replay, decoupling, and multiple independent consumers.</li>
+<li><strong>Partitions</strong> are the unit of parallelism and ordering. Choose partition keys carefully — they determine ordering guarantees and load distribution. Partition count is the upper bound on consumer parallelism.</li>
+<li><strong>ISR (In-Sync Replicas)</strong> determines durability. With <code>acks=all</code> and <code>min.insync.replicas=2</code>, Kafka guarantees no data loss as long as at least 2 replicas are alive. Replicas fall out of ISR due to slow I/O, network issues, or GC pauses.</li>
+<li><strong>Producer delivery guarantees</strong> range from fire-and-forget (<code>acks=0</code>) to exactly-once (idempotent + transactional + read_committed). Idempotent producers use PID + sequence numbers for per-partition deduplication.</li>
+<li><strong>Consumer groups</strong> provide parallel consumption with automatic partition assignment. Cooperative rebalancing minimizes disruption compared to eager rebalancing. Assignment strategies (Range, RoundRobin, Sticky) control partition distribution.</li>
+<li><strong>Backpressure</strong> is natural in Kafka’s pull model — slow consumers fall behind rather than causing upstream failures. Monitor consumer lag as the primary health indicator.</li>
+<li><strong>KRaft</strong> replaces ZooKeeper with built-in Raft consensus, improving scalability (millions of partitions), operational simplicity, and failover speed.</li>
+<li><strong>Kafka vs RabbitMQ</strong>: Kafka is a durable log for event streaming; RabbitMQ is a smart broker for task distribution. Kafka provides native exactly-once; RabbitMQ provides complex routing and priorities. They complement each other.</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>
+<p><strong>ISR and availability</strong>: If a cluster has <code>replication.factor=3</code> and <code>min.insync.replicas=2</code>, and two followers fall out of ISR simultaneously, what happens to writes? What if only one falls out? How does this change if <code>unclean.leader.election.enable=true</code>?
+Ans:</p>
+</li>
+<li>
+<p><strong>Partition key skew</strong>: You choose <code>customer_id</code> as the partition key, but one customer generates 80% of all traffic. What problems does this cause? How would you solve this without losing per-customer ordering guarantees?
+Ans:</p>
+</li>
+<li>
+<p><strong>Exactly-once cost</strong>: A team wants to enable exactly-once semantics for all Kafka topics. What are the performance implications? In what scenarios would you argue against EOS and recommend idempotent consumers instead?
+Ans:</p>
+</li>
+<li>
+<p><strong>Rebalancing storms</strong>: A consumer group with 50 consumers using eager rebalancing experiences cascading rebalances during deployment (rolling restart). Why does this happen? How does cooperative rebalancing solve it, and what edge cases remain?
+Ans:</p>
+</li>
+<li>
+<p><strong>Consumer lag and retention</strong>: Consumer lag has been growing steadily for a consumer group. The retention period is 7 days. What happens when lag exceeds 7 days? How would you design monitoring and alerting to prevent data loss?
+Ans:</p>
+</li>
+<li>
+<p><strong>Log compaction correctness</strong>: A team uses a compacted topic to store the latest state per user. A consumer crashes and restarts from offset 0. Can it reconstruct the correct current state? What if compaction has not yet run? What if tombstone records (null values) are involved?
+Ans:</p>
+</li>
+<li>
+<p><strong>Transactional producer failure</strong>: A transactional producer calls <code>beginTransaction()</code>, sends messages to 3 partitions, then crashes before calling <code>commitTransaction()</code>. What happens to the messages already written to those partitions? How does the Transaction Coordinator resolve this?
+Ans:</p>
+</li>
+<li>
+<p><strong>KRaft migration risks</strong>: A team is migrating a 200-broker cluster from ZooKeeper to KRaft. What are the key risks during migration? What happens if the KRaft controller quorum loses a majority during the migration?
+Ans:</p>
+</li>
+<li>
+<p><strong>Partition count tradeoffs</strong>: A topic currently has 100 partitions. The team wants to increase to 500 partitions to support more consumers. What are the side effects? Why can Kafka not decrease partition count, and what would you do if you needed fewer partitions?
+Ans:</p>
+</li>
+<li>
+<p><strong>Broker failure and ISR recovery</strong>: A broker hosting leaders for 500 partitions crashes. Describe the sequence of events: leader election, ISR updates, producer retries, consumer rebalancing. What determines how long this process takes?
+Ans:</p>
+</li>
+<li>
+<p><strong>Ordering across partitions</strong>: A system needs globally ordered events (not just per-partition). How would you achieve this with Kafka? What are the throughput implications? Is there a design that provides “good enough” global ordering without sacrificing all parallelism?
+Ans:</p>
+</li>
+</ol></div></article><hr/><div class="page-footer"><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../01-fundamentals/01-concepts/01-distributed-systems/07-microservices" class="internal">Microservices</a></li><li><a href="../../01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration" class="internal">Choreography Orchestration</a></li><li><a href="../../01-fundamentals/01-concepts/02-architecture/02-event-sourcing-cqrs" class="internal">Event Sourcing CQRS</a></li><li><a href="../../01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies" class="internal">Fan Out Strategies</a></li><li><a href="../../01-fundamentals/01-concepts/03-data/01-big-data-stream-processing" class="internal">Big Data Stream Processing</a></li><li><a href="../../01-fundamentals/01-concepts/03-data/02-change-data-capture" class="internal">Change Data Capture</a></li><li><a href="../../01-fundamentals/01-concepts/03-data/03-data-pipeline" class="internal">Data Pipeline</a></li><li><a href="../../01-fundamentals/02-databases/02-nosql/01-01-redis" class="internal">01 Redis</a></li><li class="overflow-end"></li></ul></div></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-36" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-0"><a href="#1-the-distributed-log-abstraction" data-for="1-the-distributed-log-abstraction">1. The Distributed Log Abstraction</a></li><li class="depth-0"><a href="#2-core-messaging-models" data-for="2-core-messaging-models">2. Core Messaging Models</a></li><li class="depth-1"><a href="#1-queue-model-point-to-point" data-for="1-queue-model-point-to-point">1. Queue Model (Point-to-Point)</a></li><li class="depth-1"><a href="#2-publisher-subscriber-model" data-for="2-publisher-subscriber-model">2. Publisher-Subscriber Model</a></li><li class="depth-0"><a href="#3-kafka-architecture-components" data-for="3-kafka-architecture-components">3. Kafka Architecture Components</a></li><li class="depth-1"><a href="#1-broker" data-for="1-broker">1. Broker</a></li><li class="depth-1"><a href="#2-topic" data-for="2-topic">2. Topic</a></li><li class="depth-1"><a href="#3-partition" data-for="3-partition">3. Partition</a></li><li class="depth-1"><a href="#4-segment-files-and-storage-engine" data-for="4-segment-files-and-storage-engine">4. Segment Files and Storage Engine</a></li><li class="depth-1"><a href="#5-log-compaction-strategies" data-for="5-log-compaction-strategies">5. Log Compaction Strategies</a></li><li class="depth-0"><a href="#4-topic-partitioning" data-for="4-topic-partitioning">4. Topic Partitioning</a></li><li class="depth-1"><a href="#1-partition-key-routing" data-for="1-partition-key-routing">1. Partition Key Routing</a></li><li class="depth-1"><a href="#2-why-partitioning-matters" data-for="2-why-partitioning-matters">2. Why Partitioning Matters</a></li><li class="depth-1"><a href="#3-partition-count-selection" data-for="3-partition-count-selection">3. Partition Count Selection</a></li><li class="depth-0"><a href="#5-partition-replication-and-isr" data-for="5-partition-replication-and-isr">5. Partition Replication and ISR</a></li><li class="depth-1"><a href="#1-in-sync-replicas-isr-mechanics" data-for="1-in-sync-replicas-isr-mechanics">1. In-Sync Replicas (ISR) Mechanics</a></li><li class="depth-1"><a href="#2-mininsyncreplicas" data-for="2-mininsyncreplicas">2. min.insync.replicas</a></li><li class="depth-1"><a href="#3-unclean-leader-election" data-for="3-unclean-leader-election">3. Unclean Leader Election</a></li><li class="depth-0"><a href="#6-producer-internals" data-for="6-producer-internals">6. Producer Internals</a></li><li class="depth-1"><a href="#1-batching-and-compression" data-for="1-batching-and-compression">1. Batching and Compression</a></li><li class="depth-1"><a href="#2-acknowledgment-modes" data-for="2-acknowledgment-modes">2. Acknowledgment Modes</a></li><li class="depth-1"><a href="#3-idempotent-producer" data-for="3-idempotent-producer">3. Idempotent Producer</a></li><li class="depth-1"><a href="#4-transactional-producer" data-for="4-transactional-producer">4. Transactional Producer</a></li><li class="depth-0"><a href="#7-consumer-group-protocol" data-for="7-consumer-group-protocol">7. Consumer Group Protocol</a></li><li class="depth-1"><a href="#1-group-coordinator-and-partition-assignment" data-for="1-group-coordinator-and-partition-assignment">1. Group Coordinator and Partition Assignment</a></li><li class="depth-1"><a href="#2-partition-assignment-strategies" data-for="2-partition-assignment-strategies">2. Partition Assignment Strategies</a></li><li class="depth-1"><a href="#3-rebalancing-eager-vs-cooperative" data-for="3-rebalancing-eager-vs-cooperative">3. Rebalancing: Eager vs Cooperative</a></li><li class="depth-1"><a href="#4-consumer-offset-management" data-for="4-consumer-offset-management">4. Consumer Offset Management</a></li><li class="depth-0"><a href="#8-exactly-once-semantics-eos" data-for="8-exactly-once-semantics-eos">8. Exactly-Once Semantics (EOS)</a></li><li class="depth-0"><a href="#9-backpressure-and-flow-control" data-for="9-backpressure-and-flow-control">9. Backpressure and Flow Control</a></li><li class="depth-0"><a href="#10-zookeeper-and-kraft" data-for="10-zookeeper-and-kraft">10. ZooKeeper and KRaft</a></li><li class="depth-1"><a href="#1-zookeeper-dependency-legacy" data-for="1-zookeeper-dependency-legacy">1. ZooKeeper Dependency (Legacy)</a></li><li class="depth-1"><a href="#2-kraft-mode-kafka-raft" data-for="2-kraft-mode-kafka-raft">2. KRaft Mode (Kafka Raft)</a></li><li class="depth-0"><a href="#11-kafka-core-apis" data-for="11-kafka-core-apis">11. Kafka Core APIs</a></li><li class="depth-1"><a href="#1-producer-api" data-for="1-producer-api">1. Producer API</a></li><li class="depth-1"><a href="#2-consumer-api" data-for="2-consumer-api">2. Consumer API</a></li><li class="depth-1"><a href="#3-streams-api" data-for="3-streams-api">3. Streams API</a></li><li class="depth-1"><a href="#4-connector-api-kafka-connect" data-for="4-connector-api-kafka-connect">4. Connector API (Kafka Connect)</a></li><li class="depth-0"><a href="#12-kafka-vs-rabbitmq" data-for="12-kafka-vs-rabbitmq">12. Kafka vs RabbitMQ</a></li><li class="depth-1"><a href="#1-architecture-philosophy" data-for="1-architecture-philosophy">1. Architecture Philosophy</a></li><li class="depth-1"><a href="#2-delivery-guarantees" data-for="2-delivery-guarantees">2. Delivery Guarantees</a></li><li class="depth-1"><a href="#3-message-ordering" data-for="3-message-ordering">3. Message Ordering</a></li><li class="depth-1"><a href="#4-replay-capability" data-for="4-replay-capability">4. Replay Capability</a></li><li class="depth-1"><a href="#5-detailed-comparison" data-for="5-detailed-comparison">5. Detailed Comparison</a></li><li class="depth-1"><a href="#6-when-to-choose-each" data-for="6-when-to-choose-each">6. When to Choose Each</a></li><li class="depth-0"><a href="#13-production-tuning-guidelines" data-for="13-production-tuning-guidelines">13. Production Tuning Guidelines</a></li><li class="depth-1"><a href="#1-cluster-sizing" data-for="1-cluster-sizing">1. Cluster Sizing</a></li><li class="depth-1"><a href="#2-consumer-lag-monitoring" data-for="2-consumer-lag-monitoring">2. Consumer Lag Monitoring</a></li><li class="depth-1"><a href="#3-key-tuning-parameters" data-for="3-key-tuning-parameters">3. Key Tuning Parameters</a></li><li class="depth-0"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-0"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li><li><a href="/firstprinciplesengineering/index.xml">RSS</a></li></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-83c11c57.js" type="module" data-persist="true"></script></html>
