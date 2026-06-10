@@ -382,6 +382,17 @@ a.internal.tag-link {
   }
 }
 
+// ---- Hide empty right-sidebar placeholder -------------------------------
+// Quartz always renders <div class="right sidebar"> with `grid-area:
+// grid-sidebar-right`, but our grid templates intentionally don't declare
+// that area (we removed the right sidebar to widen the reading column).
+// Left unfixed, the orphaned element creates an implicit grid column,
+// which overflows the viewport on mobile (sidebar computes to 414px on a
+// 375px screen). Display:none removes it from the grid entirely.
+#quartz-body > .sidebar.right {
+  display: none;
+}
+
 // ---- Landing-page hero + cards ------------------------------------------
 .fpe-hero {
   margin: 1rem 0 2.5rem;
