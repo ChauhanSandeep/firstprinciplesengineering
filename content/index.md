@@ -75,53 +75,53 @@ publish: true
 
 </div>
 
-## Learning paths
+## Reading Series
 
 <div class="fpe-learning-paths">
 
-<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/01-Distributed-Systems/01-Distributed-Systems-Primitives">
-  <span class="path-title">Distributed Systems</span>
-  <span class="path-desc">Primitives, logical clocks, consensus, distributed locks, transactions, gossip, microservices boundaries.</span>
+<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/01-Distributed-Systems/">
+  <span class="path-title">Distributed Systems from First Principles</span>
+  <span class="path-desc">Primitives → logical clocks → consensus → distributed locks → transactions → gossip → microservices. Read in dependency order.</span>
   <span class="path-count">7 articles</span>
 </a>
 
-<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/02-Architecture/01-Choreography-Orchestration">
+<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/02-Architecture/">
   <span class="path-title">Architecture & Patterns</span>
-  <span class="path-desc">Choreography vs orchestration, event sourcing, fan-out strategies, strangler fig, BFF, multi-tenancy.</span>
+  <span class="path-desc">Choreography vs orchestration, event sourcing, fan-out, locking, strangler fig, BFF, multi-tenancy — and the failure modes each pattern exists to solve.</span>
   <span class="path-count">7 articles</span>
 </a>
 
-<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/03-Data/01-Big-Data-Stream-Processing">
-  <span class="path-title">Data & APIs</span>
-  <span class="path-desc">Stream processing, change data capture, caching techniques, consistent hashing, API design, gRPC, GraphQL.</span>
-  <span class="path-count">9 articles</span>
-</a>
-
-<a class="fpe-path-card" href="01-Fundamentals/01-Concepts/07-Operations/01-Observability">
-  <span class="path-title">Operations & Security</span>
-  <span class="path-desc">Observability, testing strategies, container internals, cryptographic primitives, authentication, authorization.</span>
+<a class="fpe-path-card" href="02-Series/production-systems-deep-dives">
+  <span class="path-title">Production Systems Deep Dives</span>
+  <span class="path-desc">Kafka, Redis, DynamoDB, Spanner, Zanzibar, Lakehouse — the design decisions that defined each system, not the marketing pages.</span>
   <span class="path-count">6 articles</span>
 </a>
 
-<a class="fpe-path-card" href="01-Fundamentals/05-AI-ML/04-RAG-Architecture">
-  <span class="path-title">AI & ML Systems</span>
-  <span class="path-desc">Retrieval-augmented generation, ML system design fundamentals, model serving — the production patterns behind the buzz.</span>
-  <span class="path-count">3 articles</span>
+<a class="fpe-path-card" href="01-Fundamentals/02-Databases/01-Fundamentals/">
+  <span class="path-title">Database Internals</span>
+  <span class="path-desc">ACID foundations, CAP & PACELC, isolation levels, MVCC. The minimum mental model before debugging any data layer at 2 AM.</span>
+  <span class="path-count">4 articles</span>
 </a>
 
-<a class="fpe-path-card" href="01-Fundamentals/02-Databases/01-Fundamentals/06-MVCC">
-  <span class="path-title">Databases & Storage</span>
-  <span class="path-desc">CAP & PACELC, isolation levels, MVCC, Redis internals, DynamoDB, Kafka, Spanner, Zanzibar, lakehouse architecture.</span>
-  <span class="path-count">12 articles</span>
+<a class="fpe-path-card" href="02-Series/apis-and-networking">
+  <span class="path-title">APIs & Networking</span>
+  <span class="path-desc">TCP/UDP/QUIC up through API design, gateways, GraphQL, gRPC. The stack read bottom-up so trade-offs compose instead of fighting.</span>
+  <span class="path-count">5 articles</span>
+</a>
+
+<a class="fpe-path-card" href="01-Fundamentals/05-AI-ML/">
+  <span class="path-title">AI Systems in Production</span>
+  <span class="path-desc">RAG architecture, ML system design, model serving. The production view, not the model view — where the latency, cost, and quality actually live.</span>
+  <span class="path-count">3 articles</span>
 </a>
 
 </div>
 
 ## How to browse
 
+- **Reading Series** above — each is curated in dependency order. Start with whichever pulls you in.
 - **Search** in the toolbar (⌘K / Ctrl+K) — fastest way to a specific concept.
-- **Explorer** on the left — browse by topic.
-- **Featured** above — opinionated entry points.
+- **Explorer** on the left — the full tree if you want to browse loose.
 
 > [!note]
 > This is a **curated slice** of my private notebook. Many drafts and half-formed ideas stay unpublished by design. If a published note is wrong or unclear, [open an issue](https://github.com/chauhansandeep/firstprinciplesengineering).
