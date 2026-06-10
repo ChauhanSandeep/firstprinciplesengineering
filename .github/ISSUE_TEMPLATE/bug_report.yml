@@ -1,0 +1,50 @@
+name: Bug report
+description: Report something that's broken on the site or in the source.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+      placeholder: When I clicked X on page Y, Z happened instead of W.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Page URL (if applicable)
+      placeholder: https://chauhansandeep.github.io/firstprinciplesengineering/...
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device / browser
+      options:
+        - Desktop - Chrome
+        - Desktop - Firefox
+        - Desktop - Safari
+        - Mobile - iOS Safari
+        - Mobile - Android Chrome
+        - Other (describe in "What happened")
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, console logs, etc.
