@@ -2,15 +2,14 @@ import { QuartzPageTypePlugin } from "../types"
 import { match } from "./matchers"
 import { NotFound } from "../../components"
 import { defaultProcessedContent } from "../vfile"
-import { i18n } from "../../i18n"
 import { FullSlug } from "../../util/path"
 
 export const NotFoundPageType: QuartzPageTypePlugin = () => ({
   name: "404",
   priority: -1,
   match: match.none(),
-  generate({ cfg }) {
-    const notFound = i18n(cfg.locale).pages.error.title
+  generate() {
+    const notFound = "Not published yet"
     const slug = "404" as FullSlug
     const [, vfile] = defaultProcessedContent({
       slug,

@@ -1,4 +1,3 @@
-import { i18n } from "../../i18n"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 
 const NotFound: QuartzComponent = ({ cfg, ctx }: QuartzComponentProps) => {
@@ -7,9 +6,33 @@ const NotFound: QuartzComponent = ({ cfg, ctx }: QuartzComponentProps) => {
 
   return (
     <article class="popover-hint">
-      <h1>404</h1>
-      <p>{i18n(cfg.locale).pages.error.notFound}</p>
-      <a href={baseDir}>{i18n(cfg.locale).pages.error.home}</a>
+      <h1>This note isn't published yet</h1>
+      <p>
+        The page you're looking for hasn't been published to the public site
+        yet — it might still be a draft in the private vault, or the link may
+        be slightly off.
+      </p>
+      <p>
+        Notes are published progressively from a private Obsidian vault, so
+        this page may appear here in the future. In the meantime, you can:
+      </p>
+      <ul>
+        <li>Double-check the URL for typos.</li>
+        <li>Use the search box (top-left) to look for related notes.</li>
+        <li>
+          Head back to the <a href={baseDir}>home page</a> and browse from there.
+        </li>
+      </ul>
+      <p>
+        <em>
+          If you followed a link from somewhere and think this page should
+          exist, feel free to{" "}
+          <a href="https://github.com/ChauhanSandeep/firstprinciplesengineering/issues/new">
+            open an issue
+          </a>
+          .
+        </em>
+      </p>
       <script
         dangerouslySetInnerHTML={{
           __html: `
