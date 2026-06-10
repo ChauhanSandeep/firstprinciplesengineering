@@ -803,30 +803,41 @@ a.internal.tag-link {
   }
 
   .fpe-hero-cta {
-    margin-top: 1.25rem;
-    font-size: 0.95rem;
+    margin-top: 1.5rem;
+    font-size: 1rem;
   }
 
   .fpe-hero-link {
-    display: inline-block;
-    padding: 0.5rem 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.6rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--secondary) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
-    color: var(--secondary) !important;
-    font-weight: 600;
+    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+    border: none;
+    color: var(--light) !important;
+    font-weight: 700;
+    font-size: 1rem;
     text-decoration: none !important;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 28%, transparent);
     transition:
-      background 180ms ease,
-      border-color 180ms ease,
-      transform 180ms ease;
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      filter 180ms ease;
 
     &::after { display: none !important; }
 
     &:hover {
-      background: color-mix(in srgb, var(--secondary) 18%, transparent);
-      border-color: var(--secondary);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--secondary) 38%, transparent);
+      filter: brightness(1.05);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--secondary) 30%, transparent),
+        0 6px 18px color-mix(in srgb, var(--secondary) 28%, transparent);
     }
   }
 }
@@ -2057,4 +2068,12 @@ body[data-slug="404"] {
     & > .fpe-contact-label { grid-area: label; }
     & > .fpe-contact-value { grid-area: value; font-size: 0.78rem; }
   }
+}
+
+// ---- About page: hide Properties + Share components --------------------
+// The About page has no useful frontmatter to expose and isn't meant to be
+// shared as a note. Hide both for a cleaner read.
+body[data-slug="about"] {
+  .note-properties,
+  .fpe-share { display: none !important; }
 }
