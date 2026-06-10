@@ -427,10 +427,32 @@ article img:not([src$=".excalidraw.svg"]) {
     0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-[saved-theme="dark"] article img:not([src$=".excalidraw.svg"]) {
+[saved-theme="dark"] article img:not([src*=".excalidraw."]) {
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.3),
     0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+// Theme-aware Excalidraw pair: the post-build pass in
+// `scripts/fix-excalidraw-paths.mjs` emits two <img> tags side-by-side when
+// both `.light.svg` and `.dark.svg` exports are available. We display
+// whichever matches the active site theme so the diagram blends into the
+// page background in either mode. Both images are downloaded; the inactive
+// one is hidden via CSS (and `aria-hidden="true"` keeps screen readers from
+// announcing it twice).
+img.excalidraw-light {
+  display: inline-block;
+}
+img.excalidraw-dark {
+  display: none;
+}
+:root[saved-theme="dark"] {
+  img.excalidraw-light {
+    display: none;
+  }
+  img.excalidraw-dark {
+    display: inline-block;
+  }
 }
 
 article figcaption {
@@ -745,7 +767,7 @@ a.internal.tag-link {
 .fpe-hero {
   margin: 1rem 0 2.5rem;
   padding: 2.5rem 0 2rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid var(--lightgray);
 
   h1 {
@@ -758,7 +780,7 @@ a.internal.tag-link {
     line-height: 1.15;
   }
   .fpe-hero-byline {
-    margin: 0.25rem 0 0.75rem;
+    margin: 0.25rem auto 0.75rem;
     font-size: 0.95rem;
     color: var(--gray);
     letter-spacing: 0.01em;
@@ -777,7 +799,7 @@ a.internal.tag-link {
   }
   p {
     max-width: 56ch;
-    margin: 0.75rem 0 0;
+    margin: 0.75rem auto 0;
     color: var(--darkgray);
     font-size: 1.05rem;
   }
