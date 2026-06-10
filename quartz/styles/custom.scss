@@ -1934,3 +1934,99 @@ body[data-slug="404"] {
 [saved-theme="dark"] .fpe-share {
   background: color-mix(in srgb, var(--secondary) 8%, var(--light));
 }
+
+// ---- About page ---------------------------------------------------------
+// Single-column About page: bio + philosophy + contact card. Reuses
+// .fpe-article-card aesthetic (rounded, bordered, hover) so the contact
+// block feels native to the rest of the site.
+.fpe-about {
+  max-width: 640px;
+  margin: 0 auto;
+
+  & > h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  & > p {
+    line-height: 1.65;
+  }
+
+  & > h2 {
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.fpe-contact-card {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.fpe-contact-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  // Suppress the global external-link arrow decoration that ::after-injects
+  // an icon on external/mailto anchors. The card itself is the link target
+  // and the icon would render visually duplicated.
+  &::after,
+  & > svg {
+    display: none !important;
+  }
+
+  & > .fpe-contact-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--secondary);
+  }
+  & > .fpe-contact-label {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    color: var(--dark);
+  }
+  & > .fpe-contact-value {
+    font-family: var(--codeFont);
+    font-size: 0.88rem;
+    color: var(--darkgray);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 16%, transparent);
+  }
+}
+
+@media (max-width: 480px) {
+  .fpe-contact-row {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "icon label"
+      "icon value";
+    row-gap: 0.1rem;
+
+    & > .fpe-contact-icon  { grid-area: icon;  }
+    & > .fpe-contact-label { grid-area: label; }
+    & > .fpe-contact-value { grid-area: value; font-size: 0.78rem; }
+  }
+}

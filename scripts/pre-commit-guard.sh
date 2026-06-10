@@ -8,7 +8,7 @@
 #   ln -sf ../../scripts/pre-commit-guard.sh .git/hooks/pre-commit
 set -euo pipefail
 
-allowed_re='^content/(index\.md|_static/.*)$'
+allowed_re='^content/(index\.md|about\.md|_static/.*)$'
 
 staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^content/' || true)
 
@@ -29,6 +29,6 @@ if [ ${#blocked[@]} -gt 0 ]; then
   done
   echo
   echo "   To unstage:  git restore --staged content/"
-  echo "   Only content/index.md and content/_static/** may be committed."
+  echo "   Only content/index.md, content/about.md and content/_static/** may be committed."
   exit 1
 fi
