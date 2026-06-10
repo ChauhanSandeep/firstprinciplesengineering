@@ -19,6 +19,18 @@ publish: true
 
 <div class="fpe-featured-grid">
 
+<a class="fpe-article-card" href="01-Fundamentals/05-AI-ML/04-RAG-Architecture">
+  <span class="article-eyebrow">AI</span>
+  <span class="article-title">RAG Architecture</span>
+  <span class="article-desc">The most-deployed LLM pattern in production is mostly a retrieval system with a model bolted on — not the other way around.</span>
+</a>
+
+<a class="fpe-article-card" href="01-Fundamentals/02-Databases/01-Fundamentals/06-MVCC">
+  <span class="article-eyebrow">Databases</span>
+  <span class="article-title">MVCC</span>
+  <span class="article-desc">Uber's 2016 migration from Postgres to MySQL forced the community to reckon with what "multi-version" actually costs in practice.</span>
+</a>
+
 <a class="fpe-article-card" href="01-Fundamentals/01-Concepts/01-Distributed-Systems/03-Consensus-Algorithm">
   <span class="article-eyebrow">Distributed Systems</span>
   <span class="article-title">Consensus Algorithms</span>
@@ -89,6 +101,18 @@ publish: true
   <span class="path-title">Operations & Security</span>
   <span class="path-desc">Observability, testing strategies, container internals, cryptographic primitives, authentication, authorization.</span>
   <span class="path-count">6 articles</span>
+</a>
+
+<a class="fpe-path-card" href="01-Fundamentals/05-AI-ML/04-RAG-Architecture">
+  <span class="path-title">AI & ML Systems</span>
+  <span class="path-desc">Retrieval-augmented generation, ML system design fundamentals, model serving — the production patterns behind the buzz.</span>
+  <span class="path-count">3 articles</span>
+</a>
+
+<a class="fpe-path-card" href="01-Fundamentals/02-Databases/01-Fundamentals/06-MVCC">
+  <span class="path-title">Databases & Storage</span>
+  <span class="path-desc">CAP & PACELC, isolation levels, MVCC, Redis internals, DynamoDB, Kafka, Spanner, Zanzibar, lakehouse architecture.</span>
+  <span class="path-count">12 articles</span>
 </a>
 
 </div>
