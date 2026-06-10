@@ -25,12 +25,9 @@ const NotFound: QuartzComponent = ({ cfg, ctx }: QuartzComponentProps) => {
       </ul>
       <p>
         <em>
-          If you followed a link from somewhere and think this page should
-          exist, feel free to{" "}
-          <a href="https://github.com/ChauhanSandeep/firstprinciplesengineering/issues/new">
-            open an issue
-          </a>
-          .
+          This site is a curated subset of a much larger private knowledge
+          base, so some references intentionally point to notes that aren't
+          published. The collection grows over time as drafts are refined.
         </em>
       </p>
       <script
