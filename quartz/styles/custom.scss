@@ -134,12 +134,15 @@ article {
     margin-bottom: 2rem;
     border-collapse: separate;
     border-spacing: 0;
-    width: 100%;
-    display: block;
-    overflow-x: auto;
+    // Cap at parent width so wide tables shrink columns to fit; narrow tables
+    // stay narrow (no display: block hack, which breaks the table layout
+    // algorithm and causes phantom horizontal scrollbars).
+    max-width: 100%;
     border: 1px solid var(--lightgray);
     border-radius: 12px;
     font-size: 0.95em;
+    // Clip rounded corners so the thead doesn't poke out of the radius.
+    overflow: hidden;
 
     thead {
       background: color-mix(in srgb, var(--lightgray) 60%, transparent);
@@ -149,7 +152,6 @@ article {
         text-align: left;
         padding: 0.85rem 1rem;
         border-bottom: 1px solid var(--lightgray);
-        white-space: nowrap;
       }
     }
 
@@ -171,6 +173,16 @@ article {
       tr:last-child td {
         border-bottom: none;
       }
+    }
+  }
+
+  // Mobile: when a table truly doesn't fit, switch it to a scrollable block
+  // so users can pan horizontally instead of squishing columns into nothing.
+  @media all and ($mobile) {
+    table {
+      display: block;
+      overflow-x: auto;
+      // border-radius is preserved via the existing border on the block.
     }
   }
 
