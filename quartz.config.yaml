@@ -38,8 +38,8 @@ configuration:
       # orange / clay. Same warm structure as the fly hybrid, but pivoted
       # to Anthropic's signature warm-clay accent palette.
       lightMode:
-        light: "#fbf6e9"          # warm cream — page background
-        lightgray: "#eae2d2"      # cream surfaces / borders / card bg
+        light: "#f5f1e6"          # Anthropic "Oat" — warm beige page background
+        lightgray: "#e6e0cf"      # warm beige surfaces / borders / card bg
         gray: "#8c7e6a"           # warm muted — secondary text / icons
         darkgray: "#5a4f40"       # warm subtext
         dark: "#1f1b16"           # near-black, warm — primary text

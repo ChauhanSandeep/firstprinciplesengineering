@@ -1229,14 +1229,20 @@ ul.toc-content.overflow {
     display: none !important;
   }
 
-  // Centre the article. 880px is a comfortable measure for Atkinson
-  // Hyperlegible at the body-text size.
+  // Centre the article. In normal mode the content column already sits
+  // around 960px between the two sidebars, so reader mode must be at
+  // least as wide or the article visibly shrinks on desktop — the exact
+  // opposite of "focus on the content". 1100px gives a roomier measure
+  // (still well under ~90ch for prose at body size) while leaving real
+  // breathing room on either side of the viewport.
   & .center {
-    max-width: 880px !important;
+    max-width: 1100px !important;
     min-width: 0 !important;
+    width: 100% !important;
     margin-left: auto !important;
     margin-right: auto !important;
     padding: 0 1.5rem;
+    box-sizing: border-box;
   }
 
   // Floating circular close (X) button — replaces the open-book icon
