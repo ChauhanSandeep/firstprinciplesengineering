@@ -230,7 +230,12 @@
   }
 
   function hydrateExcalidrawZoom(root) {
-    const imgs = (root || document).querySelectorAll('img[src$=".excalidraw.svg"]')
+    // Match all three sidecar variants: legacy single `.excalidraw.svg`,
+    // and the dark/light pair `.excalidraw.{dark,light}.svg` produced by
+    // the Obsidian Excalidraw plugin's "Export both" mode. CSS hides the
+    // off-theme duplicate via `display:none`, so click events only land on
+    // the variant the reader currently sees — no theme-routing needed here.
+    const imgs = (root || document).querySelectorAll('img[src*=".excalidraw."]')
     imgs.forEach((img) => {
       if (img.dataset.fpeZoom === "1") return
       img.dataset.fpeZoom = "1"
