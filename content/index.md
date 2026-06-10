@@ -47,12 +47,6 @@ publish: true
   <span class="article-desc">Double-entry bookkeeping from 1494, now sold back as blockchain. The pattern is older than computers.</span>
 </a>
 
-<a class="fpe-article-card" href="00-QuickStart/02-System-Design-Patterns">
-  <span class="article-eyebrow">Quick Start</span>
-  <span class="article-title">System Design Patterns</span>
-  <span class="article-desc">Read-heavy, write-heavy, search-heavy: the patterns, the trigger words, and the implementation ladders that solve them.</span>
-</a>
-
 <a class="fpe-article-card" href="01-Fundamentals/01-Concepts/03-Data/02-Change-Data-Capture">
   <span class="article-eyebrow">Data</span>
   <span class="article-title">Change Data Capture</span>
@@ -93,12 +87,6 @@ publish: true
   <span class="path-title">Operations & Security</span>
   <span class="path-desc">Observability, testing strategies, container internals, cryptographic primitives, authentication, authorization.</span>
   <span class="path-count">6 articles</span>
-</a>
-
-<a class="fpe-path-card" href="00-QuickStart/01-Delivery-Framework">
-  <span class="path-title">Quick Start</span>
-  <span class="path-desc">Practical patterns for system design interviews, technology decisions, scale economics, and production checklists.</span>
-  <span class="path-count">7 articles</span>
 </a>
 
 </div>
