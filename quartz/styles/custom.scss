@@ -1774,7 +1774,7 @@ body[data-slug="404"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.85rem 1.1rem;
+  gap: 0.85rem 0.7rem;
   font-size: 0.92rem;
   line-height: 1.4;
 
@@ -1782,7 +1782,7 @@ body[data-slug="404"] {
     color: var(--darkgray);
     font-style: italic;
     flex: 1 1 100%;
-    @media (min-width: 700px) { flex: 1 1 auto; }
+    @media (min-width: 700px) { flex: 1 1 auto; margin-right: 0.4rem; }
   }
 
   .fpe-share-link {
@@ -1797,12 +1797,24 @@ body[data-slug="404"] {
     color: var(--light);
     background: var(--secondary);
     text-decoration: none;
-    transition: transform 120ms ease, background 120ms ease;
+    transition: transform 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease;
+    cursor: pointer;
+    line-height: 1.2;
+    white-space: nowrap;
 
     &:hover {
       background: var(--tertiary);
       transform: translateY(-1px);
     }
+  }
+
+  button.fpe-share-link {
+    appearance: none;
+    border: 1px solid color-mix(in srgb, var(--secondary) 55%, transparent);
+    font: inherit;
+    font-weight: 600;
+    font-family: var(--headerFont);
+    font-size: 0.86rem;
   }
 
   .fpe-share-secondary {
@@ -1812,7 +1824,14 @@ body[data-slug="404"] {
     &:hover {
       background: color-mix(in srgb, var(--secondary) 10%, transparent);
       color: var(--secondary);
+      border-color: color-mix(in srgb, var(--secondary) 75%, transparent);
     }
+  }
+
+  .fpe-share-copy.fpe-share-copied {
+    background: color-mix(in srgb, var(--secondary) 18%, transparent);
+    color: var(--secondary);
+    border-color: var(--secondary);
   }
 }
 
