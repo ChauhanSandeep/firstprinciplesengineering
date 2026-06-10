@@ -1064,3 +1064,109 @@ ul.toc-content.overflow {
   max-height: none !important;
   overflow-y: visible !important;
 }
+
+// ---- True reader mode ----------------------------------------------------
+// The upstream reader-mode plugin only fades both sidebars to opacity:0
+// while leaving the 3-column grid (325px / 780px / 325px) intact. The
+// result reads as "the right sidebar disappeared" because the empty
+// space on the right matches the natural page margin, while the empty
+// space on the left feels like a gap. This override:
+//   1. Collapses the grid to a single content column so the page truly
+//      feels distraction-free (no orphaned empty columns).
+//   2. Hides both sidebars + the page header chrome (search / dark mode
+//      toggle / breadcrumbs) so nothing competes with the article.
+//   3. Constrains the article column to a comfortable reading measure
+//      and centers it in the viewport.
+//   4. Repositions the existing .readermode button as a circular close
+//      (X) button fixed at top-right so the reader can always exit with
+//      one obvious click.
+:root[reader-mode="on"] {
+  & #quartz-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "grid-header"
+      "grid-center"
+      "grid-footer" !important;
+  }
+
+  // The readermode button lives inside .sidebar.left, so we can't
+  // display:none the whole sidebar — that would unmount the button
+  // and our floating X close target. Instead, collapse the sidebar
+  // geometrically (zero-size, no background) and hide its visible
+  // children (search, darkmode, explorer). The button stays in the
+  // DOM and is re-positioned fixed at top-right below.
+  & .sidebar.left {
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    overflow: visible !important;
+    grid-area: grid-sidebar-left;
+    // CRITICAL: the upstream plugin sets opacity:0 on this sidebar, which
+    // creates a stacking context and propagates invisibility to ALL
+    // descendants — including our floating readermode button. We must
+    // force opacity:1 here so the close button stays visible.
+    opacity: 1 !important;
+  }
+  & .sidebar.left .search,
+  & .sidebar.left .darkmode,
+  & .sidebar.left .explorer,
+  & .sidebar.left .page-title,
+  & .sidebar.left h2.page-title-text {
+    display: none !important;
+  }
+  & .sidebar.right {
+    display: none !important;
+  }
+
+  // Hide all other page-header chrome (breadcrumbs, language picker etc.)
+  & .page > header > *:not(.readermode),
+  & .page > #quartz-body > header > *:not(.readermode) {
+    display: none !important;
+  }
+
+  // Centre the article. 880px is a comfortable measure for Atkinson
+  // Hyperlegible at the body-text size.
+  & .center {
+    max-width: 880px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 0 1.5rem;
+  }
+
+  // Floating circular close (X) button — replaces the open-book icon
+  // with an X drawn from pseudo-elements. Clicking still toggles the
+  // plugin's reader-mode attribute back off.
+  // Floating circular close (X) button. We use a SVG X embedded as the
+  // background-image on top of the orange fill (instead of ::before/::after
+  // pseudo-elements, which don't paint reliably on real <button> elements
+  // in all renderers). The inline book icon is hidden via `& svg`.
+  & .readermode {
+    position: fixed !important;
+    top: 1.1rem !important;
+    right: 1.1rem !important;
+    z-index: 9999;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    border-radius: 50% !important;
+    background-color: var(--secondary) !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbf6e9' stroke-width='2.6' stroke-linecap='round'><line x1='6' y1='6' x2='18' y2='18'/><line x1='18' y1='6' x2='6' y2='18'/></svg>") !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 22px 22px !important;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+    transition: background-color 150ms ease, transform 150ms ease;
+
+    &:hover {
+      background-color: var(--tertiary) !important;
+      transform: scale(1.08);
+    }
+
+    & svg {
+      display: none !important;
+    }
+  }
+}
