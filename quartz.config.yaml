@@ -23,13 +23,16 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      # fly.io-inspired hybrid: serif headers (Fraunces, free Mackinac
-      # analogue) + humanist-grotesque body (Inter, Fricolage analogue)
-      # + clean mono (IBM Plex Mono, closer to Fragment Mono than the
-      # thicker JetBrains Mono).
-      header: Fraunces
-      body: Inter
-      code: IBM Plex Mono
+      # Typography stack (per user spec):
+      #   header  → Inter (600–700) for h1–h6, table headers, callout titles,
+      #             and UI elements (sidebar, nav, search).
+      #   body    → Atkinson Hyperlegible for body text, paragraphs, lists,
+      #             table cells, and callout content. Designed for maximum
+      #             character distinction / legibility on screens.
+      #   code    → JetBrains Mono for code blocks and inline code.
+      header: Inter
+      body: Atkinson Hyperlegible
+      code: JetBrains Mono
     colors:
       # Anthropic-inspired light mode — warm cream + near-black + Claude
       # orange / clay. Same warm structure as the fly hybrid, but pivoted

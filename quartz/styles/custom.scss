@@ -199,6 +199,10 @@ article {
       background: color-mix(in srgb, var(--lightgray) 60%, transparent);
 
       th {
+        // Table headers use the header font (Inter) per the typography
+        // spec — distinct from the Atkinson Hyperlegible body cells so
+        // the header row reads as UI/label, not content.
+        font-family: var(--headerFont);
         font-weight: 600;
         text-align: left;
         padding: 0.85rem 1rem;
@@ -525,6 +529,9 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
   transition: border-left-width 150ms ease, transform 150ms ease;
 
   .callout-title {
+    // Callout titles use the header font (Inter) per the typography
+    // spec — distinct from the Atkinson Hyperlegible callout body.
+    font-family: var(--headerFont);
     color: var(--callout-color, var(--secondary));
     font-weight: 600;
     margin-bottom: 0.5rem;
