@@ -18,29 +18,8 @@
         if (cls) pre.dataset.language = cls.slice("language-".length)
       }
 
-      const btn = document.createElement("button")
-      btn.type = "button"
-      btn.className = "copy-btn"
-      btn.setAttribute("aria-label", "Copy code")
-      btn.textContent = "copy"
-
-      btn.addEventListener("click", async (ev) => {
-        ev.preventDefault()
-        const text = pre.innerText.replace(/^copy\n/, "").trim()
-        try {
-          await navigator.clipboard.writeText(text)
-          btn.textContent = "copied"
-          btn.classList.add("copied")
-          setTimeout(() => {
-            btn.textContent = "copy"
-            btn.classList.remove("copied")
-          }, 1500)
-        } catch {
-          btn.textContent = "err"
-          setTimeout(() => (btn.textContent = "copy"), 1500)
-        }
-      })
-      pre.appendChild(btn)
+      // Copy button is injected by Quartz core (.clipboard-button via the
+      // syntax-highlighting plugin). We just style it via custom.scss.
     })
   }
 

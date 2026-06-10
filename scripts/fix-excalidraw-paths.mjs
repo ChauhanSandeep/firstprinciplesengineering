@@ -49,7 +49,26 @@ async function fileExists(p) {
 
 let totalFiles = 0
 let totalRewrites = 0
+let totalWidthApplied = 0
 let missingTargets = 0
+
+// Convert `alt="<digits>"` (Obsidian's `![<size>](…)` syntax) into an explicit
+// `width="<digits>"` attribute so the browser renders the diagram at that
+// size, capped responsively by CSS `max-width: 100%`. Skip if a width
+// attribute is already present.
+const ALT_DIGIT_RE = /\balt="(\d+)"/
+const WIDTH_RE = /\bwidth=/
+
+function applyAltAsWidth(tag) {
+  if (WIDTH_RE.test(tag)) return tag
+  const m = tag.match(ALT_DIGIT_RE)
+  if (!m) return tag
+  const n = parseInt(m[1], 10)
+  if (!Number.isFinite(n) || n <= 0) return tag
+  totalWidthApplied++
+  // Insert width attribute right after the opening `<img`
+  return tag.replace(/<img\b/, `<img width="${n}"`)
+}
 
 const htmls = await walk(PUBLIC_DIR)
 for (const html of htmls) {
@@ -61,21 +80,25 @@ for (const html of htmls) {
     // Sanity check the target file exists; if not, leave src alone
     if (!existsSync(targetAbs)) {
       missingTargets++
-      return match
+      return applyAltAsWidth(match)
     }
     const newSrc = fixSrc(html, src)
-    if (newSrc === src) return match
-    rewrites++
-    return `<img${pre}src="${newSrc}"${post}>`
+    let nextTag = newSrc === src ? match : `<img${pre}src="${newSrc}"${post}>`
+    if (newSrc !== src) rewrites++
+    nextTag = applyAltAsWidth(nextTag)
+    return nextTag
   })
-  if (rewrites > 0) {
+  if (next !== orig) {
     await fs.writeFile(html, next, "utf8")
-    totalFiles++
-    totalRewrites += rewrites
+    if (rewrites > 0) {
+      totalFiles++
+      totalRewrites += rewrites
+    }
   }
 }
 
 console.log(
   `fix-excalidraw-paths: rewrote ${totalRewrites} <img src> in ${totalFiles} HTML files` +
+    `, applied width="alt" on ${totalWidthApplied} images` +
     (missingTargets > 0 ? ` (skipped ${missingTargets} missing targets)` : ""),
 )
