@@ -20,7 +20,13 @@
 }
 
 // ---- Theme transition ----------------------------------------------------
-// Smooth fade when toggling light / dark.
+// Smooth fade when toggling light / dark. Intentionally excludes
+// `background-color`: during SPA navigation micromorph briefly causes
+// container elements (e.g. #quartz-root) to resolve their computed
+// background-color to `var(--secondary)` for one frame, which the universal
+// transition would smear into a ~300ms peach flash across the whole page.
+// Per-element background transitions are declared explicitly where they
+// matter (body bg below, .callout, sidebar items, cards on hover, etc.).
 :root,
 :root[saved-theme="dark"],
 :root[saved-theme="light"] {
@@ -29,12 +35,18 @@
   body *::before,
   body *::after {
     transition:
-      background-color 200ms ease,
       border-color 200ms ease,
       color 200ms ease,
       fill 200ms ease,
       stroke 200ms ease;
   }
+}
+
+// Smooth body bg when toggling light/dark. Scoped to body only so the
+// site backdrop fades, without dragging container elements through the
+// SPA-navigation flash described above.
+body {
+  transition: background-color 200ms ease;
 }
 
 // ---- Body typography -----------------------------------------------------
