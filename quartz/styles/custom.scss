@@ -344,11 +344,14 @@ img[src$=".excalidraw.svg"] {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
-  // In dark mode, the underlying SVG is light-themed Excalidraw, so frame
-  // it on a slightly lifted surface so it doesn't shock against #1e1e2e.
+  // Dark-mode "paper figure" — same warm cream as light-mode page so the
+  // diagram reads as a printed plate set on the dark page. Tonally
+  // consistent with the rest of the warm hybrid palette; avoids the cool
+  // white frame that previously clashed with the warm-dark surround.
   :root[saved-theme="dark"] & {
-    background: #fdfdfd;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 24px rgba(0, 0, 0, 0.25);
+    background: #fbf6e9;
+    border-color: color-mix(in srgb, #fbf6e9 35%, var(--lightgray));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 28px rgba(0, 0, 0, 0.3);
   }
 }
 
