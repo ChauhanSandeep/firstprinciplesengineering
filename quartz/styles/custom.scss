@@ -64,6 +64,13 @@ article {
     padding-bottom: 0.4rem;
     border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
   }
+
+  // Dark mode: --lightgray (#2C2823) is too close to the page bg (#1A1714)
+  // so the underline disappears. Use a warmer mid-tone with stronger alpha
+  // so h2 boundaries remain a clear visual signpost.
+  :root[saved-theme="dark"] & h2 {
+    border-bottom-color: color-mix(in srgb, var(--gray) 35%, transparent);
+  }
   h3 {
     font-size: 1.35rem;
     font-weight: 600;
