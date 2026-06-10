@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>03-Authorization-Concepts</title><meta charset="utf-8"/><link rel="preload" href="../../../index-47e0982e.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="03-Authorization-Concepts"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="03-Authorization-Concepts"/><meta name="twitter:description" content="The Story Google built Zanzibar because authorization at Google’s scale — trillions of access checks per second across Drive, YouTube, Cloud, and Maps — couldn’t be done with traditional RBAC or even ABAC."/><meta property="og:description" content="The Story Google built Zanzibar because authorization at Google’s scale — trillions of access checks per second across Drive, YouTube, Cloud, and Maps — couldn’t be done with traditional RBAC or even ABAC."/><meta property="og:image:alt" content="The Story Google built Zanzibar because authorization at Google’s scale — trillions of access checks per second across Drive, YouTube, Cloud, and Maps — couldn’t be done with traditional RBAC or even ABAC."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="The Story Google built Zanzibar because authorization at Google’s scale — trillions of access checks per second across Drive, YouTube, Cloud, and Maps — couldn’t be done with traditional RBAC or even ABAC."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-47e0982e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/01-concepts/06-security/03-authorization-concepts" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-25" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-25" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/">01-Concepts</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/06-security/">06-Security</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>03-Authorization-Concepts</a></div></nav><h1 class="article-title">03-Authorization-Concepts</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T04:20:59.999Z">Jun 10, 2026</time><span>29 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Google built Zanzibar because authorization at Google’s scale — trillions of access checks per second across Drive, YouTube, Cloud, and Maps — couldn’t be done with traditional RBAC or even ABAC. The key insight was that authorization is a graph traversal problem: “can user X access document Y?” requires walking a chain of relationships (user is member of group, group has access to folder, folder contains document). Zanzibar precomputes these traversals using “leopard indexing” — essentially materialized views for permissions. It’s the same optimization technique used to speed up database reads, repurposed to answer “can this person see this file?” millions of times per second with single-digit millisecond latency.</p>
+<hr/>
+<h2 id="1-why-authorization-is-a-separate-concern">1. Why Authorization Is a Separate Concern<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-authorization-is-a-separate-concern" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><a href="../../../01-fundamentals/01-concepts/06-security/02-cryptography-authentication" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/06-security/02-cryptography-authentication">Authentication</a> answers “who are you?” Authorization answers a fundamentally different question: “what are you allowed to do?” These two concerns must be separated because they change for different reasons and at different rates. A user’s identity is relatively stable, but their permissions shift constantly — people change teams, get promoted, lose access to projects, join new ones.</p>
+<p>Two security principles drive this separation:</p>
+<ol>
+<li><strong>Principle of least privilege.</strong> Every user, service, or process should operate with the minimum set of permissions necessary to perform its function. If an authenticated user automatically received full access, a single compromised account could destroy the entire system. Authorization is the mechanism that enforces this boundary — it constrains what an authenticated identity can actually reach.</li>
+<li><strong>Defense in depth.</strong> Even if authentication is bypassed (a stolen session token, a leaked API key), authorization provides an independent layer of protection. The attacker has an identity, but that identity’s permissions limit the blast radius. Without authorization, authentication failure means total compromise.</li>
+</ol>
+<p>In distributed systems, this separation becomes even more critical. A microservice that authenticates an incoming request (via <a href="../../../01-fundamentals/01-concepts/06-security/02-cryptography-authentication#7-json-web-tokens-jwt" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/06-security/02-cryptography-authentication">JWT</a> verification, mTLS, etc.) still needs a separate authorization decision for every operation. The identity is established once at the edge; the authorization decision happens at every resource boundary.</p>
+<hr/>
+<h2 id="2-the-authorization-decision-model">2. The Authorization Decision Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-authorization-decision-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Every authorization system, regardless of its specific mechanism, answers the same fundamental question:</p>
+<blockquote>
+<p>Given a <strong>subject</strong> (who is requesting), an <strong>action</strong> (what they want to do), and a <strong>resource</strong> (what they want to do it to), should the system <strong>allow</strong> or <strong>deny</strong> the request?</p>
+</blockquote>
+<p>The differences between RBAC, ABAC, ACLs, and ReBAC are really differences in <em>how they represent and evaluate this triple</em>. Understanding this shared structure makes it easier to reason about each model’s strengths and limitations.</p>
+<p><img src="../../.././../../excalidraw/authorization-concepts-1.excalidraw.svg" alt="1000"/></p>
+<hr/>
+<h2 id="3-role-based-access-control-rbac">3. Role-Based Access Control (RBAC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-role-based-access-control-rbac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-the-core-idea">1. The Core Idea<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-core-idea" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RBAC inserts an indirection layer between users and permissions: the <strong>role</strong>. Instead of granting permissions directly to individual users, you assign users to roles, and roles carry permissions. This indirection is the key insight — it reduces the management surface from <code>users x permissions</code> to <code>users x roles</code> + <code>roles x permissions</code>.</p>
+<p>Why do roles emerge naturally? Consider any organization. Engineers need access to code repositories, CI/CD pipelines, and staging environments. Product managers need access to analytics dashboards, feature flags, and customer data. These groupings are not arbitrary — they mirror the organizational structure. This is Conway’s Law applied to access control: the permission boundaries in your system will naturally reflect the communication boundaries in your organization.</p>
+<h3 id="2-role-hierarchy">2. Role Hierarchy<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-role-hierarchy" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Most RBAC implementations support role inheritance, forming a directed acyclic graph (DAG):</p>
+<p><img src="../../.././../../excalidraw/authorization-concepts-2.excalidraw.svg" alt="1200"/></p>
+<p>A Manager inherits all permissions from Editor, which inherits all permissions from Viewer. This means granting the Manager role automatically includes read and edit capabilities without explicitly listing them. The hierarchy reduces redundancy but introduces a subtlety: changing permissions on a lower-level role propagates upward through the entire hierarchy.</p>
+<h3 id="3-the-role-explosion-problem">3. The Role Explosion Problem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-the-role-explosion-problem" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RBAC works elegantly for small organizations with clear, static role boundaries. It breaks down in complex environments because real-world access requirements are multi-dimensional:</p>
+<ul>
+<li>An engineer in the payments team needs different access than an engineer in the ads team.</li>
+<li>A contractor in the payments team needs different access than a full-time employee in the same team.</li>
+<li>A senior engineer needs access to production, but a junior engineer does not.</li>
+</ul>
+<p>To express these distinctions in pure RBAC, you need roles like <code>payments-engineer-fulltime-senior</code> and <code>ads-engineer-contractor-junior</code>. The number of roles grows as the <em>product</em> of all attribute dimensions. An organization with 10 teams, 3 employment types, and 4 seniority levels needs up to 120 roles — and that is before you consider project-level or environment-level distinctions.
+This combinatorial explosion is the fundamental limitation that motivates ABAC.</p>
+<h3 id="4-implementation-considerations">4. Implementation Considerations<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-implementation-considerations" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>RBAC permission checks are fast because they are <strong>pre-computed</strong>. At authentication time, the system resolves the user’s roles and can cache them (in Redis, in the JWT claims, in a session store). The authorization check becomes a simple set membership test: “does the user’s role set include a role that grants this permission?” This is O(1) with a hash set.</p>
+<p>The tradeoff is flexibility. Every new access pattern that does not map cleanly to an existing role requires either creating a new role or adding a one-off exception, both of which erode the model over time.</p>
+<hr/>
+<h2 id="4-attribute-based-access-control-abac">4. Attribute-Based Access Control (ABAC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-attribute-based-access-control-abac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-why-abac-exists">1. Why ABAC Exists<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-abac-exists" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>ABAC was designed to solve the role explosion problem. Instead of pre-defining roles for every combination of access dimensions, ABAC evaluates access decisions at runtime using <strong>arbitrary attributes</strong> of the subject, resource, and environment.</p>
+<p>The mental model: RBAC is like a keycard system where each card is pre-programmed with specific doors it can open. ABAC is like a security guard who checks your badge, the time of day, the sensitivity of the room, and your department before deciding whether to let you in. The guard is more flexible but slower.</p>
+<h3 id="2-the-xacml-policy-model">2. The XACML Policy Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-xacml-policy-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The standard ABAC architecture (formalized in the XACML specification) decomposes into four components:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Component</th><th>Role</th><th>Example</th></tr></thead><tbody><tr><td><strong>Policy Enforcement Point (PEP)</strong></td><td>Intercepts the request and enforces the decision</td><td>API gateway, service mesh sidecar</td></tr><tr><td><strong>Policy Decision Point (PDP)</strong></td><td>Evaluates policies against attributes and returns allow/deny</td><td>Open Policy Agent, AWS IAM policy engine</td></tr><tr><td><strong>Policy Information Point (PIP)</strong></td><td>Supplies attributes not present in the request</td><td>LDAP directory, HR database, geo-IP service</td></tr><tr><td><strong>Policy Administration Point (PAP)</strong></td><td>Where administrators define and manage policies</td><td>Admin console, policy-as-code repository</td></tr></tbody></table></div>
+<p>XACML (eXtensible Access Control Markup Language) is the XML-based standard that formalized this four-component architecture. Modern implementations like Open Policy Agent and Cedar use the same conceptual model but with more ergonomic policy languages. The key design insight behind separating these components is <strong>decoupling policy decisions from application code</strong>:</p>
+<ol>
+<li>The PEP is a “dumb enforcer” — it intercepts requests and applies the PDP’s decision, but contains no policy logic. This means you can change authorization rules without modifying or redeploying application code.</li>
+<li>A single PDP can serve multiple PEPs (API gateway, service mesh sidecar, database proxy), ensuring consistent policy evaluation across all enforcement points. Without this centralization, policy logic scatters across every service, making auditing nearly impossible.</li>
+<li>PIPs abstract attribute sources so that the same policy can evaluate attributes from LDAP, databases, or identity tokens without the PDP knowing the specifics of each source.</li>
+</ol>
+<p><img src="../../.././../../excalidraw/authorization-concepts-6.excalidraw.svg" alt="1000"/></p>
+<p>A policy combines three categories of attributes to produce a decision:</p>
+<ul>
+<li><strong>Subject attributes</strong>: user role, department, clearance level, employment type, location</li>
+<li><strong>Resource attributes</strong>: data classification, owner, creation date, sensitivity label</li>
+<li><strong>Environment attributes</strong>: time of day, IP address, device type, network zone</li>
+</ul>
+<p><strong>Example policy</strong>: “Allow access if the subject’s department matches the resource’s owning department AND the resource’s classification is not ‘restricted’ AND the request originates from the corporate network.”
+This single policy replaces what would require dozens of roles in an RBAC system.</p>
+<h3 id="3-why-abac-is-more-expensive">3. Why ABAC Is More Expensive<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-why-abac-is-more-expensive" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The flexibility of ABAC comes at a cost. RBAC permission checks are a pre-computed lookup — the user’s roles are resolved once and cached. ABAC requires <strong>runtime policy evaluation</strong> for every request:</p>
+<ol>
+<li>The PEP intercepts the request and collects available attributes.</li>
+<li>The PEP calls the PDP with the subject, action, resource, and environment attributes.</li>
+<li>The PDP may need to fetch additional attributes from PIPs (network calls to LDAP, databases, etc.).</li>
+<li>The PDP evaluates the request against all applicable policies.</li>
+<li>The PDP returns a decision.</li>
+</ol>
+<p>Steps 3 and 4 are where the cost lives. Fetching attributes from external systems adds latency. Evaluating complex policies with boolean logic, regular expressions, or set operations adds CPU cost. At high request rates, the PDP becomes a critical-path dependency.</p>
+<p><strong>Mitigation strategies:</strong></p>
+<ul>
+<li>Cache frequently-accessed attributes at the PDP</li>
+<li>Push commonly-used attributes into the request context (e.g., JWT claims) to avoid PIP lookups</li>
+<li>Use a compiled policy language (like Rego in Open Policy Agent) rather than interpreted XML</li>
+<li>Deploy PDP as a sidecar or library rather than a remote service to eliminate network hops</li>
+</ul>
+<h3 id="4-rbac-vs-abac-when-to-use-each">4. RBAC vs. ABAC: When to Use Each<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-rbac-vs-abac-when-to-use-each" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Dimension</th><th>RBAC</th><th>ABAC</th></tr></thead><tbody><tr><td>Complexity of access rules</td><td>Simple, role-aligned</td><td>Multi-dimensional, context-dependent</td></tr><tr><td>Performance</td><td>Fast (pre-computed lookup)</td><td>Slower (runtime evaluation)</td></tr><tr><td>Auditability</td><td>Easy (who has which role)</td><td>Harder (which policies applied to which attributes)</td></tr><tr><td>Management overhead</td><td>Role proliferation over time</td><td>Policy complexity over time</td></tr><tr><td>Best for</td><td>Internal tools, well-defined org structures</td><td>Cloud platforms, multi-tenant systems, regulatory environments</td></tr></tbody></table></div>
+<p>In practice, most large systems use a hybrid: RBAC for coarse-grained access (which service can a user reach?) and ABAC for fine-grained decisions within that service (which records can they see?).</p>
+<hr/>
+<h2 id="5-access-control-lists-acls">5. Access Control Lists (ACLs)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-access-control-lists-acls" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-per-resource-permissions">1. Per-Resource Permissions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-per-resource-permissions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>ACLs take the opposite perspective from RBAC. Where RBAC is role-centric (“what can this role do?”), ACLs are <strong>resource-centric</strong> (“who can access this resource?”). Each resource maintains a list of entries specifying which subjects have which permissions.</p>
+<p>A typical ACL entry: <code>(subject: user-123, permission: read, write)</code> attached to <code>resource: document-456</code>.</p>
+<p>This model is intuitive for file systems and document stores — you look at a file and see exactly who has access. But it has a fundamental scaling problem: if you need to answer “what can user X access across all resources?”, you must scan every resource’s ACL. This is the inverse query problem, and it becomes prohibitively expensive at scale.</p>
+<h3 id="2-the-relationship-to-rbac">2. The Relationship to RBAC<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-relationship-to-rbac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>ACLs and RBAC are not competing models — they address different dimensions of the same problem:</p>
+<ul>
+<li><strong>RBAC</strong> answers: “given a user, what permissions do they have?” (subject-centric)</li>
+<li><strong>ACLs</strong> answer: “given a resource, who can access it?” (resource-centric)</li>
+</ul>
+<p>Most real systems combine both. Google Drive, for example, uses RBAC for organizational defaults (everyone in the engineering org can access the engineering shared drive) and ACLs for per-document sharing (this specific document is shared with these specific people).</p>
+<hr/>
+<h2 id="6-relationship-based-access-control-rebac">6. Relationship-Based Access Control (ReBAC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-relationship-based-access-control-rebac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-why-rebac-emerged">1. Why ReBAC Emerged<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-rebac-emerged" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Both RBAC and ACLs struggle with a common real-world pattern: <strong>inherited permissions through relationships</strong>. Consider Google Drive:</p>
+<ul>
+<li>A user owns a folder.</li>
+<li>The folder contains a document.</li>
+<li>The user should automatically have access to the document because they own the parent folder.</li>
+</ul>
+<p>In pure RBAC, you would need to explicitly grant the user a role on every document. In pure ACLs, you would need to copy the folder’s ACL to every document it contains. Both approaches are fragile and expensive to maintain.</p>
+<p>ReBAC (Relationship-Based Access Control) solves this by modeling permissions as a <strong>graph of relationships</strong> between objects. The authorization question becomes a graph traversal: “is there a path from this user to this resource through a chain of relationships that grants the requested permission?“</p>
+<h3 id="2-the-zanzibar-model-general-purpose-rebac">2. The Zanzibar Model (General-Purpose ReBAC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-zanzibar-model-general-purpose-rebac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Google’s Zanzibar system (published 2019) is the canonical general-purpose implementation of ReBAC and the most common reference point in system design interviews. It stores authorization data as <strong>relation tuples</strong>:</p>
+<pre><code>&lt;object>#&lt;relation>@&lt;subject>
+</code></pre>
+<p>Examples:</p>
+<ul>
+<li><code>doc:readme#owner@user:alice</code> — Alice is the owner of doc:readme</li>
+<li><code>folder:engineering#viewer@group:eng-team</code> — The eng-team group has viewer access to the engineering folder</li>
+<li><code>doc:readme#parent@folder:engineering</code> — doc:readme is inside the engineering folder</li>
+<li><code>group:eng-team#member@user:bob</code> — Bob is a member of the eng-team group</li>
+</ul>
+<p>The authorization check for “can Bob view doc:readme?” becomes a graph traversal:</p>
+<p><img src="../../.././../../excalidraw/authorization-concepts-3.excalidraw.svg" alt="300"/></p>
+<p>The system follows the chain: Bob is a member of eng-team, eng-team has viewer access to the engineering folder, the engineering folder is the parent of doc:readme, and viewers of a parent folder are viewers of its children. Therefore, Bob can view doc:readme.</p>
+<h4 id="1-namespace-configuration">1. Namespace Configuration<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-namespace-configuration" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Zanzibar uses <strong>namespace configurations</strong> to define the schema — which relations exist for each object type and how permissions are computed from relations:</p>
+<pre><code>name: &quot;doc&quot;
+relation { name: &quot;owner&quot; }
+relation { name: &quot;editor&quot; }
+relation { name: &quot;viewer&quot; }
+relation { name: &quot;parent&quot; }
+
+// owners are also editors
+// editors are also viewers
+// viewers of the parent folder are also viewers of this doc
+</code></pre>
+<p>This configuration defines the permission expansion rules. When checking “can X view this doc?”, the system checks:</p>
+<ol>
+<li>Is X a direct viewer?</li>
+<li>Is X an editor (editors can view)?</li>
+<li>Is X an owner (owners can edit, and editors can view)?</li>
+<li>Is X a viewer of the parent folder?</li>
+</ol>
+<p>Each step is a graph traversal that may recursively expand further.</p>
+<h4 id="2-zanzibar-at-scale">2. Zanzibar at Scale<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-zanzibar-at-scale" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Zanzibar is designed for Google’s scale — millions of authorization checks per second with low latency. Key design decisions:</p>
+<p><strong>Consistency model and the “new enemy problem.”</strong> Zanzibar is a globally distributed system backed by Google Spanner. When a relation tuple is deleted (e.g., a user is removed from a group), the deletion is committed at a specific Spanner timestamp. But authorization checks may be served by replicas that have not yet applied this write — they see stale data and incorrectly grant access to someone who has been removed. This is the “new enemy problem”: the system continues to trust a revoked identity because the revocation has not yet propagated.</p>
+<p>Zanzibar solves this with <strong>zookies</strong> (opaque consistency tokens). A zookie encodes the Spanner commit timestamp of a write. When the application removes a user from a group, it receives a zookie representing that write’s timestamp. Subsequent authorization checks include this zookie, and Zanzibar ensures the check is evaluated at a snapshot no earlier than the zookie’s timestamp — guaranteeing the check sees the deletion. The tradeoff: requiring a zookie on every check forces Zanzibar to serve reads at a specific (possibly recent) timestamp, which may increase latency because the serving replica must wait for its local state to catch up to that timestamp. Without a zookie, Zanzibar can serve from whatever snapshot is locally available, which is faster but potentially stale.</p>
+<p><strong>Caching and the leopard indexing system.</strong> The graph traversal for deep permission chains is expensive. Group membership can be deeply nested — group A contains group B, which contains group C — making a naive membership check a recursive traversal. Zanzibar’s <code>leopard</code> indexing system pre-computes and indexes these transitive membership expansions so that checking “is Bob a member of eng-team?” is a direct lookup rather than a recursive graph walk. The tradeoff is write-path cost: every time a group membership changes, the leopard index must be updated to reflect the new transitive closure, adding latency and computational cost to write operations.</p>
+<p><strong>Check latency.</strong> Despite the graph model, Zanzibar achieves p50 latency under 10ms for most checks. This is possible because real-world permission graphs are relatively shallow (typically 3-5 hops) and the hot paths are cached.</p>
+<p><strong>Open-source implementations:</strong> SpiceDB, OpenFGA (by Auth0/Okta), and Authzed are all inspired by the Zanzibar paper and implement the same tuple-based model.</p>
+<h3 id="3-rebac-for-trust-and-safety-content-moderation">3. ReBAC for Trust and Safety Content Moderation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-rebac-for-trust-and-safety-content-moderation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Zanzibar is designed for general-purpose authorization (file sharing, org permissions, nested groups). But ReBAC also appears in a very different context: <strong>trust and safety platforms</strong> where content moderators need fine-grained, case-level access to user data.</p>
+<h4 id="1-the-problem">1. The Problem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-problem" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Content moderation platforms must enforce a strict version of least privilege. When a reviewer is assigned a case (e.g., a spam report or policy violation), they need temporary access to the reported content, the content author’s profile, and related entities. But they should not have access to <em>any</em> user data outside their assigned cases. Traditional RBAC grants a “reviewer” role access to all content in the system, which is far too broad — a single compromised reviewer account would expose every user’s data. ABAC could model this, but the policies become complex and the runtime evaluation cost is high for every access check.</p>
+<h4 id="2-modeling-case-assignment-as-relationships">2. Modeling Case Assignment as Relationships<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-modeling-case-assignment-as-relationships" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>ReBAC provides an elegant solution: model case assignments as relationships between the reviewer and the entities involved in the case.</p>
+<p>When a case is assigned to a reviewer, the system creates relationship tuples:</p>
+<pre><code>case:12345#assignee@reviewer:alice
+case:12345#target@member:bob
+case:12345#content@post:789
+</code></pre>
+<p>These tuples encode: Alice is assigned to case 12345, which involves member Bob and post 789. The authorization check for “can Alice view Bob’s profile?” traverses: Alice is assigned to case 12345 → case 12345 targets member Bob → GRANTED. If Alice tries to access a member not involved in any of her cases, the traversal finds no path → DENIED.</p>
+<h4 id="3-key-differences-from-zanzibar-style-rebac">3. Key Differences from Zanzibar-Style ReBAC<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-key-differences-from-zanzibar-style-rebac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Content moderation ReBAC diverges from Zanzibar in several important ways:</p>
+<ol>
+<li>
+<p><strong>Temporal permissions with expiry.</strong> Relationships have TTLs — a case assignment might expire after 72 hours, after which the reviewer loses access automatically. This is critical for moderation: access should be revoked when a case closes or times out, without requiring an explicit deletion. Zanzibar has no built-in expiry; relationships persist until explicitly removed.</p>
+</li>
+<li>
+<p><strong>Shallow relationship graph.</strong> The graph is typically 1-2 hops deep (reviewer → case → target entity). There are no deeply nested group hierarchies or permission inheritance chains. This means the access check is a direct lookup, not a recursive graph traversal — no need for leopard-style indexing.</p>
+</li>
+<li>
+<p><strong>Simpler backend.</strong> A key-value store mapping users to their active case relationships is sufficient. Each user’s context is a JSON document listing their active source-target relationships with expiry timestamps. No dedicated graph engine or Spanner-backed global database required.</p>
+</li>
+<li>
+<p><strong>Multi-layer authorization.</strong> ReBAC typically runs alongside RBAC and policy-based access control (PBAC) in a layered architecture:</p>
+<ul>
+<li><strong>RBAC</strong> runs first as a coarse gate: is this user a reviewer at all? If RBAC denies, skip everything else.</li>
+<li><strong>ReBAC</strong>, <strong>TBAC</strong> (token-based), and <strong>PBAC</strong> (policy-based) run in parallel for fine-grained checks.</li>
+<li><strong>Aggregation</strong>: any layer returning DENIED produces a final DENIED (fail-closed). This layered approach preserves backward compatibility while incrementally adopting ReBAC.</li>
+</ul>
+</li>
+<li>
+<p><strong>Write-heavy workload.</strong> Unlike Zanzibar (which is read-heavy — millions of checks per second against a relatively stable graph), moderation ReBAC is write-heavy. Cases are constantly being created, assigned, reassigned, and closed, each operation creating or expiring relationships. The system must handle high write throughput with low latency on the relationship store.</p>
+</li>
+</ol>
+<h4 id="4-why-this-matters-for-interviews">4. Why This Matters for Interviews<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-why-this-matters-for-interviews" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Content moderation is a common system design topic. Understanding how authorization works at the case level — with temporal access, relationship-based scoping, and multi-layer checks — demonstrates depth beyond generic “use RBAC” answers. When designing a moderation system, the authorization model is a key architectural decision that affects data access patterns, audit requirements, and privacy compliance.</p>
+<h3 id="4-zanzibar-vs-domain-specific-rebac">4. Zanzibar vs. Domain-Specific ReBAC<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-zanzibar-vs-domain-specific-rebac" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Dimension</th><th>Zanzibar-Style (General Purpose)</th><th>Domain-Specific (e.g., Content Moderation)</th></tr></thead><tbody><tr><td><strong>Graph depth</strong></td><td>Deep (5-10 hops, nested groups)</td><td>Shallow (1-2 hops, case → entity)</td></tr><tr><td><strong>Permission computation</strong></td><td>Computed permissions via namespace configs</td><td>Direct relationship lookup</td></tr><tr><td><strong>Temporal access</strong></td><td>No built-in expiry (explicit deletion required)</td><td>Expiry-based (TTL on relationships)</td></tr><tr><td><strong>Consistency</strong></td><td>Zookies for causal consistency</td><td>Eventual consistency acceptable (short-lived access)</td></tr><tr><td><strong>Backend</strong></td><td>Dedicated graph engine (Spanner-backed)</td><td>Key-value store or relational DB</td></tr><tr><td><strong>Scale concern</strong></td><td>Read-heavy (millions of checks/sec)</td><td>Write-heavy (case assignments create/expire frequently)</td></tr><tr><td><strong>Best for</strong></td><td>File sharing, org permissions, nested groups</td><td>Moderation, support tickets, incident response</td></tr></tbody></table></div>
+<p>The key insight is that ReBAC is not a single architecture — it is a design pattern. The relationship graph can be deep and general-purpose (Zanzibar) or shallow and domain-specific (content moderation). The right implementation depends on the depth of the permission hierarchy, the read/write ratio, the need for temporal access, and the consistency requirements.</p>
+<hr/>
+<h2 id="7-oauth-20-for-authorization">7. OAuth 2.0 for Authorization<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-oauth-20-for-authorization" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>OAuth 2.0 is not an authentication protocol — it is an <strong>authorization delegation</strong> protocol. The problem it solves: how can a user grant a third-party application limited access to their resources on another service, without sharing their password?
+Before OAuth, if you wanted a third-party app to access your email, you gave that app your email password. The app had full access to everything, and you could only revoke it by changing your password. OAuth replaces this with scoped, revocable tokens.</p>
+<h3 id="2-grant-types-and-when-to-use-each">2. Grant Types and When to Use Each<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-grant-types-and-when-to-use-each" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Grant Type</th><th>Use Case</th><th>Flow</th></tr></thead><tbody><tr><td><strong>Authorization Code</strong></td><td>Web apps with a backend server</td><td>User redirected to auth server, server exchanges code for token</td></tr><tr><td><strong>Authorization Code + PKCE</strong></td><td>Mobile apps, SPAs (public clients)</td><td>Same as above, but with proof key to prevent interception</td></tr><tr><td><strong>Client Credentials</strong></td><td>Service-to-service (no user involved)</td><td>Service authenticates directly with client ID + secret</td></tr><tr><td><strong>Device Code</strong></td><td>Input-constrained devices (smart TVs, CLIs)</td><td>Device displays code, user authorizes on a separate device</td></tr></tbody></table></div>
+<p>The <strong>Resource Owner Password Credentials</strong> grant (user gives password directly to the client) is deprecated because it defeats the purpose of OAuth — the whole point is to avoid sharing passwords with third parties.</p>
+<h3 id="3-why-the-authorization-code-flow-has-a-redirect">3. Why the Authorization Code Flow Has a Redirect<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-why-the-authorization-code-flow-has-a-redirect" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The authorization code flow is the most common and the most misunderstood. The redirect is not incidental — it is the critical security mechanism.</p>
+<p><img src="../../.././../../excalidraw/authorization-concepts-4.excalidraw.svg" alt="1000"/></p>
+<p>The key insight: <strong>the client secret never touches the browser</strong>. The browser only sees the authorization code, which is useless without the client secret. The actual token exchange happens server-to-server (step 6), where the client proves its identity with its secret. This prevents a malicious browser extension or network sniffer from stealing a token.</p>
+<p>For public clients (mobile apps, SPAs) that cannot securely store a client secret, <strong>PKCE (Proof Key for Code Exchange)</strong> adds a dynamically-generated verifier. The client creates a random <code>code_verifier</code>, sends a hash of it (<code>code_challenge</code>) with the authorization request, and must present the original <code>code_verifier</code> when exchanging the code. This prevents an attacker who intercepts the authorization code from exchanging it, because they do not have the original verifier.</p>
+<h3 id="4-token-scopes">4. Token Scopes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-token-scopes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Scopes are the mechanism for fine-grained authorization in OAuth. When requesting a token, the client specifies the scopes it needs (e.g., <code>read:email</code>, <code>write:calendar</code>, <code>admin:org</code>). The authorization server presents these scopes to the user for consent, and the issued token is limited to the approved scopes.</p>
+<p>Scopes enforce the principle of least privilege at the token level. A calendar widget only needs <code>read:calendar</code> — it should not receive a token that can also delete your email. If the token is compromised, the damage is limited to the approved scopes.</p>
+<p><strong>Scope design guidance:</strong></p>
+<ul>
+<li>Define scopes per resource and per action: <code>resource:action</code> (e.g., <code>repos:read</code>, <code>repos:write</code>)</li>
+<li>Avoid overly broad scopes like <code>all:admin</code> — they undermine the principle of least privilege</li>
+<li>Use hierarchical scopes when the resource model supports it: <code>org:read</code> implies <code>org:repos:read</code></li>
+</ul>
+<hr/>
+<h2 id="8-jwt-for-distributed-authorization">8. JWT for Distributed Authorization<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-jwt-for-distributed-authorization" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-why-jwts-enable-stateless-verification">1. Why JWTs Enable Stateless Verification<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-jwts-enable-stateless-verification" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>In a monolithic application, authorization is straightforward: the service checks the user’s session in a shared database. In a distributed system with dozens of microservices, this shared database becomes a bottleneck and a single point of failure. Every service, on every request, would need to query the central auth service.</p>
+<p><a href="../../../01-fundamentals/01-concepts/06-security/02-cryptography-authentication#7-json-web-tokens-jwt" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/06-security/02-cryptography-authentication">JWTs</a> solve this by encoding the authorization claims (user ID, roles, scopes, expiry) into a <strong>self-contained, cryptographically signed token</strong>. Any service that possesses the issuer’s public key can verify the token independently — no network call to the auth service required.</p>
+<p>The structure of a JWT:</p>
+<ul>
+<li><strong>Header</strong>: signing algorithm (RS256, ES256) and key ID</li>
+<li><strong>Payload</strong>: claims — <code>sub</code> (subject), <code>iss</code> (issuer), <code>exp</code> (expiry), <code>aud</code> (audience), plus custom claims like <code>roles</code>, <code>scopes</code>, <code>tenant_id</code></li>
+<li><strong>Signature</strong>: <code>sign(header + payload, private_key)</code> — only the issuer’s private key can produce a valid signature</li>
+</ul>
+<p>The verification flow at any service: decode the header, fetch the issuer’s public key (from a JWKS endpoint, cached locally), verify the signature, check expiry and audience claims. If all checks pass, the claims are trusted without contacting the issuer.</p>
+<h3 id="2-the-revocation-tradeoff">2. The Revocation Tradeoff<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-revocation-tradeoff" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The statelessness that makes JWTs powerful also creates their biggest limitation: <strong>you cannot revoke a JWT before it expires</strong>. Once issued, the token is valid at every service until its <code>exp</code> claim passes. If a user’s access is revoked, logs out, or their account is compromised, the token continues to work.</p>
+<p>This is a fundamental tradeoff between <strong>performance</strong> (no central check on every request) and <strong>security</strong> (immediate revocation capability).</p>
+<p><strong>Mitigation strategies, in order of increasing complexity:</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Strategy</th><th>How it works</th><th>Tradeoff</th></tr></thead><tbody><tr><td><strong>Short expiry</strong></td><td>Set <code>exp</code> to 5-15 minutes; use refresh tokens for renewal</td><td>User must re-authenticate more frequently via refresh flow</td></tr><tr><td><strong>Token blacklist</strong></td><td>Maintain a distributed blacklist (Redis) of revoked token IDs (<code>jti</code> claim)</td><td>Re-introduces a centralized check, partially negating the stateless benefit</td></tr><tr><td><strong>Token versioning</strong></td><td>Store a per-user token version in a fast cache; reject tokens with old versions</td><td>Requires a cache lookup per request, but the cache is small and fast</td></tr><tr><td><strong>Event-driven invalidation</strong></td><td>Publish revocation events via Kafka; services update local blacklists</td><td>Eventually consistent — there is a window where revoked tokens are still accepted</td></tr></tbody></table></div>
+<p>The practical approach in most production systems: short-lived access tokens (5-15 minutes) combined with longer-lived refresh tokens stored securely. The access token is stateless and fast to verify. The refresh token is checked against the central auth service when it is used to obtain a new access token, providing a revocation checkpoint.</p>
+<h3 id="3-jwt-signing-symmetric-vs-asymmetric">3. JWT Signing: Symmetric vs. Asymmetric<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-jwt-signing-symmetric-vs-asymmetric" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Approach</th><th>Algorithm</th><th>Who can verify</th><th>Use case</th></tr></thead><tbody><tr><td><strong>Symmetric (HMAC)</strong></td><td>HS256</td><td>Only services that share the secret</td><td>Single service or tightly-coupled services</td></tr><tr><td><strong>Asymmetric (RSA/ECDSA)</strong></td><td>RS256, ES256</td><td>Anyone with the public key</td><td>Distributed microservices, third-party consumers</td></tr></tbody></table></div>
+<p>Asymmetric signing is the standard choice for distributed systems because it allows any service to verify tokens without possessing the signing secret. The issuer publishes its public keys at a JWKS (JSON Web Key Set) endpoint, and services cache these keys locally.</p>
+<h3 id="4-jwks-and-key-rotation">4. JWKS and Key Rotation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-jwks-and-key-rotation" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A JWKS (JSON Web Key Set) endpoint is a URL published by the token issuer (e.g., <code>https://auth.example.com/.well-known/jwks.json</code>) that returns the set of public keys currently valid for signature verification. Each key in the set has a <code>kid</code> (key ID) — a unique identifier for that specific key.</p>
+<p>The JWT header includes a <code>kid</code> field that tells the verifier which specific public key to use for verification. This enables seamless key rotation:</p>
+<ol>
+<li>The issuer generates a new key pair (private + public key).</li>
+<li>The issuer publishes both old and new public keys at the JWKS endpoint.</li>
+<li>New tokens are signed with the new private key and carry the new <code>kid</code> in their header.</li>
+<li>Services that cache the JWKS refresh their cache periodically (or on cache miss when they encounter an unknown <code>kid</code>).</li>
+<li>Tokens signed with the old key remain verifiable until they expire, because the old public key is still in the JWKS.</li>
+<li>After all old tokens have expired, the issuer removes the old public key from the JWKS.</li>
+</ol>
+<p>This rolling rotation ensures zero downtime during key changes. Without <code>kid</code>, a verifier receiving a token would not know which key to use and would have to try all keys — or worse, assume a single key that breaks when rotation occurs.</p>
+<hr/>
+<h2 id="9-authorization-in-distributed-systems">9. Authorization in Distributed Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-authorization-in-distributed-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-service-to-service-authorization">1. Service-to-Service Authorization<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-service-to-service-authorization" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>In a microservices architecture, authorization happens at multiple layers:</p>
+<ul>
+<li><strong>Edge authorization (API Gateway).</strong> The <a href="../../../01-fundamentals/01-concepts/05-api/02-api-gateway" class="internal internal-link" data-slug="01-fundamentals/01-concepts/05-api/02-api-gateway">02-API-Gateway</a> validates the user’s token, checks coarse-grained permissions (is this user allowed to call this API?), and forwards the request with the validated identity. This prevents unauthorized requests from reaching internal services.</li>
+<li><strong>Service-level authorization.</strong> Each service makes its own fine-grained authorization decisions. The payment service checks whether the user can access this specific payment record. The document service checks whether the user has edit permission on this specific document.</li>
+<li><strong>Service mesh authorization.</strong> In a service mesh (Istio, Linkerd), a sidecar proxy (typically Envoy) is injected alongside each service and intercepts all inbound and outbound network traffic. <a href="../../../01-fundamentals/01-concepts/06-security/02-cryptography-authentication#11-mutual-tls-mtls-for-service-to-service-authentication" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/06-security/02-cryptography-authentication">mTLS</a> provides service-to-service identity at the transport layer, and authorization policies are configured declaratively (e.g., “Service A can call Service B on <code>POST /orders</code> but not <code>DELETE /orders</code>”). The proxy enforces these policies before the request reaches application code, providing a security boundary that compromised application code cannot bypass. This prevents a compromised service from calling arbitrary internal services.</li>
+</ul>
+<p><img src="../../.././../../excalidraw/authorization-concepts-5.excalidraw.svg" alt="1000"/></p>
+<h3 id="2-policy-as-code">2. Policy as Code<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-policy-as-code" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Modern authorization systems treat policies as code, versioned in Git and deployed through CI/CD:</p>
+<ul>
+<li><strong>Open Policy Agent (OPA)</strong>: a general-purpose policy engine that decouples authorization decisions from application code. Policies are written in Rego, a declarative query language designed for expressing authorization rules over structured data (JSON). The mental model: OPA receives a request context as a JSON document (containing subject, action, resource, and environment attributes), evaluates it against Rego policies, and returns a structured decision (allow/deny plus optional explanations). OPA can be deployed as a sidecar (co-located with each service, eliminating network hops for policy evaluation) or as a library linked directly into the application.</li>
+<li><strong>AWS IAM</strong>: ABAC-style JSON policies with conditions on attributes.</li>
+<li><strong>Cedar (AWS)</strong>: a purpose-built authorization policy language designed for verifiability. Cedar’s advantage over Rego is that its restricted grammar allows automated policy analysis — you can mathematically prove properties like “no policy grants admin access to users outside the security team.”</li>
+</ul>
+<p>The advantage of policy-as-code is auditability. You can diff authorization changes, review them in pull requests, and trace exactly when a permission was granted or revoked.</p>
+<hr/>
+<h2 id="10-comparison-of-authorization-models">10. Comparison of Authorization Models<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-comparison-of-authorization-models" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Dimension</th><th>RBAC</th><th>ABAC</th><th>ACLs</th><th>ReBAC</th></tr></thead><tbody><tr><td><strong>Mental model</strong></td><td>User belongs to role; role has permissions</td><td>Attributes evaluated at runtime</td><td>Resource lists permitted subjects</td><td>Graph traversal through relationships</td></tr><tr><td><strong>Granularity</strong></td><td>Coarse (role-level)</td><td>Fine (attribute-level)</td><td>Fine (per-resource)</td><td>Fine (relationship chain)</td></tr><tr><td><strong>Check performance</strong></td><td>Fast (set membership)</td><td>Slower (policy evaluation)</td><td>Fast per-resource, slow for inverse queries</td><td>Depends on graph depth</td></tr><tr><td><strong>Management complexity</strong></td><td>Role explosion</td><td>Policy complexity</td><td>Per-resource overhead</td><td>Namespace configuration</td></tr><tr><td><strong>Inherited permissions</strong></td><td>Through role hierarchy</td><td>Through policy rules</td><td>Manual propagation</td><td>Natural (graph traversal)</td></tr><tr><td><strong>Best fit</strong></td><td>Internal tools, clear org structure</td><td>Multi-tenant, regulatory</td><td>File systems, document sharing</td><td>Nested resources, social graphs</td></tr><tr><td><strong>Real-world examples</strong></td><td>AWS IAM roles, Kubernetes RBAC</td><td>AWS IAM policies, OPA</td><td>Unix file permissions, S3 bucket ACLs</td><td>Google Drive, GitHub orgs (Zanzibar)</td></tr></tbody></table></div>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>Authorization is separate from authentication</strong> because it enforces least privilege and defense in depth — even a compromised identity is constrained by its permissions.</li>
+<li><strong>RBAC</strong> maps organizational structure to permissions via roles. Fast (pre-computed lookup) but suffers role explosion when access rules are multi-dimensional.</li>
+<li><strong>ABAC</strong> evaluates policies at runtime using subject, resource, and environment attributes. The PEP/PDP separation decouples enforcement from decision logic, enabling centralized policy management. More flexible than RBAC but more expensive (runtime evaluation, PIP lookups).</li>
+<li><strong>ACLs</strong> are resource-centric permission lists. Intuitive for per-resource sharing but expensive for inverse queries (“what can this user access?”).</li>
+<li><strong>ReBAC</strong> models permissions as a relationship graph. Two implementations: (1) <strong>Zanzibar-style</strong> (general-purpose) — deep graphs, computed permissions via namespace configs, zookies for causal consistency, leopard indexing for pre-computed group membership. (2) <strong>Domain-specific</strong> (e.g., content moderation) — shallow graphs (1-2 hops), expiry-based temporal permissions, direct lookup from a key-value store, multi-layer authorization (RBAC + ReBAC + PBAC). The right implementation depends on graph depth, read/write ratio, and temporal access requirements.</li>
+<li><strong>OAuth 2.0</strong> is authorization delegation. The authorization code flow keeps the client secret off the browser via redirects. PKCE protects public clients. Scopes enforce least privilege at the token level.</li>
+<li><strong>JWTs</strong> enable stateless distributed authorization — any service can verify claims using the issuer’s public key. JWKS endpoints publish public keys with <code>kid</code> identifiers, enabling seamless key rotation. The tradeoff is inability to revoke before expiry without a blacklist or short TTL + refresh tokens.</li>
+<li><strong>In distributed systems</strong>, authorization happens at multiple layers: edge (API Gateway), service-level (fine-grained), and service mesh (mTLS).</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>
+<p><strong>Revocation latency</strong>: A user is removed from an admin group, but their JWT (with admin claims) does not expire for another 10 minutes. What is the blast radius during this window, and how would you minimize it without sacrificing the stateless benefits of JWTs?
+Ans:</p>
+</li>
+<li>
+<p><strong>Zanzibar consistency</strong>: Explain the “new enemy problem” in ReBAC systems. A user is removed from a group at timestamp T1, but a permission check at T2 > T1 still sees them as a member due to caching. How does Zanzibar’s zookie mechanism address this, and what are the performance implications of requiring consistent reads on every check?
+Ans:</p>
+</li>
+<li>
+<p><strong>Role explosion vs. policy complexity</strong>: An organization migrates from RBAC to ABAC to solve role explosion. Six months later, they have 500 ABAC policies with overlapping conditions, and no one can predict whether a given user will have access to a given resource. What went wrong, and how would you design the policy architecture to prevent this?
+Ans:</p>
+</li>
+<li>
+<p><strong>OAuth code interception</strong>: In the authorization code flow without PKCE, explain exactly how an attacker on a mobile device could intercept the authorization code via a custom URL scheme. Why is the <code>code_verifier</code> in PKCE sufficient to prevent this, even though the <code>code_challenge</code> is sent in the clear?
+Ans:</p>
+</li>
+<li>
+<p><strong>ABAC latency at scale</strong>: Your ABAC system uses OPA as a remote PDP. At 50,000 requests per second, the PDP becomes a bottleneck. What architectural changes would you make to reduce latency? Consider the tradeoffs between sidecar deployment, policy caching, and pushing attributes into JWT claims.
+Ans:</p>
+</li>
+<li>
+<p><strong>Hybrid authorization</strong>: You are designing a multi-tenant SaaS platform where tenants can define custom roles and sharing rules for their documents. Would you choose RBAC, ABAC, ReBAC, or a combination? Explain how you would layer the models and where each applies.
+Ans:</p>
+</li>
+<li>
+<p><strong>Graph depth in ReBAC</strong>: A Zanzibar-style system has deeply nested group hierarchies (groups within groups, 10+ levels deep). How does this affect check latency? What strategies does Zanzibar use to keep latency bounded, and what are the consistency tradeoffs of pre-computing group membership?
+Ans:</p>
+</li>
+<li>
+<p><strong>JWT claim bloat</strong>: A system encodes fine-grained permissions in JWT claims (e.g., per-resource permissions for hundreds of resources). The JWT grows to 8KB. What problems does this cause, and how would you redesign the authorization model to keep tokens small while still enabling stateless authorization?
+Ans:</p>
+</li>
+<li>
+<p><strong>Cross-service authorization</strong>: Service A calls Service B on behalf of a user. Service B needs to authorize the request based on the user’s permissions, not Service A’s. How do you propagate the user’s authorization context through the call chain without giving Service A the ability to forge arbitrary user contexts?
+Ans:</p>
+</li>
+<li>
+<p><strong>ACL inverse query</strong>: You have a system with 100 million documents, each with an ACL. A user requests “show me all documents I can access.” How would you make this query performant? What are the tradeoffs between maintaining a forward index (user -> documents) and scanning ACLs?
+Ans:</p>
+</li>
+<li>
+<p><strong>Temporal ReBAC revocation</strong>: A content moderation platform uses ReBAC to scope reviewer access to assigned cases. A reviewer is removed from a case, but due to caching, their next API call still returns the case’s content. How would you design the system to minimize this stale-access window? Compare the tradeoffs of immediate cache invalidation, short TTLs on relationships, and Zanzibar-style zookies. Which approach is most practical for a moderation platform, and why?
+Ans:</p>
+</li>
+<li>
+<p><strong>Policy distribution lag</strong>: Your OPA sidecar has a stale policy cache. A deployment updated policies to restrict Service A from accessing a sensitive endpoint on Service B, but the sidecar has not yet pulled the new policy. What is the window of vulnerability? How would you design the policy distribution system to minimize this window, and what are the tradeoffs between push-based (event-driven) and pull-based (periodic refresh) distribution?
+Ans:</p>
+</li>
+</ol></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-25" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-0"><a href="#1-why-authorization-is-a-separate-concern" data-for="1-why-authorization-is-a-separate-concern">1. Why Authorization Is a Separate Concern</a></li><li class="depth-0"><a href="#2-the-authorization-decision-model" data-for="2-the-authorization-decision-model">2. The Authorization Decision Model</a></li><li class="depth-0"><a href="#3-role-based-access-control-rbac" data-for="3-role-based-access-control-rbac">3. Role-Based Access Control (RBAC)</a></li><li class="depth-1"><a href="#1-the-core-idea" data-for="1-the-core-idea">1. The Core Idea</a></li><li class="depth-1"><a href="#2-role-hierarchy" data-for="2-role-hierarchy">2. Role Hierarchy</a></li><li class="depth-1"><a href="#3-the-role-explosion-problem" data-for="3-the-role-explosion-problem">3. The Role Explosion Problem</a></li><li class="depth-1"><a href="#4-implementation-considerations" data-for="4-implementation-considerations">4. Implementation Considerations</a></li><li class="depth-0"><a href="#4-attribute-based-access-control-abac" data-for="4-attribute-based-access-control-abac">4. Attribute-Based Access Control (ABAC)</a></li><li class="depth-1"><a href="#1-why-abac-exists" data-for="1-why-abac-exists">1. Why ABAC Exists</a></li><li class="depth-1"><a href="#2-the-xacml-policy-model" data-for="2-the-xacml-policy-model">2. The XACML Policy Model</a></li><li class="depth-1"><a href="#3-why-abac-is-more-expensive" data-for="3-why-abac-is-more-expensive">3. Why ABAC Is More Expensive</a></li><li class="depth-1"><a href="#4-rbac-vs-abac-when-to-use-each" data-for="4-rbac-vs-abac-when-to-use-each">4. RBAC vs. ABAC: When to Use Each</a></li><li class="depth-0"><a href="#5-access-control-lists-acls" data-for="5-access-control-lists-acls">5. Access Control Lists (ACLs)</a></li><li class="depth-1"><a href="#1-per-resource-permissions" data-for="1-per-resource-permissions">1. Per-Resource Permissions</a></li><li class="depth-1"><a href="#2-the-relationship-to-rbac" data-for="2-the-relationship-to-rbac">2. The Relationship to RBAC</a></li><li class="depth-0"><a href="#6-relationship-based-access-control-rebac" data-for="6-relationship-based-access-control-rebac">6. Relationship-Based Access Control (ReBAC)</a></li><li class="depth-1"><a href="#1-why-rebac-emerged" data-for="1-why-rebac-emerged">1. Why ReBAC Emerged</a></li><li class="depth-1"><a href="#2-the-zanzibar-model-general-purpose-rebac" data-for="2-the-zanzibar-model-general-purpose-rebac">2. The Zanzibar Model (General-Purpose ReBAC)</a></li><li class="depth-1"><a href="#3-rebac-for-trust-and-safety-content-moderation" data-for="3-rebac-for-trust-and-safety-content-moderation">3. ReBAC for Trust and Safety Content Moderation</a></li><li class="depth-1"><a href="#4-zanzibar-vs-domain-specific-rebac" data-for="4-zanzibar-vs-domain-specific-rebac">4. Zanzibar vs. Domain-Specific ReBAC</a></li><li class="depth-0"><a href="#7-oauth-20-for-authorization" data-for="7-oauth-20-for-authorization">7. OAuth 2.0 for Authorization</a></li><li class="depth-1"><a href="#2-grant-types-and-when-to-use-each" data-for="2-grant-types-and-when-to-use-each">2. Grant Types and When to Use Each</a></li><li class="depth-1"><a href="#3-why-the-authorization-code-flow-has-a-redirect" data-for="3-why-the-authorization-code-flow-has-a-redirect">3. Why the Authorization Code Flow Has a Redirect</a></li><li class="depth-1"><a href="#4-token-scopes" data-for="4-token-scopes">4. Token Scopes</a></li><li class="depth-0"><a href="#8-jwt-for-distributed-authorization" data-for="8-jwt-for-distributed-authorization">8. JWT for Distributed Authorization</a></li><li class="depth-1"><a href="#1-why-jwts-enable-stateless-verification" data-for="1-why-jwts-enable-stateless-verification">1. Why JWTs Enable Stateless Verification</a></li><li class="depth-1"><a href="#2-the-revocation-tradeoff" data-for="2-the-revocation-tradeoff">2. The Revocation Tradeoff</a></li><li class="depth-1"><a href="#3-jwt-signing-symmetric-vs-asymmetric" data-for="3-jwt-signing-symmetric-vs-asymmetric">3. JWT Signing: Symmetric vs. Asymmetric</a></li><li class="depth-1"><a href="#4-jwks-and-key-rotation" data-for="4-jwks-and-key-rotation">4. JWKS and Key Rotation</a></li><li class="depth-0"><a href="#9-authorization-in-distributed-systems" data-for="9-authorization-in-distributed-systems">9. Authorization in Distributed Systems</a></li><li class="depth-1"><a href="#1-service-to-service-authorization" data-for="1-service-to-service-authorization">1. Service-to-Service Authorization</a></li><li class="depth-1"><a href="#2-policy-as-code" data-for="2-policy-as-code">2. Policy as Code</a></li><li class="depth-0"><a href="#10-comparison-of-authorization-models" data-for="10-comparison-of-authorization-models">10. Comparison of Authorization Models</a></li><li class="depth-0"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-0"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/02-architecture/07-multi-tenancy" class="internal">07-Multi-Tenancy</a></li><li><a href="../../../01-fundamentals/01-concepts/06-security/01-cryptographic-primitives" class="internal">01-Cryptographic-Primitives</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-67bd5d9d.js" type="module" data-persist="true"></script></html>

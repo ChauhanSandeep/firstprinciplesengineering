@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>05-Distributed-Transactions</title><meta charset="utf-8"/><link rel="preload" href="../../../index-47e0982e.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="05-Distributed-Transactions"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="05-Distributed-Transactions"/><meta name="twitter:description" content="Distributed Transactions Related: 03-Consensus-Algorithm, 02-CAP-and-PACELC, 04-Distributed-Lock, 01-Choreography-Orchestration, 05-Isolation-Levels, 04-Optimistic-Pessimistic-Locking The Story Jim Gray invented the two-phase commit protocol and won the Turing Award for his work on database transact..."/><meta property="og:description" content="Distributed Transactions Related: 03-Consensus-Algorithm, 02-CAP-and-PACELC, 04-Distributed-Lock, 01-Choreography-Orchestration, 05-Isolation-Levels, 04-Optimistic-Pessimistic-Locking The Story Jim Gray invented the two-phase commit protocol and won the Turing Award for his work on database transact..."/><meta property="og:image:alt" content="Distributed Transactions Related: 03-Consensus-Algorithm, 02-CAP-and-PACELC, 04-Distributed-Lock, 01-Choreography-Orchestration, 05-Isolation-Levels, 04-Optimistic-Pessimistic-Locking The Story Jim Gray invented the two-phase commit protocol and won the Turing Award for his work on database transact..."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="Distributed Transactions Related: 03-Consensus-Algorithm, 02-CAP-and-PACELC, 04-Distributed-Lock, 01-Choreography-Orchestration, 05-Isolation-Levels, 04-Optimistic-Pessimistic-Locking The Story Jim Gray invented the two-phase commit protocol and won the Turing Award for his work on database transact..."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-47e0982e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-4" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-4" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/">01-Concepts</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/">01-Distributed-Systems</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>05-Distributed-Transactions</a></div></nav><h1 class="article-title">05-Distributed-Transactions</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T04:20:59.973Z">Jun 10, 2026</time><span>25 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="distributed-transactions">Distributed Transactions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#distributed-transactions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><strong>Related</strong>: <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">03-Consensus-Algorithm</a>, <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock">04-Distributed-Lock</a>, <a href="../../../01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration" class="internal internal-link" data-slug="01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration">01-Choreography-Orchestration</a>, <a href="../../../05-isolation-levels" class="internal internal-link" data-slug="05-isolation-levels">05-Isolation-Levels</a>, <a href="../../../01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking" class="internal internal-link" data-slug="01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking">04-Optimistic-Pessimistic-Locking</a></p>
+<h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Jim Gray invented the two-phase commit protocol and won the Turing Award for his work on database transactions. In January 2007, he sailed alone out of San Francisco Bay and disappeared. His colleagues at Google, Amazon, and Microsoft organized the largest civilian satellite image search ever — essentially building a massive distributed system to find the man who invented distributed transactions. Thousands of volunteers scanned satellite imagery in parallel, coordinated through Amazon’s Mechanical Turk. They never found him. The irony is haunting: the community that understood coordination better than anyone on earth couldn’t coordinate a search well enough to find one of its founders.</p>
+<hr/>
+<h2 id="1-why-distributed-transactions-are-hard">1. Why Distributed Transactions Are Hard<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-distributed-transactions-are-hard" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A single-node database transaction is deceptively simple. The database engine controls the entire commit path: it writes a WAL record, flushes to disk, and either the write succeeds atomically or it does not. There is one decision-maker, one failure domain, and one clock. ACID guarantees fall out naturally from this single-authority model.</p>
+<p>The moment data lives on more than one node, this model breaks apart. Consider a bank transfer: debit <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">100</span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mord mathnormal">o</span><span class="mord mathnormal">ma</span><span class="mord mathnormal">cco</span><span class="mord mathnormal">u</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord mathnormal">A</span><span class="mord mathnormal">o</span><span class="mord mathnormal">nn</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">cr</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span></span></span></span>100 to account B on node 2. On a single database, this is a trivial transaction. Across two nodes, every assumption fails:</p>
+<ul>
+<li><strong>Independent failure domains.</strong> Node 1 can crash after debiting while node 2 never receives the credit instruction. Money vanishes.</li>
+<li><strong>No shared state.</strong> Node 2 cannot inspect node 1’s transaction log to decide whether to commit. Each node only knows its own state.</li>
+<li><strong>No global clock.</strong> You cannot determine “did node 1 commit before or after node 2 crashed?” without a coordination protocol.</li>
+<li><strong>Network partitions.</strong> The link between nodes can fail, leaving both nodes uncertain about each other’s state.</li>
+</ul>
+<p>The fundamental problem is <strong>atomic commitment across independent failure domains</strong>: how do you ensure that either all nodes commit or all nodes abort, when any node (or the network between them) can fail at any moment?</p>
+<p>This is not merely an engineering challenge. The FLP impossibility result proves that no deterministic protocol can guarantee consensus in an asynchronous system with even one possible crash failure. Every solution to distributed transactions is a pragmatic compromise around this theoretical limit.</p>
+<hr/>
+<h2 id="2-the-spectrum-of-solutions">2. The Spectrum of Solutions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-spectrum-of-solutions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Distributed transaction approaches form a spectrum from strong consistency to high availability:</p>
+<pre><code>Strong Consistency                                              High Availability
+      |                                                                |
+     2PC -----> 3PC -----> Spanner (2PC+Paxos) -----> Sagas -----> Outbox Pattern
+  (blocking)  (non-blocking   (non-blocking,        (eventual     (eventual,
+               but fragile)    global consensus)    consistency)   local-first)
+</code></pre>
+<p>Each approach makes different tradeoffs along the <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a> dimensions. Understanding when to use which approach is the core skill.</p>
+<hr/>
+<h2 id="3-two-phase-commit-2pc">3. Two-Phase Commit (2PC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-two-phase-commit-2pc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-the-protocol">1. The Protocol<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-protocol" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>2PC is the classical solution to atomic commitment. It introduces a <strong>coordinator</strong> (transaction manager) that runs a voting protocol across all <strong>participants</strong> (nodes holding data involved in the transaction).
+The key insight behind 2PC: split the commit into two phases so that no participant commits until everyone has confirmed they <em>can</em> commit.</p>
+<p><strong>Phase 1 — Prepare (Voting)</strong></p>
+<ol>
+<li>The coordinator assigns a globally unique transaction ID and sends a <code>PREPARE</code> request to every participant.</li>
+<li>Each participant executes the transaction up to the point of commit: writes redo/undo logs to durable storage, acquires locks on affected rows, validates constraints.</li>
+<li>Each participant votes:
+<ul>
+<li><code>YES</code> — “I have durably prepared this transaction and promise to commit if instructed.”</li>
+<li><code>NO</code> — “I cannot commit (constraint violation, conflict, resource unavailable).”</li>
+</ul>
+</li>
+<li>Once a participant votes <code>YES</code>, it has made an irrevocable promise. It cannot unilaterally abort. It must hold its locks and wait for the coordinator’s decision.</li>
+</ol>
+<p><strong>Phase 2 — Commit or Abort (Decision)</strong></p>
+<p>If all participants voted <code>YES</code>:</p>
+<ol>
+<li>The coordinator writes a <code>COMMIT</code> record to its own durable log. This is the <strong>commit point</strong> — the single moment that determines the transaction’s fate.</li>
+<li>The coordinator sends <code>COMMIT</code> to all participants.</li>
+<li>Each participant applies the transaction, releases locks, and acknowledges.</li>
+<li>The coordinator must retry indefinitely until all acknowledgments are received.</li>
+</ol>
+<p>If any participant voted <code>NO</code> (or timed out):</p>
+<ol>
+<li>The coordinator writes an <code>ABORT</code> record to its log.</li>
+<li>The coordinator sends <code>ABORT</code> to all participants.</li>
+<li>Participants roll back and release locks.</li>
+</ol>
+<p><img src="../../.././../../excalidraw/distributed-transactions-1.excalidraw.svg" alt="700"/></p>
+<h3 id="2-the-commit-point-and-its-significance">2. The Commit Point and Its Significance<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-the-commit-point-and-its-significance" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The most important concept in 2PC is the <strong>commit point</strong>: the moment the coordinator writes <code>COMMIT</code> to its durable log. Before this point, the transaction can still be aborted. After this point, the transaction <em>will</em> commit, regardless of subsequent failures — the coordinator will keep retrying until all participants acknowledge.</p>
+<p>Specifically, the coordinator must durably log three things before sending the decision to any participant:</p>
+<ol>
+<li>The transaction ID</li>
+<li>The list of all participants</li>
+<li>The decision itself (COMMIT or ABORT).</li>
+</ol>
+<p>If the coordinator crashes after writing COMMIT but before notifying all participants, it re-reads this record on recovery and resends the decision. If it crashes before writing the decision, it defaults to ABORT since the outcome is unknown. This is why the coordinator’s disk is the true single point of failure in 2PC — it is the one component whose loss leaves participants permanently blocked.
+This means the fate of a distributed transaction affecting potentially billions of dollars across multiple continents is determined by a single disk write on a single machine. This is both the elegance and the vulnerability of 2PC.</p>
+<h3 id="3-the-blocking-problem">3. The Blocking Problem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-the-blocking-problem" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The critical weakness of 2PC emerges in a specific failure scenario:</p>
+<ol>
+<li>Participant P1 votes <code>YES</code> in Phase 1.</li>
+<li>The coordinator crashes before writing its decision to the log.</li>
+<li>P1 is now <strong>stuck</strong>: it voted <code>YES</code> (so it cannot unilaterally abort), but it never received a <code>COMMIT</code> or <code>ABORT</code> (so it cannot proceed). It must hold its locks and wait indefinitely for the coordinator to recover.</li>
+</ol>
+<p>This is why 2PC is called a <strong>blocking protocol</strong>. The consequences are severe:</p>
+<ul>
+<li><strong>Lock amplification.</strong> P1 holds locks on the rows involved in the transaction. Every other transaction that needs those rows is now blocked too. If the coordinator stays down for minutes or hours, the blocking cascades through the system.</li>
+<li><strong>No safe unilateral action.</strong> P1 cannot safely abort (another participant might have received a <code>COMMIT</code>). It cannot safely commit (the coordinator might have decided to abort). The only safe action is to wait.</li>
+<li><strong>Cascading failures.</strong> In a system processing thousands of transactions per second, even a brief coordinator outage can cause lock contention to spiral, leading to timeouts, thread pool exhaustion, and system-wide degradation.</li>
+</ul>
+<h3 id="4-coordinator-failure-scenarios">4. Coordinator Failure Scenarios<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-coordinator-failure-scenarios" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Failure Point</th><th>Coordinator State</th><th>Participant State</th><th>Resolution</th></tr></thead><tbody><tr><td>Before sending any <code>PREPARE</code></td><td>No record of transaction</td><td>Unaware of transaction</td><td>Safe — transaction never started</td></tr><tr><td>After sending <code>PREPARE</code>, before collecting all votes</td><td>Knows transaction exists</td><td>Some in <code>PREPARED</code> state, holding locks</td><td>Coordinator recovers, sees no commit decision, aborts</td></tr><tr><td>After collecting all <code>YES</code> votes, before writing commit decision</td><td>Has votes in memory only</td><td>All in <code>PREPARED</code> state, holding locks</td><td><strong>Danger zone</strong> — participants blocked until coordinator recovers</td></tr><tr><td>After writing <code>COMMIT</code> to log, before sending <code>COMMIT</code></td><td>Durable commit decision exists</td><td>All in <code>PREPARED</code> state, holding locks</td><td>Coordinator recovers, reads log, resends <code>COMMIT</code></td></tr><tr><td>After sending <code>COMMIT</code>, before all ACKs received</td><td>Commit decision durable</td><td>Some committed, some still prepared</td><td>Coordinator recovers, retries <code>COMMIT</code> to unacknowledged participants</td></tr></tbody></table></div>
+<p>The third row is the catastrophic scenario. The coordinator has enough information to decide but crashed before making that decision durable. Participants are blocked with no recourse.</p>
+<h3 id="5-recovery-after-coordinator-crash">5. Recovery After Coordinator Crash<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-recovery-after-coordinator-crash" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>When a coordinator restarts, it reads its transaction log:</p>
+<ul>
+<li><strong>Transaction has <code>COMMIT</code> record</strong> — resend <code>COMMIT</code> to all participants that have not acknowledged.</li>
+<li><strong>Transaction has <code>ABORT</code> record</strong> — resend <code>ABORT</code> to all participants.</li>
+<li><strong>Transaction has no decision record</strong> — the coordinator crashed before deciding. It aborts the transaction and sends <code>ABORT</code> to all participants.</li>
+</ul>
+<p>Participants that voted <code>YES</code> and are waiting in the prepared state will periodically poll the coordinator (or other participants) for the transaction’s outcome. This polling continues until the coordinator recovers.</p>
+<h3 id="6-participant-timeout-behavior">6. Participant Timeout Behavior<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-participant-timeout-behavior" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>What should a participant do if it votes <code>YES</code> and never hears back?</p>
+<ul>
+<li><strong>It cannot time out and abort.</strong> It made a promise. If another participant received a <code>COMMIT</code>, unilateral abort would cause inconsistency.</li>
+<li><strong>It cannot time out and commit.</strong> The coordinator might have decided to abort.</li>
+<li><strong>It can only wait</strong> and periodically ask the coordinator (or other participants) for the decision.</li>
+</ul>
+<p>Some implementations allow a participant to ask <em>other participants</em> for the outcome. If any participant received a <code>COMMIT</code> or <code>ABORT</code>, it can share that information. But if all participants are in the <code>PREPARED</code> state, none of them can make progress — this is the true deadlock scenario of 2PC.</p>
+<h3 id="7-performance-characteristics">7. Performance Characteristics<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-performance-characteristics" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>2PC imposes significant overhead:</p>
+<ul>
+<li><strong>Latency.</strong> Minimum of 2 round trips (prepare + commit) plus durable log writes on every participant. For geographically distributed nodes, this means hundreds of milliseconds per transaction.</li>
+<li><strong>Lock duration.</strong> Locks are held from the start of Phase 1 until the end of Phase 2 — the entire duration of the protocol, including network round trips. This dramatically reduces concurrency compared to local transactions.</li>
+<li><strong>Log writes.</strong> The coordinator writes its decision to a durable log. Each participant writes its prepare record. These are synchronous disk writes on the critical path.</li>
+<li><strong>Throughput ceiling.</strong> The coordinator becomes a serialization point. Every distributed transaction must pass through it, limiting horizontal scalability.</li>
+</ul>
+<hr/>
+<h2 id="4-three-phase-commit-3pc">4. Three-Phase Commit (3PC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-three-phase-commit-3pc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>3PC was designed to solve the blocking problem of 2PC by adding an intermediate phase.
+The intuition is that if we can ensure that no participant commits until it knows that <em>all</em> participants are aware the transaction will commit, then a coordinator crash cannot leave participants in an ambiguous state.</p>
+<h3 id="1-the-protocol-1">1. The Protocol<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-protocol-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>3PC adds a <code>PRE-COMMIT</code> phase between voting and committing:</p>
+<ol>
+<li><strong>Phase 1 — Prepare (same as 2PC).</strong> Coordinator sends <code>PREPARE</code>, participants vote <code>YES</code> or <code>NO</code>.</li>
+<li><strong>Phase 2 — Pre-Commit.</strong> If all voted <code>YES</code>, coordinator sends <code>PRE-COMMIT</code> to all participants. Participants acknowledge. This phase ensures all participants know the decision <em>before</em> any participant commits.</li>
+<li><strong>Phase 3 — Commit.</strong> Coordinator sends <code>COMMIT</code>. Participants apply the transaction.</li>
+</ol>
+<p>The key difference: if a participant is in the <code>PRE-COMMIT</code> state and the coordinator crashes, it knows that all other participants also voted <code>YES</code> (otherwise the coordinator would not have sent <code>PRE-COMMIT</code>). It can safely proceed to commit after a timeout, or elect a new coordinator.</p>
+<h3 id="2-why-3pc-fails-in-practice">2. Why 3PC Fails in Practice<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-why-3pc-fails-in-practice" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>3PC solves the blocking problem <strong>only in a synchronous network model</strong> — one where you can set a reliable upper bound on message delivery time. In real networks:</p>
+<ul>
+<li><strong>Network partitions.</strong> During a partition, one group of participants might be in <code>PRE-COMMIT</code> (and proceed to commit after timeout), while another group never received <code>PRE-COMMIT</code> (and aborts after timeout). The result is inconsistency — exactly what we were trying to prevent.</li>
+<li><strong>Asynchronous networks.</strong> In practice, you cannot distinguish between a slow message and a lost message. A participant that times out waiting for <code>PRE-COMMIT</code> might abort, while the coordinator eventually delivers <code>PRE-COMMIT</code> to others who then commit.</li>
+</ul>
+<p>This is why 3PC is rarely used in production systems. It adds complexity (three round trips instead of two) without providing the safety guarantee it promises in real-world networks. The industry has largely moved toward either making 2PC more robust (Spanner’s approach) or avoiding distributed transactions entirely (Sagas).</p>
+<hr/>
+<h2 id="5-sagas">5. Sagas<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-sagas" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-the-core-idea">1. The Core Idea<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-core-idea" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Sagas take a fundamentally different approach. Instead of trying to make a distributed transaction atomic, a saga breaks it into a sequence of <strong>local transactions</strong>, each of which commits independently. If a step fails partway through, previously completed steps are reversed by executing <strong>compensating transactions</strong>.</p>
+<p>The key insight: we give up atomicity and isolation in exchange for availability and loose coupling. The system is temporarily inconsistent during saga execution but eventually reaches a consistent state — either all steps complete or all completed steps are compensated.</p>
+<h3 id="2-what-a-saga-gives-up">2. What a Saga Gives Up<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-what-a-saga-gives-up" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A saga provides <strong>ACD</strong> guarantees but not <strong>I</strong> (isolation):</p>
+<ul>
+<li><strong>Atomicity</strong> — achieved through compensating transactions (either all steps complete or all are reversed).</li>
+<li><strong>Consistency</strong> — the system moves from one valid state to another, but intermediate states may be visible.</li>
+<li><strong>Durability</strong> — each local transaction is durable within its service.</li>
+<li><strong>No Isolation</strong> — other transactions can observe intermediate states. This is the fundamental tradeoff.</li>
+</ul>
+<h3 id="3-compensating-transactions">3. Compensating Transactions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-compensating-transactions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A compensating transaction is <em>not</em> an undo or rollback. It is a new forward transaction that semantically reverses the effect of a previously committed transaction. This distinction matters:</p>
+<ul>
+<li>Debiting <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">100</span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mord mathnormal">o</span><span class="mord mathnormal">mana</span><span class="mord mathnormal">cco</span><span class="mord mathnormal">u</span><span class="mord mathnormal">n</span><span class="mord mathnormal">t</span><span class="mord mathnormal">i</span><span class="mord mathnormal">sco</span><span class="mord mathnormal">m</span><span class="mord mathnormal">p</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">b</span><span class="mord mathnormal" style="margin-right:0.0359em;">y</span><span class="mord mathnormal" style="margin-right:0.0278em;">cr</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">in</span><span class="mord mathnormal" style="margin-right:0.0359em;">g</span></span></span></span>100 — not by deleting the debit record.</li>
+<li>Creating an order is compensated by cancelling the order — which might involve creating a cancellation record, sending a notification, and updating analytics.</li>
+<li>Sending an email cannot be compensated. You can send an apology email, but you cannot unsend the original.</li>
+</ul>
+<p>Compensating transactions must be <strong>idempotent</strong> (safe to execute multiple times) because the saga coordinator may retry them on failure. They must also handle the case where the original transaction’s effects have already been partially consumed by other parts of the system.</p>
+<h3 id="4-choreography-vs-orchestration">4. Choreography vs Orchestration<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-choreography-vs-orchestration" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>There are two models for coordinating saga execution:
+<strong>Choreography</strong> — each service publishes domain events when its local transaction completes, and other services react to those events. There is no central coordinator.</p>
+<p><img src="../../.././../../excalidraw/distributed-transactions-2.excalidraw.svg" alt="1200"/></p>
+<p><strong>Orchestration</strong> — a central saga orchestrator tells each service what to do and tracks the overall state of the saga.
+The orchestrator is a state machine that owns the flow. It commands each service in order, listens for replies, and on failure issues compensating commands to the already-completed services in <strong>REVERSE</strong> order.</p>
+<p><img src="../../.././../../excalidraw/distributed-transactions-3.excalidraw.svg" alt="1200"/></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Aspect</th><th>Choreography</th><th>Orchestration</th></tr></thead><tbody><tr><td>Coupling</td><td>Loose — services only know about events</td><td>Tighter — orchestrator knows all services</td></tr><tr><td>Visibility</td><td>Hard to trace — flow is implicit in event subscriptions</td><td>Easy to trace — flow is explicit in orchestrator</td></tr><tr><td>Failure handling</td><td>Each service handles its own compensation</td><td>Orchestrator manages all compensation</td></tr><tr><td>Complexity scaling</td><td>Grows rapidly with number of services — event chains become hard to reason about</td><td>Grows linearly — orchestrator becomes more complex but flow remains readable</td></tr><tr><td>Single point of failure</td><td>None</td><td>Orchestrator (must be highly available)</td></tr><tr><td>Best for</td><td>Simple sagas with 2-4 steps</td><td>Complex sagas with many steps, branching logic, or complex compensation</td></tr></tbody></table></div>
+<h3 id="5-isolation-challenges-in-sagas">5. Isolation Challenges in Sagas<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-isolation-challenges-in-sagas" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The lack of isolation creates several concurrency anomalies:</p>
+<ol>
+<li><strong>Dirty reads.</strong> A saga creates an order (step 1), then payment fails (step 2). Between step 1 committing and the compensation executing, other services can read the order and act on it. A notification service might send an “order confirmed” email for an order that will be cancelled moments later.</li>
+<li><strong>Lost updates.</strong> Two concurrent sagas modify the same entity. Saga A reads inventory count = 10, reserves 3 (sets to 7). Saga B reads inventory count = 10 (before A’s write is visible), reserves 5 (sets to 5). Saga A’s reservation is silently lost.</li>
+<li><strong>Non-repeatable reads.</strong> A saga reads data at step 1, makes a decision based on it, but by step 3 another saga has changed that data. The decision made at step 1 is now based on stale information.</li>
+</ol>
+<p><strong>Countermeasures:</strong></p>
+<ul>
+<li><strong>Semantic locking.</strong> Add a <code>status</code> field (e.g., <code>PENDING</code>, <code>CONFIRMED</code>, <code>CANCELLED</code>) so readers know the data is part of an in-progress saga.</li>
+<li><strong>Commutative updates.</strong> Design operations that produce the same result regardless of execution order (e.g., <code>increment by 3</code> rather than <code>set to 7</code>).</li>
+<li><strong>Pessimistic view.</strong> Reread data before critical steps to detect changes.</li>
+<li><strong>Reread value.</strong> Before compensating, verify the current state matches expectations.</li>
+<li><strong>Version vector / optimistic locking.</strong> Use version numbers to detect concurrent modifications.</li>
+</ul>
+<h3 id="6-non-reversible-actions">6. Non-Reversible Actions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-non-reversible-actions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Some actions cannot be compensated:</p>
+<ul>
+<li>Sending an email or push notification</li>
+<li>Calling an external third-party API (payment processor charge)</li>
+<li>Publishing data to a public feed</li>
+<li>Physical actions (shipping a package)</li>
+</ul>
+<p>The design strategy: <strong>place non-reversible actions as late as possible in the saga</strong>, after all steps that might fail have completed. If a non-reversible action itself fails, you may need manual intervention or a dead-letter queue for human review.</p>
+<hr/>
+<h2 id="6-the-outbox-pattern">6. The Outbox Pattern<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-the-outbox-pattern" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The outbox pattern solves a subtle but critical problem in event-driven architectures: how do you atomically update a database <em>and</em> publish an event? If you update the database and then publish to Kafka, the publish might fail (data updated, no event). If you publish first and then update, the update might fail (event sent, no data change).</p>
+<h3 id="1-how-it-works">1. How It Works<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-how-it-works" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>The service writes both the data change and the outbox event to the <strong>same local database</strong> in a <strong>single local transaction</strong>.</li>
+<li>A separate process (the “relay” or “poller”) reads unpublished events from the outbox table and publishes them to the message broker.</li>
+<li>After successful publish, the relay marks the event as published.</li>
+</ol>
+<p><img src="../../.././../../excalidraw/distributed-transactions-4.excalidraw.svg" alt="1200"/></p>
+<h3 id="2-relay-implementation-polling-vs-cdc">2. Relay Implementation: Polling vs CDC<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-relay-implementation-polling-vs-cdc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Polling</strong>: A background thread queries the outbox table periodically (<code>SELECT * FROM outbox WHERE published = false</code>). Simple but introduces latency (polling interval) and database load.</p>
+<p><strong>Change Data Capture (CDC)</strong>: Tools like Debezium read the database’s transaction log (WAL/binlog) and emit events in real time. Lower latency, no polling overhead, but adds infrastructure complexity.</p>
+<h3 id="3-why-outbox-matters">3. Why Outbox Matters<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-why-outbox-matters" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The outbox pattern is the <strong>foundational building block</strong> for reliable sagas in microservices. Without it, event-driven choreography is unreliable — you cannot guarantee that a local commit and its corresponding event are both delivered. With it, you get <strong>at-least-once</strong> event delivery, which combined with idempotent consumers gives you effectively-once processing.</p>
+<hr/>
+<h2 id="7-idempotency-and-exactly-once-semantics">7. Idempotency and Exactly-Once Semantics<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-idempotency-and-exactly-once-semantics" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Distributed transactions and saga compensation rely heavily on <strong>at-least-once delivery</strong> — messages may be delivered more than once due to retries, network issues, or relay restarts. The system must handle duplicates gracefully.</p>
+<h3 id="1-idempotency-keys">1. Idempotency Keys<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-idempotency-keys" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Every operation that might be retried should carry an <strong>idempotency key</strong> — a unique identifier that allows the receiver to detect and deduplicate repeated requests.</p>
+<pre><code>POST /payments
+Idempotency-Key: order-123-payment-attempt-1
+{amount: 100, currency: &quot;USD&quot;}
+</code></pre>
+<p>The receiver stores a mapping of idempotency key to result. On a duplicate request, it returns the stored result without re-executing the operation.</p>
+<h3 id="2-deduplication-strategies">2. Deduplication Strategies<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-deduplication-strategies" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Strategy</th><th>How It Works</th><th>Tradeoff</th></tr></thead><tbody><tr><td>Idempotency key table</td><td>Store processed keys in a database table; check before processing</td><td>Requires storage; must manage key expiration</td></tr><tr><td>Natural idempotency</td><td>Design operations to be inherently idempotent (e.g., <code>SET balance = 500</code> vs <code>ADD 100</code>)</td><td>Not always possible for business logic</td></tr><tr><td>Message ID deduplication</td><td>Message broker assigns unique IDs; consumer tracks processed IDs</td><td>Requires consumer-side state</td></tr><tr><td>Transactional inbox</td><td>Consumer writes incoming message ID to an “inbox” table in the same transaction as processing</td><td>Atomic dedup + processing; adds a table per consumer</td></tr></tbody></table></div>
+<h3 id="3-the-exactly-once-illusion">3. The Exactly-Once Illusion<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-the-exactly-once-illusion" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>True exactly-once delivery is impossible in a distributed system (a fundamental result of distributed computing). What systems actually achieve is <strong>effectively-once processing</strong>: at-least-once delivery combined with idempotent processing. Kafka’s “exactly-once semantics” uses transactional producers and consumer offset commits within the same transaction to achieve this.</p>
+<hr/>
+<h2 id="8-real-world-approaches">8. Real-World Approaches<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-real-world-approaches" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-google-spanner-2pc-that-does-not-block">1. Google Spanner: 2PC That Does Not Block<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-google-spanner-2pc-that-does-not-block" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Textbook 2PC blocks because the coordinator and each participant are <strong>single machines</strong> — when one dies mid-protocol, the rest cannot safely proceed.</p>
+<p><a href="../../../07-spanner" class="internal internal-link alias" data-slug="07-spanner">Spanner</a>’s fix: every role in 2PC — coordinator and each participant — is itself a <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">Paxos</a> group of 3 or 5 replicas. The 2PC protocol is unchanged; only the <strong>failure unit</strong> changes. What was “a node” is now “a fault-tolerant group” with a replicated log.</p>
+<p>Now replay the catastrophic case: the coordinator leader crashes after collecting all <code>YES</code> votes. Its decision-in-progress, the votes, and the participant list are already on a majority of replicas. Paxos elects a new leader in seconds; the new leader reads the log and resumes the protocol. Participant failures behave the same way — the <code>PREPARED</code> state lives in the participant’s own Paxos log, not on the dead machine. <strong>Indefinite blocking becomes a bounded leader-election outage.</strong></p>
+<p>A separate, orthogonal contribution is <strong>TrueTime</strong> (GPS + atomic clocks, &lt; 7ms uncertainty). Committing transactions wait out the uncertainty interval so timestamps respect real-time order. This buys <strong>external consistency</strong>, not non-blocking commits — the two ideas are independent.</p>
+<p>Costs: GPS/atomic clocks in every data center, a few-millisecond commit wait from TrueTime, and one Paxos round trip per write on top of the disk flush.</p>
+<h3 id="2-cockroachdb-parallel-commits">2. CockroachDB: Parallel Commits<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-cockroachdb-parallel-commits" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Textbook 2PC needs two sequential round trips before the client hears “committed”:</p>
+<ol>
+<li><code>PREPARE</code> + collect votes,</li>
+<li><code>COMMIT</code> + collect acks.
+Parallel commits collapse this to <strong>one</strong> by precomputing the commit condition as a piece of replicated state.</li>
+</ol>
+<p>The mechanic. The coordinator does two things at the same time:</p>
+<ol>
+<li>Writes a <strong>staging record</strong> for the transaction (status = <code>STAGING</code>, plus the list of keys the txn is touching and the commit timestamp) into its own range, replicated via Raft.</li>
+<li>Sends each participant range a write that lays down an <strong>intent</strong> on its row.</li>
+</ol>
+<p>The moment the staging record is durable and every participant has acked its intent, the transaction is <strong>implicitly committed</strong> — the client is told “committed” immediately. A second async pass flips the staging record to <code>COMMITTED</code> and rewrites the intents as final values (cleanup, off the critical path).</p>
+<p>Why no second phase is needed. The staging record is effectively a contract: <em>“this txn is committed iff every listed intent exists at this timestamp.”</em> Any node that later finds a <code>STAGING</code> record (because the coordinator crashed before cleanup) can resolve the outcome by walking the listed keys itself: all intents present → the txn was implicitly committed, finalize it; any intent missing and unrecoverable → abort. The coordinator is not on the recovery path. Combined with each range being Raft-replicated (same fix as Spanner), coordinator failure becomes a leader-election blip, not a block.</p>
+<p>Cost: the one-round-trip win is for the happy path. Contended writes whose intents collide still degrade to retries.</p>
+<h3 id="3-kafka-transactions">3. Kafka Transactions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-kafka-transactions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Kafka provides transactional semantics for produce-consume workflows:</p>
+<ol>
+<li>A <strong>transactional producer</strong> can atomically write to multiple partitions and commit consumer offsets, ensuring that a consume-transform-produce pipeline either fully succeeds or fully rolls back.</li>
+<li>Implemented using a <strong>transaction coordinator</strong> (a Kafka broker assigned to the transactional ID) that uses a 2PC-like protocol internally.</li>
+<li><strong>Read committed isolation</strong>: consumers with <code>isolation.level=read_committed</code> only see messages from committed transactions.</li>
+</ol>
+<p>This is specifically useful for stream processing where you need to consume from one topic, transform, and produce to another topic atomically.</p>
+<hr/>
+<h2 id="9-decision-framework">9. Decision Framework<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-decision-framework" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Choosing the right approach depends on your consistency requirements, system architecture, and operational constraints.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Criterion</th><th>2PC</th><th>Sagas (Orchestrated)</th><th>Sagas (Choreography)</th><th>Outbox + Events</th></tr></thead><tbody><tr><td>Consistency guarantee</td><td>Strong (linearizable)</td><td>Eventual</td><td>Eventual</td><td>Eventual</td></tr><tr><td>Availability</td><td>Lower (blocking)</td><td>Higher</td><td>Highest</td><td>Higher</td></tr><tr><td>Latency overhead</td><td>High (2+ round trips, lock duration)</td><td>Medium (sequential service calls)</td><td>Low (async events)</td><td>Low (async)</td></tr><tr><td>Coupling</td><td>Tight (all participants in protocol)</td><td>Medium (orchestrator knows all services)</td><td>Loose (services only know events)</td><td>Loose</td></tr><tr><td>Complexity to implement</td><td>Low (protocol is well-defined)</td><td>Medium (must design compensations + orchestrator)</td><td>High (distributed flow, hard to trace)</td><td>Low-Medium</td></tr><tr><td>Complexity to operate</td><td>High (coordinator HA, lock monitoring)</td><td>Medium</td><td>Medium-High (distributed debugging)</td><td>Low-Medium (outbox table management)</td></tr><tr><td>Best fit</td><td>Database clusters, financial core systems</td><td>Multi-service workflows with complex compensation</td><td>Simple event-driven pipelines</td><td>Reliable event publishing from a service</td></tr></tbody></table></div>
+<p><strong>Choose 2PC when:</strong></p>
+<ul>
+<li>Strong consistency is a regulatory or business requirement (financial transactions, inventory where overselling is unacceptable)</li>
+<li>All participants are within the same trust boundary (database shards, not microservices)</li>
+<li>Transaction duration is short (milliseconds, not seconds)</li>
+</ul>
+<p><strong>Choose Sagas when:</strong></p>
+<ul>
+<li>The workflow spans multiple independent services</li>
+<li>Availability is more important than immediate consistency</li>
+<li>You can design meaningful compensating transactions</li>
+<li>Long-running workflows (minutes to hours)</li>
+</ul>
+<p><strong>Choose Outbox Pattern when:</strong></p>
+<ul>
+<li>You need reliable event publishing from a service</li>
+<li>Building event-driven choreography sagas</li>
+<li>You need to guarantee “local commit + event publish” atomicity</li>
+</ul>
+<h3 id="why-microservices-avoid-2pc">Why Microservices Avoid 2PC<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#why-microservices-avoid-2pc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>2PC requires all participants to implement the prepare/commit protocol, hold locks for the duration of the protocol, and trust a single coordinator. In a microservices architecture:</p>
+<ul>
+<li>Services are independently deployed and owned by different teams — coordinating protocol upgrades is impractical.</li>
+<li>Lock duration spans network round trips between services, which can be orders of magnitude slower than within a database cluster.</li>
+<li>A coordinator failure blocks all services involved in any in-flight transaction, creating a cross-service blast radius that violates microservice isolation goals.</li>
+<li>Services communicate over unreliable networks (HTTP, gRPC), not the reliable local networks that database clusters use.</li>
+</ul>
+<p>This is why virtually every microservice architecture uses Sagas or event-driven patterns instead of 2PC.</p>
+<hr/>
+<h2 id="10-connection-to-cap-and-consistency-models">10. Connection to CAP and Consistency Models<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-connection-to-cap-and-consistency-models" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Distributed transactions sit at the heart of the <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a> tradeoff:</p>
+<ul>
+<li><strong>2PC chooses CP.</strong> It guarantees consistency (atomic commitment) at the cost of availability (blocking on coordinator failure, reduced throughput from lock contention).</li>
+<li><strong>Sagas choose AP.</strong> They guarantee availability (each service commits independently, no global coordination) at the cost of consistency (intermediate states are visible, eventual consistency only).</li>
+<li><strong>Spanner achieves “effectively CA”</strong> by using synchronized clocks and Paxos replication to make the consistency cost so low (a few milliseconds of TrueTime wait) that the system behaves as both consistent and available for practical purposes. But during a true majority-of-replicas failure, it still chooses consistency over availability.</li>
+</ul>
+<p>The <a href="../../../05-isolation-levels" class="internal internal-link" data-slug="05-isolation-levels">05-Isolation-Levels</a> spectrum also applies: 2PC provides serializable isolation across nodes, while sagas provide something weaker than read committed — intermediate saga states are visible to concurrent transactions.</p>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>The core problem</strong>: ensuring atomic commitment across independent failure domains where any node or network link can fail.</li>
+<li><strong>2PC</strong>: coordinator-driven voting protocol. The commit point is the coordinator’s durable log write. Blocking protocol — participants that voted YES cannot proceed if the coordinator crashes. Strong consistency, but poor availability and high latency.</li>
+<li><strong>3PC</strong>: adds a pre-commit phase to prevent blocking. Works in theory (synchronous networks) but fails under network partitions. Rarely used in practice.</li>
+<li><strong>Sagas</strong>: break distributed transactions into local transactions with compensating actions. Trade isolation for availability. Two coordination models: choreography (event-driven, decoupled) and orchestration (central coordinator, easier to trace).</li>
+<li><strong>Outbox pattern</strong>: solves the dual-write problem (database update + event publish) using a single local transaction. Foundation for reliable event-driven sagas.</li>
+<li><strong>Idempotency</strong>: essential for at-least-once delivery semantics. Use idempotency keys, deduplication tables, or naturally idempotent operations.</li>
+<li><strong>Spanner</strong>: combines 2PC with Paxos replication and TrueTime to achieve non-blocking globally consistent transactions.</li>
+<li><strong>CockroachDB</strong>: parallel commits reduce 2PC to effectively 1 round trip; Raft replication prevents coordinator blocking.</li>
+<li><strong>Decision framework</strong>: 2PC for database clusters and financial systems; Sagas for microservice workflows; Outbox for reliable event publishing.</li>
+<li><strong>CAP connection</strong>: 2PC is CP (consistency over availability), Sagas are AP (availability over consistency).</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>
+<p><strong>Coordinator crash timing.</strong> In 2PC, a coordinator crashes after receiving <code>YES</code> votes from all participants but before writing the commit decision to its log. When it recovers, what does it do? What are all participants doing while the coordinator is down? What if the coordinator never recovers?
+Ans:</p>
+</li>
+<li>
+<p><strong>The in-doubt window.</strong> A 2PC participant has voted <code>YES</code> and the coordinator is unreachable. Can the participant safely ask other participants for the outcome? Under what conditions does this help, and when does it not help at all?
+Ans:</p>
+</li>
+<li>
+<p><strong>3PC under partition.</strong> Two groups of participants are separated by a network partition during the 3PC protocol. Group A received <code>PRE-COMMIT</code>; Group B did not. Both groups time out. What happens? Why does this violate safety?
+Ans:</p>
+</li>
+<li>
+<p><strong>Saga compensation failure.</strong> In a saga, step 3 fails and the orchestrator begins compensating steps 2 and 1. The compensation for step 2 also fails (e.g., the payment processor is down). What should the orchestrator do? How do you prevent the system from being stuck in a partially compensated state?
+Ans:</p>
+</li>
+<li>
+<p><strong>Saga dirty reads.</strong> An order saga completes step 1 (create order) and step 2 (charge payment). A notification service reads the order and sends a confirmation email. Step 3 (reserve inventory) fails, triggering compensation that cancels the order and refunds the payment. The customer received a confirmation email for a cancelled order. How would you redesign the saga to prevent this?
+Ans:</p>
+</li>
+<li>
+<p><strong>Outbox table growth.</strong> The outbox relay crashes for 6 hours during a Black Friday sale. The outbox table has accumulated 50 million unpublished events. When the relay restarts, what problems might occur? How would you design the relay to handle this gracefully?
+Ans:</p>
+</li>
+<li>
+<p><strong>Spanner TrueTime uncertainty.</strong> Spanner waits out the TrueTime uncertainty interval before reporting a commit as successful. What would happen if the clocks drifted beyond the assumed uncertainty bound? How would this affect the external consistency guarantee?
+Ans:</p>
+</li>
+<li>
+<p><strong>Concurrent sagas on shared data.</strong> Two order sagas both read inventory count = 10 at step 1. Saga A reserves 8 units, Saga B reserves 5 units. Both succeed at their local transaction level. How does overselling happen here, and what countermeasures would you implement?
+Ans:</p>
+</li>
+<li>
+<p><strong>2PC lock duration in microservices.</strong> A 2PC transaction spans three microservices. Service B experiences a garbage collection pause of 30 seconds during Phase 1. What happens to the locks held by Services A and C? How does this compare to the same GC pause within a single-database 2PC?
+Ans:</p>
+</li>
+<li>
+<p><strong>Outbox ordering.</strong> Your outbox relay publishes events to Kafka. Two concurrent transactions write to the outbox: transaction T1 commits first, then T2. But the relay reads T2’s event before T1’s (due to read timing). Downstream consumers process events out of order. How do you guarantee ordering? Does CDC-based relay solve this?
+Ans:</p>
+</li>
+<li>
+<p><strong>Idempotency key expiration.</strong> You expire idempotency keys after 24 hours to manage storage. A client retries a payment request 25 hours after the original — past the expiration window. The system processes it as a new request, charging the customer twice. How would you design the system to prevent this while still managing storage growth?
+Ans:</p>
+</li>
+<li>
+<p><strong>Saga vs 2PC for money transfer.</strong> A fintech company transfers money between user wallets in their own system (not external banks). Both wallets are in the same database cluster but different shards. Should they use 2PC or a saga? What if the wallets are in different databases owned by different services?
+Ans:</p>
+</li>
+</ol></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-4" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#distributed-transactions" data-for="distributed-transactions">Distributed Transactions</a></li><li class="depth-1"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-1"><a href="#1-why-distributed-transactions-are-hard" data-for="1-why-distributed-transactions-are-hard">1. Why Distributed Transactions Are Hard</a></li><li class="depth-1"><a href="#2-the-spectrum-of-solutions" data-for="2-the-spectrum-of-solutions">2. The Spectrum of Solutions</a></li><li class="depth-1"><a href="#3-two-phase-commit-2pc" data-for="3-two-phase-commit-2pc">3. Two-Phase Commit (2PC)</a></li><li class="depth-2"><a href="#1-the-protocol" data-for="1-the-protocol">1. The Protocol</a></li><li class="depth-2"><a href="#2-the-commit-point-and-its-significance" data-for="2-the-commit-point-and-its-significance">2. The Commit Point and Its Significance</a></li><li class="depth-2"><a href="#3-the-blocking-problem" data-for="3-the-blocking-problem">3. The Blocking Problem</a></li><li class="depth-2"><a href="#4-coordinator-failure-scenarios" data-for="4-coordinator-failure-scenarios">4. Coordinator Failure Scenarios</a></li><li class="depth-2"><a href="#5-recovery-after-coordinator-crash" data-for="5-recovery-after-coordinator-crash">5. Recovery After Coordinator Crash</a></li><li class="depth-2"><a href="#6-participant-timeout-behavior" data-for="6-participant-timeout-behavior">6. Participant Timeout Behavior</a></li><li class="depth-2"><a href="#7-performance-characteristics" data-for="7-performance-characteristics">7. Performance Characteristics</a></li><li class="depth-1"><a href="#4-three-phase-commit-3pc" data-for="4-three-phase-commit-3pc">4. Three-Phase Commit (3PC)</a></li><li class="depth-2"><a href="#1-the-protocol-1" data-for="1-the-protocol-1">1. The Protocol</a></li><li class="depth-2"><a href="#2-why-3pc-fails-in-practice" data-for="2-why-3pc-fails-in-practice">2. Why 3PC Fails in Practice</a></li><li class="depth-1"><a href="#5-sagas" data-for="5-sagas">5. Sagas</a></li><li class="depth-2"><a href="#1-the-core-idea" data-for="1-the-core-idea">1. The Core Idea</a></li><li class="depth-2"><a href="#2-what-a-saga-gives-up" data-for="2-what-a-saga-gives-up">2. What a Saga Gives Up</a></li><li class="depth-2"><a href="#3-compensating-transactions" data-for="3-compensating-transactions">3. Compensating Transactions</a></li><li class="depth-2"><a href="#4-choreography-vs-orchestration" data-for="4-choreography-vs-orchestration">4. Choreography vs Orchestration</a></li><li class="depth-2"><a href="#5-isolation-challenges-in-sagas" data-for="5-isolation-challenges-in-sagas">5. Isolation Challenges in Sagas</a></li><li class="depth-2"><a href="#6-non-reversible-actions" data-for="6-non-reversible-actions">6. Non-Reversible Actions</a></li><li class="depth-1"><a href="#6-the-outbox-pattern" data-for="6-the-outbox-pattern">6. The Outbox Pattern</a></li><li class="depth-2"><a href="#1-how-it-works" data-for="1-how-it-works">1. How It Works</a></li><li class="depth-2"><a href="#2-relay-implementation-polling-vs-cdc" data-for="2-relay-implementation-polling-vs-cdc">2. Relay Implementation: Polling vs CDC</a></li><li class="depth-2"><a href="#3-why-outbox-matters" data-for="3-why-outbox-matters">3. Why Outbox Matters</a></li><li class="depth-1"><a href="#7-idempotency-and-exactly-once-semantics" data-for="7-idempotency-and-exactly-once-semantics">7. Idempotency and Exactly-Once Semantics</a></li><li class="depth-2"><a href="#1-idempotency-keys" data-for="1-idempotency-keys">1. Idempotency Keys</a></li><li class="depth-2"><a href="#2-deduplication-strategies" data-for="2-deduplication-strategies">2. Deduplication Strategies</a></li><li class="depth-2"><a href="#3-the-exactly-once-illusion" data-for="3-the-exactly-once-illusion">3. The Exactly-Once Illusion</a></li><li class="depth-1"><a href="#8-real-world-approaches" data-for="8-real-world-approaches">8. Real-World Approaches</a></li><li class="depth-2"><a href="#1-google-spanner-2pc-that-does-not-block" data-for="1-google-spanner-2pc-that-does-not-block">1. Google Spanner: 2PC That Does Not Block</a></li><li class="depth-2"><a href="#2-cockroachdb-parallel-commits" data-for="2-cockroachdb-parallel-commits">2. CockroachDB: Parallel Commits</a></li><li class="depth-2"><a href="#3-kafka-transactions" data-for="3-kafka-transactions">3. Kafka Transactions</a></li><li class="depth-1"><a href="#9-decision-framework" data-for="9-decision-framework">9. Decision Framework</a></li><li class="depth-2"><a href="#why-microservices-avoid-2pc" data-for="why-microservices-avoid-2pc">Why Microservices Avoid 2PC</a></li><li class="depth-1"><a href="#10-connection-to-cap-and-consistency-models" data-for="10-connection-to-cap-and-consistency-models">10. Connection to CAP and Consistency Models</a></li><li class="depth-1"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-1"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal">03-Consensus-Algorithm</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal">04-Distributed-Lock</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/07-microservices" class="internal">07-Microservices</a></li><li><a href="../../../01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration" class="internal">01-Choreography-Orchestration</a></li><li><a href="../../../01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking" class="internal">04-Optimistic-Pessimistic-Locking</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-67bd5d9d.js" type="module" data-persist="true"></script></html>

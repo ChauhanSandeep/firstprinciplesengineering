@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>04-Optimistic-Pessimistic-Locking</title><meta charset="utf-8"/><link rel="preload" href="../../../index-47e0982e.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="04-Optimistic-Pessimistic-Locking"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="04-Optimistic-Pessimistic-Locking"/><meta name="twitter:description" content="Related: 05-Isolation-Levels, 07-Two-Phase-Locking, 06-MVCC, 04-Distributed-Lock, 05-Distributed-Transactions, 03-Consensus-Algorithm The Story Amazon’s Dynamo paper has a detail most people skim past."/><meta property="og:description" content="Related: 05-Isolation-Levels, 07-Two-Phase-Locking, 06-MVCC, 04-Distributed-Lock, 05-Distributed-Transactions, 03-Consensus-Algorithm The Story Amazon’s Dynamo paper has a detail most people skim past."/><meta property="og:image:alt" content="Related: 05-Isolation-Levels, 07-Two-Phase-Locking, 06-MVCC, 04-Distributed-Lock, 05-Distributed-Transactions, 03-Consensus-Algorithm The Story Amazon’s Dynamo paper has a detail most people skim past."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="Related: 05-Isolation-Levels, 07-Two-Phase-Locking, 06-MVCC, 04-Distributed-Lock, 05-Distributed-Transactions, 03-Consensus-Algorithm The Story Amazon’s Dynamo paper has a detail most people skim past."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-47e0982e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-10" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-10" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/">01-Concepts</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/02-architecture/">02-Architecture</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>04-Optimistic-Pessimistic-Locking</a></div></nav><h1 class="article-title">04-Optimistic-Pessimistic-Locking</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T04:20:59.979Z">Jun 10, 2026</time><span>17 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><p><strong>Related</strong>: <a href="../../../05-isolation-levels" class="internal internal-link" data-slug="05-isolation-levels">05-Isolation-Levels</a>, <a href="../../../07-two-phase-locking" class="internal internal-link" data-slug="07-two-phase-locking">07-Two-Phase-Locking</a>, <a href="../../../06-mvcc" class="internal internal-link" data-slug="06-mvcc">06-MVCC</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock">04-Distributed-Lock</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions">05-Distributed-Transactions</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">03-Consensus-Algorithm</a></p>
+<h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Amazon’s Dynamo paper has a detail most people skim past. They studied what happens when a customer adds items to a shopping cart during a network partition. With pessimistic locking, the cart returns an error. With optimistic concurrency, it might show stale items. Amazon calculated the revenue loss from each scenario and found that cart errors cost dramatically more than stale data — customers abandon carts on errors but barely notice a stale item list. A billion-dollar business decision was hiding inside a concurrency control choice. The “correct” theoretical answer and the profitable answer were different.</p>
+<hr/>
+<h2 id="1-the-fundamental-problem">1. The Fundamental Problem<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-fundamental-problem" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Every system that allows multiple actors to read and modify shared state faces a core question: <strong>how do you prevent two concurrent operations from silently overwriting each other’s work?</strong></p>
+<p>Consider two transactions that both read an account balance of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">100</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal">h</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mord mathnormal">i</span><span class="mord mathnormal">es</span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal">bi</span><span class="mord mathnormal">t</span></span></span></span>80. If both succeed, the balance is -$60 — a state neither transaction would have allowed individually. This is a <strong>lost update</strong>, and it is the canonical problem that concurrency control exists to solve.</p>
+<p>Two philosophical approaches emerge from this problem:</p>
+<ol>
+<li><strong>Pessimistic</strong> — assume conflicts will happen and <em>prevent</em> them by holding locks. No other transaction can touch the data while you hold the lock.</li>
+<li><strong>Optimistic</strong> — assume conflicts are rare and <em>detect</em> them at commit time. Let everyone work freely, but reject any transaction that operated on stale data.</li>
+</ol>
+<p>The choice between them is fundamentally a bet on your workload’s conflict rate.</p>
+<hr/>
+<h2 id="2-pessimistic-locking">2. Pessimistic Locking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-pessimistic-locking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-the-core-idea">1. The Core Idea<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-core-idea" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Pessimistic locking prevents conflicts by acquiring a lock <em>before</em> accessing data and holding it for the entire duration of the transaction. While you hold the lock, no conflicting operation can proceed — other transactions must wait (block) until the lock is released.
+The mental model is straightforward: treat every access as if a conflict is about to happen. Pay the cost of coordination upfront so you never have to deal with a conflict after the fact.</p>
+<h3 id="2-shared-and-exclusive-locks">2. Shared and Exclusive Locks<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-shared-and-exclusive-locks" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Not all access patterns conflict with each other. Two transactions that only read the same row are perfectly safe to run concurrently. This observation leads to two types of locks:</p>
+<ul>
+<li><strong>Shared lock (S)</strong> — acquired for reads. Multiple transactions can hold shared locks on the same resource simultaneously. A shared lock guarantees the data will not be modified while you are reading it.</li>
+<li><strong>Exclusive lock (X)</strong> — acquired for writes. Only one transaction can hold an exclusive lock, and no shared locks can coexist with it. An exclusive lock guarantees nobody else can read or write the data while you are modifying it.</li>
+</ul>
+<p>The <strong>compatibility matrix</strong> captures which locks can coexist:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>Shared (S) requested</th><th>Exclusive (X) requested</th></tr></thead><tbody><tr><td><strong>No lock held</strong></td><td>Granted</td><td>Granted</td></tr><tr><td><strong>Shared (S) held</strong></td><td>Granted</td><td>Blocked</td></tr><tr><td><strong>Exclusive (X) held</strong></td><td>Blocked</td><td>Blocked</td></tr></tbody></table></div>
+<p>The key insight: reads do not conflict with reads, but any write conflicts with everything. This is why shared locks exist — they allow read concurrency while still protecting against writes.</p>
+<h3 id="3-how-it-works-step-by-step">3. How It Works Step by Step<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-how-it-works-step-by-step" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Consider two transactions operating on the same inventory row:</p>
+<p>Transaction B is forced to wait. When it finally reads the data, it sees A’s committed result. No conflict is possible because concurrency is serialized through the lock.</p>
+<p><img src="../../.././../../excalidraw/optimistic-pessimistic-locking-1.excalidraw.svg" alt="700"/></p>
+<h3 id="4-deadlocks">4. Deadlocks<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-deadlocks" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Pessimistic locking introduces a problem that optimistic locking never has: <strong>deadlocks</strong>. A deadlock occurs when two transactions each hold a lock that the other needs, forming a circular wait.</p>
+<pre><code>Transaction A:                        Transaction B:
+──────────────                        ──────────────
+Lock row X                            Lock row Y
+...                                   ...
+Try to lock row Y                     Try to lock row X
+  -- BLOCKED (B holds Y)               -- BLOCKED (A holds X)
+</code></pre>
+<p>Neither can proceed. The system is stuck.</p>
+<p><strong>Why deadlocks are inevitable</strong>: whenever transactions can acquire multiple locks in different orders, circular dependencies become possible. You cannot eliminate them entirely without imposing a global lock ordering — which is impractical in most real systems.</p>
+<p><strong>How databases resolve deadlocks:</strong></p>
+<ul>
+<li><strong>Deadlock detection</strong> — the database maintains a wait-for graph. When it detects a cycle, it aborts one transaction (the “victim”) and releases its locks. The victim is typically the transaction that has done the least work, making rollback cheapest.</li>
+<li><strong>Lock timeouts</strong> — if a transaction waits longer than a threshold, it is aborted. Simpler than detection but can cause unnecessary aborts.</li>
+</ul>
+<h3 id="5-cost-of-pessimistic-locking">5. Cost of Pessimistic Locking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-cost-of-pessimistic-locking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The fundamental cost is <strong>reduced concurrency</strong>. Even if two transactions would not have conflicted, the second one must wait if the first holds the lock. Under high concurrency, this leads to:</p>
+<ul>
+<li><strong>Lock contention</strong> — many transactions waiting for the same resource</li>
+<li><strong>Convoy effect</strong> — a slow transaction holding a popular lock causes a queue of blocked transactions</li>
+<li><strong>Throughput degradation</strong> — the system spends more time waiting than working</li>
+</ul>
+<hr/>
+<h2 id="3-optimistic-locking">3. Optimistic Locking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-optimistic-locking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-the-core-insight">1. The Core Insight<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-core-insight" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>If conflicts are rare — say, 1 in 1,000 transactions actually modifies the same row concurrently — then acquiring and releasing locks on <em>every</em> transaction is wasteful overhead. The insight behind optimistic locking is: <strong>skip the lock entirely, let everyone work freely, and check for conflicts only at commit time.</strong> In the rare case where a conflict did occur, abort and retry.</p>
+<p>This trades the <em>guaranteed</em> cost of locking on every operation for an <em>occasional</em> cost of retrying on conflict.</p>
+<h3 id="2-compare-and-swap-the-underlying-primitive">2. Compare-And-Swap: The Underlying Primitive<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-compare-and-swap-the-underlying-primitive" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Before discussing specific mechanisms, it helps to see the primitive they all rest on. <strong>Compare-And-Swap (CAS)</strong> is an atomic operation with the semantic: <em>“update this value to X only if its current value is still Y.”</em> The comparison and the update happen as a single indivisible step — no other operation can slip between them.</p>
+<p>In hardware, CAS is a single CPU instruction used to build lock-free data structures. At the database level, the same idea appears as a conditional update — a <code>WHERE</code> clause that checks an expected state before modifying it:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="catppuccin-latte catppuccin-mocha"><code data-language="sql" data-theme="catppuccin-latte catppuccin-mocha" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">UPDATE</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> table</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> </span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">SET</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> new_value </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> X </span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">WHERE</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> key</span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> K </span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">AND</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> current_value </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> Y</span></span></code></pre></figure>
+<p>If another transaction already changed the value, the <code>WHERE</code> clause matches zero rows and the update does nothing. The application detects this via the affected row count.</p>
+<p>CAS has two flavors in practice, differing in <em>what</em> the precondition checks:</p>
+<ol>
+<li><strong>Version-based CAS</strong> — the precondition checks an auxiliary version counter. Any change to the row bumps the version, so the check detects <em>any</em> concurrent modification, regardless of which field changed.</li>
+<li><strong>State-based CAS</strong> — the precondition checks the actual business state that matters (e.g., <code>status = 'available'</code>, <code>qty >= 1</code>). The check detects only modifications that would invalidate <em>this specific operation</em>.</li>
+</ol>
+<p>Version-based is general-purpose — one mechanism works for every update. State-based is surgical — it encodes the meaningful invariant directly into the query. Both are CAS; they differ in what “match” means.</p>
+<h3 id="3-version-based-optimistic-locking">3. Version-Based Optimistic Locking<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-version-based-optimistic-locking" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The most common form of optimistic concurrency. Every row carries a <strong>version number</strong> (or timestamp). A transaction reads the row, notes the version, does its work, then writes conditionally:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="catppuccin-latte catppuccin-mocha"><code data-language="sql" data-theme="catppuccin-latte catppuccin-mocha" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">UPDATE</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> items</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">SET</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> quantity </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value"> 7</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;">, </span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">version</span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator"> =</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> version</span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator"> +</span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value"> 1</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">WHERE</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> id </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value"> 42</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> AND</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> version</span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator"> =</span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value"> 3</span></span></code></pre></figure>
+<p>If another transaction already modified the row, <code>version</code> is no longer 3, the <code>WHERE</code> clause matches zero rows, and the write fails. The application detects this (via affected row count) and retries: re-read the current state, recompute, attempt again.</p>
+<p><img src="../../.././../../excalidraw/optimistic-pessimistic-locking-2.excalidraw.svg" alt="700"/></p>
+<p>Version-based CAS fits when:</p>
+<ul>
+<li>The operation is “read-modify-write” with arbitrary logic between read and write</li>
+<li>You need to detect concurrent modification regardless of <em>which</em> field changed</li>
+<li>The transaction operates on a single logical entity and any change to that entity could invalidate your logic</li>
+</ul>
+<h3 id="4-state-based-cas-when-the-precondition-is-the-point">4. State-Based CAS: When the Precondition Is the Point<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-state-based-cas-when-the-precondition-is-the-point" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Many operations are fundamentally <strong>state transitions</strong> — available -> booked, pending -> completed, <code>qty</code> -> <code>qty - 1</code>. In these cases, the meaningful precondition is the <em>business state itself</em>, not a version counter. Encoding the precondition directly into the query is simpler, cheaper, and more expressive than maintaining a version column.</p>
+<p>Consider <strong>seat booking during a flash-sale concert</strong>. A user requests 4 specific seats. Thousands of users are concurrently competing for overlapping seat sets. Compare the three approaches:</p>
+<ol>
+<li><strong>Pessimistic</strong> — lock all 4 seat rows, check availability, mark them booked, commit. Any other transaction touching any of those seats must wait. Under extreme contention, the lock queue grows unbounded and tail latency explodes.</li>
+<li><strong>Version-based optimistic</strong> — read each seat with its version, verify all 4 are available, then write each seat with a version check. If any version check fails, retry the whole booking. Retries cascade under contention, and a version bump from an unrelated field (e.g., seat description edit) triggers spurious retries.</li>
+<li><strong>State-based CAS</strong> — issue a single conditional update that bakes the “must be available” check directly into the query:</li>
+</ol>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="catppuccin-latte catppuccin-mocha"><code data-language="sql" data-theme="catppuccin-latte catppuccin-mocha" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">UPDATE</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> seats</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">SET</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> booking_id </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> $my_booking</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">WHERE</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> show_id </span><span style="--shiki-light:#179299;--shiki-dark:#94E2D5;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> $show</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">  AND</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> seat_id </span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">IN</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> (</span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value">12</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value">13</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value">14</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#FAB387;" data-token-type="value">15</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;">)</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">  AND</span><span style="--shiki-light:#4C4F69;--shiki-dark:#CDD6F4;"> booking_id </span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword">IS</span><span style="--shiki-light:#8839EF;--shiki-dark:#CBA6F7;" data-token-type="keyword"> NULL</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#9399B2;--shiki-dark-font-style:italic;" data-token-type="comment"> -- Ensure that the seat is blocked/reserved if there is no existing booking id</span></span></code></pre></figure>
+<p>The database atomically scans those 4 rows and updates only the ones still unbooked. The <strong>affected row count</strong> tells the application exactly what happened:</p>
+<ul>
+<li><code>4</code> rows — full success, all seats reserved</li>
+<li><code>2</code> rows — partial success; two seats were grabbed by someone else. The application can accept the partial reservation, release the two and fail, or try alternate seats</li>
+<li><code>0</code> rows — all seats taken; offer alternatives</li>
+</ul>
+<p>Notice what this approach <em>did not need</em>:</p>
+<ul>
+<li>No version column on the seats table</li>
+<li>No explicit read-before-write (the check happens inside the update)</li>
+<li>No retry loop (partial success is handled directly, not by retrying)</li>
+<li>No lock held across a network round trip</li>
+</ul>
+<p>The key insight is that <strong>the precondition is the business rule</strong>. “Booking succeeds if the seat is still unbooked” is expressible directly in SQL. A version counter would be an indirection — any unrelated change to the seat row would force retries even though the booking-relevant state did not change.</p>
+<h3 id="5-other-state-based-cas-patterns">5. Other State-Based CAS Patterns<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-other-state-based-cas-patterns" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The seat booking pattern generalizes. A few common variants:</p>
+<ol>
+<li><strong>Inventory decrement</strong> — <code>UPDATE inventory SET qty = qty - 1 WHERE item_id = X AND qty >= 1</code>. Atomically enforces the non-negative constraint and decrements in one step. Affected row count distinguishes “purchased” from “sold out”. A version-based approach would require read + compute + conditional write + retry loop; state-based CAS collapses this into one atomic statement.</li>
+<li><strong>State machine transitions</strong> — <code>UPDATE orders SET status = 'shipped' WHERE order_id = X AND status = 'packed'</code>. Enforces the valid transition <code>packed -> shipped</code> inside the query. Orders in any other state (canceled, already shipped, pending) are silently rejected. The business rule lives as a precondition.</li>
+<li><strong>Distributed leader election</strong> — <code>SET leader = node_A IF leader IS NULL</code> (etcd, Redis, ZooKeeper). A node becomes leader only if no leader is set. The CAS semantic prevents split-brain at the storage layer with no extra coordination.</li>
+<li><strong>Idempotency keys</strong> — <code>INSERT INTO payments (idempotency_key, ...) VALUES (...) ON CONFLICT DO NOTHING</code>. The key itself is the precondition — a duplicate request detects the conflict and the application returns the already-recorded result.</li>
+</ol>
+<h3 id="6-choosing-between-version-based-and-state-based-cas">6. Choosing Between Version-Based and State-Based CAS<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-choosing-between-version-based-and-state-based-cas" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The practical rule: <strong>if you can express the precondition as a <code>WHERE</code> clause on the current business state, use state-based CAS</strong>. It avoids the version column, avoids spurious retries on unrelated modifications, and lets the affected row count carry useful partial-success information.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Situation</th><th>Prefer</th></tr></thead><tbody><tr><td>Arbitrary read-modify-write on a complex entity</td><td>Version-based</td></tr><tr><td>Any concurrent change to the row could invalidate the logic</td><td>Version-based</td></tr><tr><td>State transition where the precondition is a specific field value</td><td>State-based</td></tr><tr><td>Atomic counter increment/decrement with bounds (inventory, credits)</td><td>State-based</td></tr><tr><td>Batch operations where partial success is meaningful</td><td>State-based (use affected row count)</td></tr><tr><td>Competing for scarce exclusive resources (seats, leader slot, unique key)</td><td>State-based</td></tr><tr><td>Multiple unrelated fields updated by different operations on the same row</td><td>Version-based or column-level locks</td></tr></tbody></table></div>
+<p>Reserve version-based locking for cases where the operation’s correctness depends on the <em>entire entity</em> not changing, not just a specific field.</p>
+<h3 id="7-the-retry-problem-under-high-contention">7. The Retry Problem Under High Contention<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-the-retry-problem-under-high-contention" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Optimistic locking has an Achilles’ heel: <strong>what happens when conflicts are frequent?</strong></p>
+<p>If 100 transactions concurrently modify the same row, only 1 succeeds on each round. The other 99 must retry. On the next round, 98 fail again. This creates several pathological behaviors:</p>
+<ul>
+<li><strong>Livelock</strong> — transactions keep retrying but keep failing because other retries keep succeeding first. The system is doing work but not making proportional progress.</li>
+<li><strong>Retry storms</strong> — each failed transaction re-reads and retries, multiplying the load on the database. Under heavy contention, the system does more wasted work than useful work.</li>
+<li><strong>Starvation</strong> — some transactions may be repeatedly unlucky and never succeed, especially without fairness guarantees.</li>
+<li><strong>Amplified latency</strong> — tail latencies grow exponentially as transactions require multiple retries.</li>
+</ul>
+<p>Mitigations include exponential backoff with jitter (to spread out retries), retry limits (to fail fast rather than livelock), and — at a certain contention threshold — switching to pessimistic locking.</p>
+<hr/>
+<h2 id="4-when-to-choose-each-approach">4. When to Choose Each Approach<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-when-to-choose-each-approach" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The decision variable is <strong>conflict rate</strong> — how often two concurrent transactions actually touch the same data.</p>
+<p><img src="../../.././../../excalidraw/optimistic-pessimistic-locking-3.excalidraw.svg" alt="1000"/></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Factor</th><th>Favors Optimistic</th><th>Favors Pessimistic</th></tr></thead><tbody><tr><td><strong>Conflict rate</strong></td><td>Low — most transactions do not touch the same data</td><td>High — hot rows or accounts updated frequently</td></tr><tr><td><strong>Read/write ratio</strong></td><td>Read-heavy — reads never conflict</td><td>Write-heavy on shared data</td></tr><tr><td><strong>Transaction duration</strong></td><td>Short — less time for conflicts to occur</td><td>Long — holding locks is better than retrying expensive work</td></tr><tr><td><strong>Retry cost</strong></td><td>Low — recomputation is cheap</td><td>High — complex business logic, external side effects</td></tr><tr><td><strong>Latency sensitivity</strong></td><td>Tolerant — occasional retry is acceptable</td><td>Strict — cannot afford unpredictable tail latency</td></tr><tr><td><strong>Throughput priority</strong></td><td>High — no lock overhead on the common path</td><td>Moderate — willing to trade throughput for predictability</td></tr></tbody></table></div>
+<p><strong>The key mental model</strong>: optimistic locking optimizes for the <em>common case</em> (no conflict) at the expense of the <em>uncommon case</em> (conflict requires retry). Pessimistic locking provides <em>predictable behavior</em> regardless of conflict rate, at the cost of lower throughput.</p>
+<h3 id="real-world-examples">Real-World Examples<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#real-world-examples" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>Optimistic works well:</strong></p>
+<ul>
+<li>Wiki or CMS edits — users rarely edit the same page simultaneously</li>
+<li>Shopping cart updates — each user modifies their own cart</li>
+<li>Configuration changes — low frequency, different keys</li>
+</ul>
+<p><strong>Pessimistic works well:</strong></p>
+<ul>
+<li>Bank account transfers — high-value rows updated by many concurrent transactions</li>
+<li>Ticket booking — many users competing for the same seats</li>
+<li>Inventory decrements during flash sales — extreme contention on the same rows</li>
+</ul>
+<hr/>
+<h2 id="5-connection-to-distributed-systems">5. Connection to Distributed Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-connection-to-distributed-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>On a single database node, these concepts map cleanly to SQL locks and version columns. But in distributed systems, the same philosophical split applies — it just gets harder.</p>
+<h3 id="1-pessimistic-in-distributed-systems-distributed-locks">1. Pessimistic in Distributed Systems: Distributed Locks<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-pessimistic-in-distributed-systems-distributed-locks" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The distributed equivalent of a database lock is a <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock">Distributed Lock</a>. A service acquires a lock on a resource (via ZooKeeper, etcd, Redis, etc.) before modifying it.
+The challenges multiply:</p>
+<ul>
+<li><strong>Lock holder failure</strong> — if the lock holder crashes, the lock must eventually be released. This requires TTLs or lease-based locks, which introduce a window where two holders might exist (the old holder thinks it still has the lock; the new holder has acquired it after TTL expiry).</li>
+<li><strong>Network partitions</strong> — a lock holder may be partitioned from the lock service but still believe it holds the lock. This is the core problem that <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">consensus algorithms</a> like Raft and Paxos solve — ensuring agreement on who holds the lock despite failures.</li>
+<li><strong>Fencing tokens</strong> — to prevent stale lock holders from causing damage, the lock service issues a monotonically increasing fencing token with each lock grant. Storage systems reject writes with an outdated token, providing safety even when locks are not perfectly reliable.</li>
+</ul>
+<h3 id="2-optimistic-in-distributed-systems-cas-and-version-vectors">2. Optimistic in Distributed Systems: CAS and Version Vectors<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-optimistic-in-distributed-systems-cas-and-version-vectors" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Optimistic concurrency control scales more naturally to distributed systems because it does not require coordination during the operation — only at commit time.</p>
+<ul>
+<li><strong>Conditional writes</strong> — DynamoDB, Cosmos DB, and Cassandra all support conditional updates (analogous to <code>UPDATE WHERE version = N</code>). These are single-item CAS operations that work across distributed storage.</li>
+<li><strong>ETags in HTTP</strong> — the <code>If-Match</code> header implements optimistic concurrency for REST APIs. The client reads a resource with an ETag, then sends an update conditioned on that ETag. If another client modified the resource, the server returns <code>412 Precondition Failed</code>.</li>
+<li><strong>Version vectors</strong> — in multi-leader or leaderless replication, a single version number is insufficient because updates can arrive from multiple nodes. <a href="../../../06-mvcc" class="internal internal-link alias" data-slug="06-mvcc">Version vectors</a> track the version per replica, enabling detection of concurrent updates vs. causal ordering.</li>
+</ul>
+<p>The tradeoff remains the same: pessimistic (distributed locks) provides strong mutual exclusion but is expensive and fragile across network boundaries. Optimistic (CAS / version vectors) allows higher throughput but requires conflict resolution logic.</p>
+<hr/>
+<h2 id="6-technology-agnostic-comparison">6. Technology-Agnostic Comparison<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-technology-agnostic-comparison" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Dimension</th><th>Pessimistic</th><th>Optimistic</th></tr></thead><tbody><tr><td><strong>Mechanism</strong></td><td>Acquire lock before access; hold until commit</td><td>Read version; conditional write at commit</td></tr><tr><td><strong>Conflict handling</strong></td><td>Prevention — conflicts cannot occur</td><td>Detection — conflicts discovered at commit time</td></tr><tr><td><strong>Blocking behavior</strong></td><td>Transactions wait for locks</td><td>No waiting; failed transactions retry</td></tr><tr><td><strong>Deadlock risk</strong></td><td>Yes — circular lock dependencies possible</td><td>None — no locks to create cycles</td></tr><tr><td><strong>Livelock risk</strong></td><td>None — waiting transactions eventually proceed</td><td>Yes — under contention, retries can cascade</td></tr><tr><td><strong>Throughput under low contention</strong></td><td>Lower — lock acquisition overhead on every operation</td><td>Higher — no coordination overhead</td></tr><tr><td><strong>Throughput under high contention</strong></td><td>Stable — serialized access is predictable</td><td>Degrades — retries amplify load</td></tr><tr><td><strong>Implementation complexity</strong></td><td>Lock management, deadlock detection, timeout handling</td><td>Version tracking, retry logic, idempotency</td></tr><tr><td><strong>Distributed system fit</strong></td><td>Harder — requires distributed lock service</td><td>Easier — CAS operations are naturally partitionable</td></tr></tbody></table></div>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>The fundamental problem is preventing lost updates when multiple transactions modify the same data concurrently.</li>
+<li><strong>Pessimistic locking</strong> acquires locks before access and holds them for the transaction duration. Shared locks allow concurrent reads; exclusive locks serialize all access. Deadlocks are an inherent risk, resolved via detection (wait-for graphs) or timeouts.</li>
+<li><strong>Optimistic locking</strong> skips locking entirely, relying on <strong>Compare-And-Swap</strong> to detect conflicts at commit time. CAS appears in two forms: <strong>version-based</strong> (detect any change via a version counter — general purpose) and <strong>state-based</strong> (encode the business precondition directly in the <code>WHERE</code> clause — ideal for state transitions like seat booking, inventory decrement, leader election, where affected-row count carries partial-success information). Under low contention both provide higher throughput than locking; under high contention they suffer from livelock, retry storms, and starvation.</li>
+<li><strong>Conflict rate</strong> is the primary decision variable. Low conflict rate favors optimistic; high conflict rate favors pessimistic.</li>
+<li>In distributed systems, pessimistic locking maps to <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal internal-link alias" data-slug="01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock">distributed locks</a> (with fencing tokens for safety), while optimistic locking maps to conditional writes, ETags, and version vectors.</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li><strong>Retry amplification</strong>: If 50 transactions simultaneously attempt optimistic updates on the same row, how many total update attempts occur before all 50 succeed? What is the time complexity? How would you mitigate this?
+Ans:</li>
+<li><strong>Deadlock vs. livelock</strong>: Both cause transactions to fail to make progress. What is the fundamental difference in how they manifest, and why does pessimistic locking risk one while optimistic locking risks the other?
+Ans:</li>
+<li><strong>Fencing tokens</strong>: A service acquires a distributed lock with TTL=10s, then experiences a GC pause for 15 seconds. It resumes and writes to storage, believing it still holds the lock. How does a fencing token prevent data corruption, and what assumptions must the storage system make?
+Ans:</li>
+<li><strong>Hybrid strategies</strong>: Some systems use optimistic locking by default but escalate to pessimistic locking when retry counts exceed a threshold. What are the tradeoffs of this approach? How would you decide the escalation threshold?
+Ans:</li>
+<li><strong>CAS on distributed storage</strong>: DynamoDB supports conditional writes on a single item. Why is single-item CAS straightforward in a distributed database but multi-item CAS (transactions across multiple items) is fundamentally harder? What does this have to do with consensus?
+Ans:</li>
+<li><strong>Version vectors vs. version numbers</strong>: Why is a single version counter insufficient for optimistic concurrency control in a multi-leader replicated system? Construct a scenario where a single counter leads to incorrect conflict detection.
+Ans:</li>
+<li><strong>Phantom reads and pessimistic locking</strong>: Standard row-level exclusive locks prevent lost updates on existing rows. But what if a transaction’s logic depends on the <em>absence</em> of a row (e.g., “insert if not exists”)? How do predicate locks or gap locks address this, and what is their performance cost?
+Ans:</li>
+<li><strong>Convoy effect</strong>: Explain how a single slow transaction holding an exclusive lock on a hot row can degrade system-wide throughput. How does this differ from simple lock contention, and what mitigation strategies exist?
+Ans:</li>
+</ol></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-10" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-0"><a href="#1-the-fundamental-problem" data-for="1-the-fundamental-problem">1. The Fundamental Problem</a></li><li class="depth-0"><a href="#2-pessimistic-locking" data-for="2-pessimistic-locking">2. Pessimistic Locking</a></li><li class="depth-1"><a href="#1-the-core-idea" data-for="1-the-core-idea">1. The Core Idea</a></li><li class="depth-1"><a href="#2-shared-and-exclusive-locks" data-for="2-shared-and-exclusive-locks">2. Shared and Exclusive Locks</a></li><li class="depth-1"><a href="#3-how-it-works-step-by-step" data-for="3-how-it-works-step-by-step">3. How It Works Step by Step</a></li><li class="depth-1"><a href="#4-deadlocks" data-for="4-deadlocks">4. Deadlocks</a></li><li class="depth-1"><a href="#5-cost-of-pessimistic-locking" data-for="5-cost-of-pessimistic-locking">5. Cost of Pessimistic Locking</a></li><li class="depth-0"><a href="#3-optimistic-locking" data-for="3-optimistic-locking">3. Optimistic Locking</a></li><li class="depth-1"><a href="#1-the-core-insight" data-for="1-the-core-insight">1. The Core Insight</a></li><li class="depth-1"><a href="#2-compare-and-swap-the-underlying-primitive" data-for="2-compare-and-swap-the-underlying-primitive">2. Compare-And-Swap: The Underlying Primitive</a></li><li class="depth-1"><a href="#3-version-based-optimistic-locking" data-for="3-version-based-optimistic-locking">3. Version-Based Optimistic Locking</a></li><li class="depth-1"><a href="#4-state-based-cas-when-the-precondition-is-the-point" data-for="4-state-based-cas-when-the-precondition-is-the-point">4. State-Based CAS: When the Precondition Is the Point</a></li><li class="depth-1"><a href="#5-other-state-based-cas-patterns" data-for="5-other-state-based-cas-patterns">5. Other State-Based CAS Patterns</a></li><li class="depth-1"><a href="#6-choosing-between-version-based-and-state-based-cas" data-for="6-choosing-between-version-based-and-state-based-cas">6. Choosing Between Version-Based and State-Based CAS</a></li><li class="depth-1"><a href="#7-the-retry-problem-under-high-contention" data-for="7-the-retry-problem-under-high-contention">7. The Retry Problem Under High Contention</a></li><li class="depth-0"><a href="#4-when-to-choose-each-approach" data-for="4-when-to-choose-each-approach">4. When to Choose Each Approach</a></li><li class="depth-1"><a href="#real-world-examples" data-for="real-world-examples">Real-World Examples</a></li><li class="depth-0"><a href="#5-connection-to-distributed-systems" data-for="5-connection-to-distributed-systems">5. Connection to Distributed Systems</a></li><li class="depth-1"><a href="#1-pessimistic-in-distributed-systems-distributed-locks" data-for="1-pessimistic-in-distributed-systems-distributed-locks">1. Pessimistic in Distributed Systems: Distributed Locks</a></li><li class="depth-1"><a href="#2-optimistic-in-distributed-systems-cas-and-version-vectors" data-for="2-optimistic-in-distributed-systems-cas-and-version-vectors">2. Optimistic in Distributed Systems: CAS and Version Vectors</a></li><li class="depth-0"><a href="#6-technology-agnostic-comparison" data-for="6-technology-agnostic-comparison">6. Technology-Agnostic Comparison</a></li><li class="depth-0"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-0"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal">05-Distributed-Transactions</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-67bd5d9d.js" type="module" data-persist="true"></script></html>

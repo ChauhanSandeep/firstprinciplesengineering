@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>03-Consensus-Algorithm</title><meta charset="utf-8"/><link rel="preload" href="../../../index-47e0982e.css" as="style"/><link rel="preload" href="../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend Deca:wght@400;700&amp;family=Atkinson Hyperlegible:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="First Principles Engineering"/><meta property="og:title" content="03-Consensus-Algorithm"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="03-Consensus-Algorithm"/><meta name="twitter:description" content="The Story Lamport submitted the Paxos paper in 1990 using an elaborate allegory about a fictional Greek parliament on the island of Paxos, where legislators kept wandering in and out of the chamber."/><meta property="og:description" content="The Story Lamport submitted the Paxos paper in 1990 using an elaborate allegory about a fictional Greek parliament on the island of Paxos, where legislators kept wandering in and out of the chamber."/><meta property="og:image:alt" content="The Story Lamport submitted the Paxos paper in 1990 using an elaborate allegory about a fictional Greek parliament on the island of Paxos, where legislators kept wandering in and out of the chamber."/><meta property="twitter:domain" content="chauhansandeep.github.io/firstprinciplesengineering"/><meta property="og:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm"/><meta property="twitter:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="The Story Lamport submitted the Paxos paper in 1990 using an elaborate allegory about a fictional Greek parliament on the island of Paxos, where legislators kept wandering in and out of the chamber."/><meta name="generator" content="Quartz"/><script src="../../../static/site.js" defer></script><link href="../../../index-47e0982e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-caf7c009.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm-og-image.webp"/><meta property="og:image:url" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm-og-image.webp"/><meta name="twitter:image" content="https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm" data-basepath="/firstprinciplesengineering"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">First Principles Engineering</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="Reader mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="Reader mode"><title>Reader mode</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-2" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-2" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/">01-Fundamentals</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/">01-Concepts</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/">01-Distributed-Systems</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>03-Consensus-Algorithm</a></div></nav><h1 class="article-title">03-Consensus-Algorithm</h1><p show-comma="true" class="content-meta"><time datetime="2026-06-10T04:20:59.971Z">Jun 10, 2026</time><span>26 min read</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h2 id="the-story">The Story<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-story" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Lamport submitted the Paxos paper in 1990 using an elaborate allegory about a fictional Greek parliament on the island of Paxos, where legislators kept wandering in and out of the chamber. Reviewers told him to drop the story and just write it normally. He refused — for eight years — out of spite, because he believed the computer science community couldn’t appreciate elegance. When he finally relented with “Paxos Made Simple” in 2001, the opening line was: “The Paxos algorithm, when presented in plain English, is very simple.” Passive-aggression as a literary form.</p>
+<hr/>
+<h2 id="1-why-consensus-exists">1. Why Consensus Exists<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-why-consensus-exists" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The fundamental challenge in distributed systems is getting multiple machines to act as one coherent system. A single database on one machine has no coordination problem — it is the sole authority on what the current state is. The moment you replicate data across multiple nodes for fault tolerance or scalability, you face an unavoidable question: when these nodes disagree (due to crashes, network delays, or partitions), which node’s view of reality is correct?</p>
+<p><strong>Related Topics</strong>: <a href="../../../02-zookeeper" class="internal internal-link" data-slug="02-zookeeper">02-Zookeeper</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock">04-Distributed-Lock</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions">05-Distributed-Transactions</a>, <a href="../../../02-cap-and-pacelc" class="internal internal-link" data-slug="02-cap-and-pacelc">02-CAP-and-PACELC</a>, <a href="../../../01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol" class="internal internal-link" data-slug="01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol">06-Gossip-Protocol</a>, <a href="../../../05-isolation-levels" class="internal internal-link" data-slug="05-isolation-levels">05-Isolation-Levels</a></p>
+<p>Consensus is the formal answer to this question. It is a protocol by which a group of nodes agrees on a single value (or a sequence of values) such that:</p>
+<ul>
+<li><strong>Agreement</strong> — all non-faulty nodes decide the same value</li>
+<li><strong>Validity</strong> — the decided value was actually proposed by some node (not fabricated)</li>
+<li><strong>Termination</strong> — every non-faulty node eventually decides (liveness)</li>
+<li><strong>Integrity</strong> — each node decides at most once</li>
+</ul>
+<p>These four properties sound simple. The deep difficulty is that you must maintain agreement and validity <em>even when nodes crash and messages are lost</em>, while also making progress (termination). This tension between safety and liveness is the core of why consensus is hard.</p>
+<h3 id="where-consensus-appears-in-practice">Where Consensus Appears in Practice<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#where-consensus-appears-in-practice" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>You rarely implement consensus directly. Instead, you use systems built on consensus protocols:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Use Case</th><th>System</th><th>Underlying Protocol</th></tr></thead><tbody><tr><td>Configuration / service discovery</td><td>etcd, ZooKeeper, Consul</td><td>Raft, ZAB</td></tr><tr><td>Distributed locking</td><td>Chubby, etcd</td><td>Paxos, Raft</td></tr><tr><td>Leader election</td><td>Kubernetes control plane</td><td>Raft (via etcd)</td></tr><tr><td>Replicated state machines</td><td>CockroachDB, TiKV, Spanner</td><td>Raft, Paxos</td></tr><tr><td>Metadata management</td><td>Kafka (KRaft mode)</td><td>Raft</td></tr></tbody></table></div>
+<p>Every time you see “replicated log” or “replicated state machine,” consensus is doing the heavy lifting underneath.</p>
+<hr/>
+<h2 id="2-why-consensus-is-hard-the-flp-impossibility">2. Why Consensus is Hard: The FLP Impossibility<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-why-consensus-is-hard-the-flp-impossibility" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Before diving into algorithms, you need to understand the theoretical limit that shapes every consensus protocol.</p>
+<p>In 1985, Fischer, Lynch, and Paterson proved that <strong>no deterministic consensus algorithm can guarantee termination in an asynchronous system where even one node can crash</strong>. This is the FLP impossibility result.</p>
+<p>The intuition is straightforward. In a fully asynchronous network, you cannot distinguish between a node that has crashed and a node that is merely slow. Any protocol that waits for a response from a potentially crashed node might wait forever (violating termination). But any protocol that proceeds without hearing from that node might proceed incorrectly if the node is actually alive and has a different view (violating agreement).</p>
+<p><strong>What this means in practice</strong>: every real consensus algorithm circumvents FLP by weakening one assumption:</p>
+<ul>
+<li><strong>Paxos and Raft</strong> use timeouts to detect failures, which technically makes the system partially synchronous. They guarantee safety always, but liveness only when the network behaves “well enough” (messages are delivered within some bound, a stable leader exists).</li>
+<li>This means that under severe network partitions or message delays, the system might stall (no progress) but will never produce inconsistent results. <strong>Safety is unconditional; liveness is conditional.</strong></li>
+</ul>
+<p>This is the most important insight for staff-level understanding: consensus algorithms do not solve an impossible problem. They redefine the problem boundary to make it solvable, accepting that the system may temporarily stall rather than produce wrong answers.</p>
+<hr/>
+<h2 id="3-naive-approaches-and-why-they-fail">3. Naive Approaches and Why They Fail<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-naive-approaches-and-why-they-fail" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-designated-leader-no-election">1. Designated Leader (No Election)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-designated-leader-no-election" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Pick one node as the permanent leader. All decisions flow through it.</p>
+<p><strong>Why it fails</strong>: if the leader crashes, the entire system halts. You need a way to choose a new leader, but choosing a new leader <em>is itself a consensus problem</em>. You have a chicken-and-egg situation.</p>
+<h3 id="2-majority-vote-on-each-request">2. Majority Vote on Each Request<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-majority-vote-on-each-request" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>For every decision, have all nodes vote and take the majority.</p>
+<p><strong>Why it fails</strong>: consider two concurrent proposals. Node A proposes value X and gets votes from nodes {1, 2, 3}. Simultaneously, node B proposes value Y and gets votes from nodes {3, 4, 5}. Node 3 voted for both. Now you have two “majorities” that decided different values. Without ordering proposals (which requires… consensus), simple voting breaks.</p>
+<h3 id="3-two-phase-commit-2pc">3. Two-Phase Commit (2PC)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-two-phase-commit-2pc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Use a coordinator that first asks all nodes to prepare, then tells them to commit.</p>
+<p><strong>Why it fails</strong>: if the coordinator crashes after sending “prepare” but before sending “commit,” all participants are stuck holding locks, unable to proceed. 2PC is a consensus protocol for the case where <em>all</em> nodes must agree, and it blocks when the coordinator fails. True consensus algorithms tolerate minority failures by using majority quorums.</p>
+<p>The key insight that makes consensus algorithms work is <strong>numbered proposals combined with majority quorums</strong>. By requiring a majority (not unanimity) and by ordering proposals with monotonically increasing numbers, the algorithms ensure that any two successful quorums overlap, preventing conflicting decisions.</p>
+<hr/>
+<h2 id="4-paxos">4. Paxos<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-paxos" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Paxos, invented by Leslie Lamport, is the foundational consensus algorithm. Every other consensus protocol is either a variant of Paxos or was designed in reaction to it. Understanding Paxos deeply is essential even if you never implement it directly.</p>
+<h3 id="1-the-mental-model">1. The Mental Model<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-the-mental-model" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Think of Paxos as a voting protocol with a twist: before you can propose a value for a vote, you must first win the right to propose by convincing a majority that your proposal number is the highest they have seen. This two-phase structure (first win the right, then propose the value) is what prevents conflicting decisions.</p>
+<h3 id="2-roles">2. Roles<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-roles" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Paxos defines three logical roles (a single physical node often plays multiple roles):</p>
+<ul>
+<li><strong>Proposer</strong> — initiates consensus by proposing a value with a unique proposal number</li>
+<li><strong>Acceptor</strong> — votes on proposals and durably records its votes (the “memory” of the system)</li>
+<li><strong>Learner</strong> — observes the outcome and acts on it (does not participate in voting)</li>
+</ul>
+<h3 id="3-single-decree-paxos-basic-paxos">3. Single-Decree Paxos (Basic Paxos)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-single-decree-paxos-basic-paxos" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Single-decree Paxos decides on exactly one value. It proceeds in two phases.</p>
+<h4 id="phase-1-prepare">Phase 1: Prepare<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#phase-1-prepare" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ol>
+<li>A proposer selects a globally unique proposal number <code>n</code> (higher than any it has used before) and sends <code>Prepare(n)</code> to a majority of acceptors.</li>
+<li>Each acceptor that receives <code>Prepare(n)</code>:
+<ul>
+<li>If <code>n</code> is higher than any proposal number it has previously promised, it <strong>promises</strong> not to accept any future proposal with a number less than <code>n</code>. It replies with <code>Promise(n, accepted_value)</code> where <code>accepted_value</code> is the value from the highest-numbered proposal it has already accepted (or null if it has accepted nothing).</li>
+<li>If <code>n</code> is not higher, the acceptor ignores the message (or sends a rejection).</li>
+</ul>
+</li>
+</ol>
+<h4 id="phase-2-accept">Phase 2: Accept<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#phase-2-accept" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ol start="3">
+<li>
+<p>If the proposer receives promises from a majority of acceptors:</p>
+<ul>
+<li>It examines the responses. If any acceptor reported a previously accepted value, the proposer <strong>must use the value from the highest-numbered accepted proposal</strong>. This is the critical rule that ensures safety.</li>
+<li>If no acceptor reported an accepted value, the proposer is free to choose any value.</li>
+<li>It sends <code>Accept(n, v)</code> to the acceptors.</li>
+</ul>
+</li>
+<li>
+<p>Each acceptor that receives <code>Accept(n, v)</code>:</p>
+<ul>
+<li>If it has not promised to a proposal number higher than <code>n</code>, it <strong>accepts</strong> the proposal and durably records <code>(n, v)</code>.</li>
+<li>Otherwise, it rejects.</li>
+</ul>
+</li>
+<li>
+<p>Once a majority of acceptors have accepted <code>(n, v)</code>, the value <code>v</code> is <strong>chosen</strong>. Learners are notified.</p>
+</li>
+</ol>
+<p><img src="../../.././../../excalidraw/consensus-algorithm-1.excalidraw.svg" alt="1000"/></p>
+<h3 id="4-why-the-adopt-previously-accepted-value-rule-is-essential">4. Why the “Adopt Previously Accepted Value” Rule is Essential<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-why-the-adopt-previously-accepted-value-rule-is-essential" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>This rule is the heart of Paxos safety. Without it, the algorithm breaks.</p>
+<p><strong>Scenario without the rule</strong>: Acceptors {A1, A2, A3}. Proposer P1 runs Paxos with proposal 5 and value “X”. A1 and A2 accept (5, “X”) — value “X” is now chosen. Later, proposer P2 runs Paxos with proposal 6. P2 contacts A2 and A3. A2 reports it accepted (5, “X”). If P2 could ignore this and propose its own value “Y”, then A2 and A3 might accept (6, “Y”). Now A1 thinks “X” is chosen, A2 accepted both, and A3 thinks “Y” is chosen. The system is inconsistent.</p>
+<p><strong>With the rule</strong>: P2 sees that A2 already accepted (5, “X”), so P2 must propose “X” with its higher number 6. Even though P2 wanted “Y”, it proposes “X”. This ensures the already-chosen value is never overridden.</p>
+<p><img src="../../.././../../excalidraw/consensus-algorithm-4.excalidraw.svg" alt="1200"/></p>
+<h3 id="5-the-dueling-proposers-problem-livelock">5. The Dueling Proposers Problem (Livelock)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-the-dueling-proposers-problem-livelock" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Paxos has a subtle liveness issue. Two proposers can endlessly preempt each other:</p>
+<ol>
+<li>Proposer P1 sends <code>Prepare(1)</code>, gets a majority of promises.</li>
+<li>Before P1 can send <code>Accept(1, v)</code>, proposer P2 sends <code>Prepare(2)</code>. Acceptors promise to P2 and will now reject P1’s accept.</li>
+<li>P1 retries with <code>Prepare(3)</code>, preempting P2.</li>
+<li>P2 retries with <code>Prepare(4)</code>, preempting P1.</li>
+<li>This continues indefinitely — neither proposer ever completes phase 2.</li>
+</ol>
+<p>This is not a safety violation (no wrong value is chosen) but a liveness violation (no value is ever chosen). This is exactly the FLP impossibility manifesting in practice.</p>
+<p><strong>The fix</strong>: elect a single distinguished proposer (a leader). If only one proposer is active, there is no contention, and phase 2 always succeeds. This insight leads directly to Multi-Paxos.</p>
+<h3 id="6-multi-paxos">6. Multi-Paxos<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-multi-paxos" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Basic Paxos decides a single value. Real systems need to agree on a <strong>sequence</strong> of values (a replicated log). Multi-Paxos extends single-decree Paxos to decide a series of values efficiently.</p>
+<p>The key optimization: once a leader has been established via phase 1, it can skip phase 1 for subsequent proposals and jump directly to phase 2. This amortizes the cost of leader election across many consensus decisions, reducing the per-decision cost from 2 round trips to 1.</p>
+<p><strong>Multi-Paxos flow</strong>:</p>
+<ol>
+<li>Leader runs phase 1 once to establish authority for a range of log slots.</li>
+<li>For each new client request, the leader runs only phase 2: <code>Accept(n, slot_i, value)</code>.</li>
+<li>If the leader loses its authority (another proposer runs phase 1 with a higher number), the new leader re-runs phase 1 and takes over.</li>
+</ol>
+<p>This is essentially how Google’s Chubby and Spanner work internally. Multi-Paxos with a stable leader behaves very similarly to Raft, which is no coincidence — Raft was designed to formalize the practical patterns that Multi-Paxos deployments had converged on.</p>
+<hr/>
+<h2 id="5-raft">5. Raft<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-raft" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Raft was designed by Diego Ongaro and John Ousterhout specifically to be more understandable than Paxos while providing equivalent guarantees. Its core insight is decomposing consensus into three independent subproblems: <strong>leader election</strong>, <strong>log replication</strong>, and <strong>safety</strong>. Each can be understood and reasoned about independently.</p>
+<h3 id="1-node-states">1. Node States<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-node-states" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Every node in a Raft cluster is in one of three states:</p>
+<ul>
+<li><strong>Follower</strong> — passive; responds to requests from the leader and candidates</li>
+<li><strong>Candidate</strong> — actively seeking votes to become leader</li>
+<li><strong>Leader</strong> — handles all client requests and replicates log entries to followers</li>
+</ul>
+<p>All nodes start as followers.</p>
+<h3 id="2-terms">2. Terms<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-terms" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Raft divides time into <strong>terms</strong>, which are consecutive integers. Each term begins with an election. If a candidate wins, it serves as leader for the rest of the term. If no candidate wins (split vote), the term ends with no leader, and a new term begins immediately.</p>
+<p>Terms act as a logical clock. Every RPC includes the sender’s current term. If a node receives a message with a higher term, it immediately updates its own term and reverts to follower state. If a node receives a message with a lower term, it rejects the message. This mechanism ensures stale leaders cannot cause harm.</p>
+<h3 id="3-leader-election">3. Leader Election<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-leader-election" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><img src="../../.././../../excalidraw/consensus-algorithm-2.excalidraw.svg" alt="1000"/></p>
+<h4 id="1-how-election-works">1. How Election Works<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-how-election-works" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><img src="../../.././../../excalidraw/consensus-algorithm-5.excalidraw.svg" alt="800"/></p>
+<ol>
+<li>A follower that has not received a heartbeat from the leader within its <strong>election timeout</strong> transitions to candidate state.</li>
+<li>The candidate increments its term, votes for itself, and sends <code>RequestVote</code> RPCs to all other nodes.</li>
+<li>Each node votes for at most one candidate per term, on a first-come-first-served basis.</li>
+<li>A candidate becomes leader if it receives votes from a majority of the cluster.</li>
+</ol>
+<h4 id="2-randomized-election-timeouts">2. Randomized Election Timeouts<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-randomized-election-timeouts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>If all followers had the same election timeout, they would all become candidates simultaneously and split votes indefinitely. Raft uses <strong>randomized timeouts</strong> (typically 150-300ms) so that in most cases, a single node times out first and wins before others even start their elections.</p>
+<p>This randomization is how Raft sidesteps the FLP impossibility for liveness in practice. It does not provide a deterministic guarantee of progress, but the probability of repeated split votes drops exponentially with each round.</p>
+<h4 id="3-the-election-restriction-log-completeness">3. The Election Restriction (Log Completeness)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-the-election-restriction-log-completeness" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>A candidate’s <code>RequestVote</code> RPC includes the index and term of its last log entry. A voter <strong>rejects</strong> the vote if the candidate’s log is less up-to-date than the voter’s own log. “Up-to-date” means: compare the term of the last entry first, then the index.</p>
+<p><strong>Why this matters</strong>: this restriction ensures that the elected leader already contains all committed entries. Without it, a leader with an incomplete log could overwrite committed data during log replication. This is a safety-critical invariant: <strong>any entry that has been committed is present in all future leaders’ logs.</strong></p>
+<h3 id="4-log-replication">4. Log Replication<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-log-replication" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Once a leader is elected, it accepts client requests. Each request becomes a new entry in the leader’s log. The leader then replicates the entry to followers:</p>
+<ol>
+<li>Leader appends the entry to its own log.</li>
+<li>Leader sends <code>AppendEntries</code> RPCs to all followers with the new entry.</li>
+<li>Followers append the entry and acknowledge.</li>
+<li>Once a <strong>majority</strong> of nodes have the entry, the leader marks it as <strong>committed</strong> and applies it to its state machine.</li>
+<li>The leader notifies followers of the new commit index in subsequent heartbeats; followers then apply committed entries to their state machines.</li>
+</ol>
+<p><img src="../../.././../../excalidraw/consensus-algorithm-3.excalidraw.svg" alt="1000"/></p>
+<h4 id="1-log-matching-property">1. Log Matching Property<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-log-matching-property" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>Raft maintains a crucial invariant: if two logs contain an entry with the same index and term, then all preceding entries are also identical. The leader enforces this by including the <code>prevLogIndex</code> and <code>prevLogTerm</code> in every <code>AppendEntries</code> RPC. If a follower’s log does not match, it rejects the RPC, and the leader backs up and retries with earlier entries until it finds the point of divergence.</p>
+<p>The mechanism for finding the divergence point uses a per-follower <code>nextIndex</code> maintained by the leader. On each <code>AppendEntries</code>, if the follower’s log does not match at <code>nextIndex - 1</code>, it rejects the request. The leader decrements <code>nextIndex</code> and retries, backtracking one entry at a time until a matching entry is found. The follower then truncates everything after that point and accepts the leader’s entries. This backtracking is how Raft resolves log divergence without a separate negotiation protocol.</p>
+<p>This consistency check means the leader never needs to reason about complex merge scenarios — it simply overwrites divergent follower logs with its own authoritative log. Followers unconditionally accept the leader’s log as correct.</p>
+<h4 id="2-handling-log-divergence-after-leader-changes">2. Handling Log Divergence After Leader Changes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-handling-log-divergence-after-leader-changes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>After a leader crash, followers may have logs that diverge from the new leader. Some followers may be missing entries, and some may have extra uncommitted entries from the old leader. The new leader handles this by:</p>
+<ol>
+<li>Finding the highest log index where the follower’s log matches the leader’s log (via the <code>prevLogIndex</code>/<code>prevLogTerm</code> consistency check).</li>
+<li>Deleting all follower entries after that point.</li>
+<li>Sending all subsequent entries from the leader’s log.</li>
+</ol>
+<p><strong>Key safety guarantee</strong>: the new leader only overwrites entries that were never committed. Any committed entry (replicated to a majority) is guaranteed to be in the new leader’s log due to the election restriction.</p>
+<h3 id="5-the-commitment-rule-why-you-cannot-commit-old-term-entries-by-counting">5. The Commitment Rule: Why You Cannot Commit Old-Term Entries by Counting<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-the-commitment-rule-why-you-cannot-commit-old-term-entries-by-counting" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>One of Raft’s most subtle safety properties: a leader in term T <strong>never commits entries from previous terms by counting replicas</strong>. It only commits entries from its own term. Once an entry from the current term is committed, all preceding entries are implicitly committed as well (because log matching guarantees they are on a majority).</p>
+<p><strong>Why this rule exists</strong>: without it, a committed old-term entry could be overwritten. Consider a scenario where an entry from term 2 is replicated to a bare majority, a new leader in term 3 is elected that does not have this entry, and the new leader overwrites it. The commitment rule prevents this by requiring that the leader commit at least one entry from its own term before older entries are considered committed. Since the election restriction ensures the new leader has all committed entries, and entries from the current term can only be committed by the current leader, the system remains consistent.</p>
+<h3 id="6-heartbeats-and-leader-lease">6. Heartbeats and Leader Lease<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-heartbeats-and-leader-lease" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The leader periodically sends empty <code>AppendEntries</code> RPCs as heartbeats (typically every 50-100ms). These serve two purposes:</p>
+<ol>
+<li>Prevent followers from starting unnecessary elections.</li>
+<li>Carry the leader’s commit index to followers.</li>
+</ol>
+<p>The election timeout must be significantly larger than the heartbeat interval (typically 10x). If it is too close, normal network jitter causes spurious elections, destabilizing the cluster.</p>
+<hr/>
+<h2 id="6-zab-zookeeper-atomic-broadcast">6. ZAB (ZooKeeper Atomic Broadcast)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-zab-zookeeper-atomic-broadcast" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>ZAB is the consensus protocol powering <a href="../../../02-zookeeper" class="internal internal-link" data-slug="02-zookeeper">02-Zookeeper</a>. It is conceptually similar to Multi-Paxos and Raft but was developed independently and has some distinct characteristics.</p>
+<h3 id="1-key-differences-from-raft">1. Key Differences from Raft<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-key-differences-from-raft" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Transaction IDs (zxids)</strong>: ZAB uses two-part transaction IDs (epoch, counter) instead of Raft’s (term, index). The epoch corresponds to a leader’s reign, similar to Raft’s term.</li>
+<li><strong>Recovery protocol</strong>: ZAB has an explicit recovery phase when a new leader is elected. The new leader synchronizes all followers to its state before accepting new requests. This is more structured than Raft’s incremental log repair.</li>
+<li><strong>Ordered broadcast</strong>: ZAB guarantees that if a leader broadcasts message A before message B, all servers that deliver B will have already delivered A. This total ordering is built into the protocol rather than being a consequence of log indexing.</li>
+<li><strong>Two-phase commit for writes</strong>: the leader proposes a write to followers (like Raft’s AppendEntries) and waits for a majority acknowledgment before committing. Functionally equivalent to Raft’s log replication, but framed as atomic broadcast rather than log replication.</li>
+</ul>
+<h3 id="2-when-zab-matters">2. When ZAB Matters<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-when-zab-matters" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>In practice, ZAB matters because ZooKeeper is deployed widely for coordination services. Its operational behavior (leader election takes seconds, write throughput is limited by the leader, reads can be served by any node but may be stale) is a direct consequence of ZAB’s design. Many teams are migrating from ZooKeeper/ZAB to etcd/Raft because Raft’s simpler model is easier to operate and debug.</p>
+<hr/>
+<h2 id="7-consensus-in-production-real-world-systems">7. Consensus in Production: Real-World Systems<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-consensus-in-production-real-world-systems" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-etcd-and-kubernetes">1. etcd and Kubernetes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-etcd-and-kubernetes" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>etcd is the most widely deployed Raft implementation. It stores all Kubernetes cluster state (pod definitions, service configurations, secrets). Key production characteristics:</p>
+<ul>
+<li><strong>Cluster size</strong>: almost always 3 or 5 nodes. More nodes increase write latency because the leader must wait for more acknowledgments.</li>
+<li><strong>Write throughput</strong>: limited by the leader’s disk fsync speed and network RTT to followers. Typical: 10,000-30,000 writes/sec for small values.</li>
+<li><strong>Read consistency</strong>: by default, etcd serves linearizable reads by routing all reads through the leader, which confirms it is still the leader via a round of heartbeats (ReadIndex protocol). This adds latency but guarantees consistency.</li>
+<li><strong>Failure tolerance</strong>: a 3-node cluster tolerates 1 failure; a 5-node cluster tolerates 2 failures.</li>
+<li><strong>Operational gotcha</strong>: etcd performance degrades sharply if the underlying disk is slow. Raft requires fsync before responding to AppendEntries, so slow disks directly impact consensus latency and can cause leader elections.</li>
+</ul>
+<h3 id="2-cockroachdb-and-tikv">2. CockroachDB and TiKV<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-cockroachdb-and-tikv" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Both CockroachDB and TiKV use Raft for replicating data ranges. Each range (a contiguous slice of the key space) is managed by its own Raft group. A large cluster may have tens of thousands of concurrent Raft groups.</p>
+<ul>
+<li><strong>Multi-Raft</strong>: running many Raft groups on the same node requires batching and coalescing heartbeats; otherwise, the heartbeat traffic alone would saturate the network.</li>
+<li><strong>Learner replicas</strong>: when adding a new node, it first joins as a non-voting learner (receives log entries but does not participate in quorum). Once it catches up, it is promoted to a full voter. This prevents the new, empty node from slowing down commits while it copies data.</li>
+</ul>
+<h3 id="3-google-spanner-and-chubby">3. Google Spanner and Chubby<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-google-spanner-and-chubby" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Spanner uses a Paxos variant for replication across geographically distributed datacenters. Key design choices:</p>
+<ul>
+<li><strong>Long-lived leaders</strong>: Spanner uses leader leases (typically 10 seconds) so the leader can serve consistent reads without running a consensus round for each read.</li>
+<li><strong>TrueTime</strong>: Spanner’s use of synchronized clocks (GPS + atomic clocks) is not part of the consensus protocol itself, but it allows Spanner to assign globally consistent timestamps to transactions, which interacts with the consensus layer.</li>
+<li><strong>Cross-datacenter latency</strong>: Paxos rounds span datacenters (e.g., US East, US West, Europe), so each write has multi-hundred-millisecond latency. Spanner accepts this tradeoff for global consistency.</li>
+</ul>
+<hr/>
+<h2 id="8-consensus-and-linearizability">8. Consensus and Linearizability<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-consensus-and-linearizability" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>A common misconception: running a consensus algorithm automatically gives you <a href="../../../05-isolation-levels" class="internal internal-link alias" data-slug="05-isolation-levels">linearizable</a> reads. It does not.</p>
+<p><strong>Consensus guarantees agreement on a sequence of log entries.</strong> Linearizability requires that every read reflects the most recent write. These are related but distinct properties.</p>
+<p><strong>Where reads can go stale</strong>: if a follower serves a read, it might not have applied the most recent committed entries yet. Even the leader can serve a stale read if it has been partitioned from the cluster and does not realize it has been deposed.</p>
+<p><strong>Approaches for linearizable reads</strong>:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Approach</th><th>How it works</th><th>Latency cost</th></tr></thead><tbody><tr><td>Route all reads through the leader</td><td>Leader confirms it is still leader before responding</td><td>1 RTT (heartbeat round)</td></tr><tr><td>ReadIndex (etcd)</td><td>Leader records current commit index, waits for it to be applied, then responds</td><td>1 RTT</td></tr><tr><td>Lease-based reads (Spanner)</td><td>Leader holds a time-based lease; serves reads without confirmation while lease is valid</td><td>Near-zero extra latency, requires synchronized clocks</td></tr><tr><td>Quorum reads</td><td>Read from a majority of nodes, take the latest value</td><td>1 RTT to majority</td></tr></tbody></table></div>
+<hr/>
+<h2 id="9-performance-and-operational-considerations">9. Performance and Operational Considerations<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-performance-and-operational-considerations" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-latency">1. Latency<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-latency" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Consensus requires at minimum <strong>one round trip</strong> from the leader to a majority of followers for each committed write (assuming a stable leader, as in Multi-Paxos or Raft). With basic Paxos (no stable leader), each decision requires <strong>two round trips</strong> (prepare + accept).</p>
+<p>In geo-distributed deployments, this RTT dominates. A Raft cluster with nodes in US-East, US-West, and EU-West has a minimum write latency of ~70ms (the cross-continental RTT to the nearest majority).</p>
+<h3 id="2-throughput">2. Throughput<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-throughput" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The leader is a throughput bottleneck because all writes flow through it. Strategies to improve throughput:</p>
+<ul>
+<li><strong>Batching</strong>: group multiple client requests into a single log entry</li>
+<li><strong>Pipelining</strong>: send the next batch before the previous one is acknowledged</li>
+<li><strong>Parallel consensus groups</strong>: shard data across multiple independent Raft groups (as CockroachDB does)</li>
+</ul>
+<h3 id="3-cluster-sizing">3. Cluster Sizing<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-cluster-sizing" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Cluster Size</th><th>Failures Tolerated</th><th>Write Latency Impact</th><th>Use Case</th></tr></thead><tbody><tr><td>3</td><td>1</td><td>Lowest (wait for 1 follower)</td><td>Most common; sufficient for single-DC</td></tr><tr><td>5</td><td>2</td><td>Moderate (wait for 2 followers)</td><td>Cross-DC; higher availability</td></tr><tr><td>7</td><td>3</td><td>Higher (wait for 3 followers)</td><td>Rare; only for extreme availability needs</td></tr></tbody></table></div>
+<p><strong>Odd numbers only</strong>: a 4-node cluster tolerates only 1 failure (same as 3 nodes) but has higher write latency. The fourth node adds cost and latency without improving fault tolerance.</p>
+<h3 id="4-disk-and-network-requirements">4. Disk and Network Requirements<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-disk-and-network-requirements" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>Fsync on every write</strong>: Raft and Paxos require durable storage of accepted values before responding. Slow disks (network-attached storage, magnetic drives) directly degrade consensus latency.</li>
+<li><strong>Network stability</strong>: consensus algorithms are sensitive to network jitter. If heartbeat RTT frequently approaches the election timeout, the cluster will experience unnecessary leader elections, causing availability blips.</li>
+</ul>
+<hr/>
+<h2 id="10-algorithm-comparison">10. Algorithm Comparison<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-algorithm-comparison" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Property</th><th>Paxos</th><th>Multi-Paxos</th><th>Raft</th><th>ZAB</th></tr></thead><tbody><tr><td>Leader required</td><td>No (any proposer)</td><td>Yes (stable leader)</td><td>Yes (elected leader)</td><td>Yes (elected leader)</td></tr><tr><td>Rounds per decision</td><td>2 (prepare + accept)</td><td>1 (accept only, amortized)</td><td>1 (append only)</td><td>1 (propose + ack)</td></tr><tr><td>Log replication built-in</td><td>No</td><td>With extensions</td><td>Yes</td><td>Yes</td></tr><tr><td>Understandability</td><td>Notoriously difficult</td><td>Complex</td><td>Designed for clarity</td><td>Moderate</td></tr><tr><td>Leader election</td><td>Implicit (proposer contention)</td><td>Implicit</td><td>Explicit (RequestVote)</td><td>Explicit (with recovery phase)</td></tr><tr><td>Reconfiguration</td><td>Complex</td><td>Complex</td><td>Joint consensus</td><td>Dynamic reconfiguration</td></tr><tr><td>Production systems</td><td>Chubby, Spanner</td><td>Spanner, Megastore</td><td>etcd, CockroachDB, TiKV, Consul</td><td>ZooKeeper</td></tr><tr><td>Safety guarantee</td><td>Always safe</td><td>Always safe</td><td>Always safe</td><td>Always safe</td></tr><tr><td>Liveness guarantee</td><td>Conditional (no dueling)</td><td>Conditional (stable leader)</td><td>Conditional (stable leader)</td><td>Conditional (stable leader)</td></tr></tbody></table></div>
+<hr/>
+<h2 id="11-failure-scenarios-deep-dive">11. Failure Scenarios Deep Dive<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-failure-scenarios-deep-dive" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="1-leader-crashes-mid-commit">1. Leader Crashes Mid-Commit<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-leader-crashes-mid-commit" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The leader receives a client write, appends it to its log, sends AppendEntries to followers, but crashes before learning whether a majority acknowledged.</p>
+<p><strong>What happens</strong>: the entry may or may not be on a majority of nodes. If it is, the new leader will have it (election restriction) and will eventually commit it. If it is not, the new leader may not have it, and the entry will be lost. The client sees a timeout and must retry. The system remains correct because the entry was never reported as committed to the client.</p>
+<p><strong>Implication for clients</strong>: all writes must be idempotent, or clients must use unique request IDs so the system can deduplicate retries.</p>
+<h3 id="2-network-partition-3-2-split-in-a-5-node-cluster">2. Network Partition (3-2 Split in a 5-Node Cluster)<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-network-partition-3-2-split-in-a-5-node-cluster" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>The cluster splits into a majority partition {A, B, C} and a minority partition {D, E}. Suppose D was the leader.</p>
+<p><strong>Majority side</strong>: A, B, or C will time out, start an election, and elect a new leader. The majority side continues accepting writes normally.</p>
+<p><strong>Minority side</strong>: D continues sending heartbeats to E, but cannot commit any new entries (needs 3 acknowledgments, only has 2). D may or may not realize it has been deposed, depending on whether it receives messages with a higher term. Any client connected to the minority side will see writes time out.</p>
+<p><strong>Partition heals</strong>: D discovers the new leader’s higher term, reverts to follower, and discards any uncommitted entries it accumulated during the partition. E does the same. Both catch up from the new leader’s log.</p>
+<h3 id="3-split-brain-can-two-leaders-exist">3. Split-Brain: Can Two Leaders Exist?<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-split-brain-can-two-leaders-exist" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>Technically, yes — briefly. During a network partition, the old leader (in the minority partition) may still believe it is leader for a short time. But it cannot commit any new entries because it cannot reach a majority. Meanwhile, the majority partition elects a new leader that can commit entries.</p>
+<p>When the partition heals, the old leader discovers the higher term and steps down. Any uncommitted entries from the old leader are overwritten. <strong>No committed entry is ever lost</strong>, and no two conflicting entries are ever committed. The “two leaders” situation is transient and harmless because the quorum requirement prevents the stale leader from making progress.</p>
+<h3 id="4-slow-follower">4. Slow Follower<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-slow-follower" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>A follower with a slow disk or degraded network can fall behind. In Raft, this does not affect the cluster’s ability to commit entries (as long as a majority is healthy). The leader tracks each follower’s progress independently and continues sending entries.</p>
+<p>However, if the slow follower is needed for the majority (e.g., in a 3-node cluster where one other node has crashed), the slow follower’s performance becomes the bottleneck for the entire cluster.</p>
+<h3 id="5-leader-overloaded">5. Leader Overloaded<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-leader-overloaded" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>If the leader cannot process AppendEntries responses fast enough, followers may time out and start elections. This creates a cascading failure: the election itself adds load, and the new leader inherits the same problem. This is why Raft clusters require careful capacity planning and why the election timeout must be well-tuned relative to expected leader processing latency.</p>
+<hr/>
+<h2 id="revision-summary">Revision Summary<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#revision-summary" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><strong>Consensus</strong> is the problem of getting multiple nodes to agree on a value despite crashes and network failures. It is the foundation of replicated state machines, distributed locking, leader election, and coordination services.</li>
+<li><strong>FLP impossibility</strong> proves that no deterministic consensus algorithm can guarantee both safety and liveness in an asynchronous system with even one crash failure. Practical algorithms (Paxos, Raft, ZAB) guarantee safety unconditionally and liveness only under partial synchrony.</li>
+<li><strong>Paxos</strong> uses numbered proposals and two phases (prepare/accept). Safety comes from the rule that proposers must adopt previously accepted values. Liveness requires a stable leader (Multi-Paxos) to avoid dueling proposers.</li>
+<li><strong>Multi-Paxos</strong> amortizes leader election cost across many decisions by letting a stable leader skip phase 1, reducing per-decision cost to one round trip.</li>
+<li><strong>Raft</strong> decomposes consensus into leader election, log replication, and safety. Randomized election timeouts prevent split votes. The election restriction (candidates must have up-to-date logs) ensures committed entries are never lost. The commitment rule prevents committing old-term entries by counting.</li>
+<li><strong>ZAB</strong> powers ZooKeeper with similar guarantees to Raft but frames the problem as atomic broadcast with an explicit recovery phase for new leaders.</li>
+<li><strong>Majority quorums</strong> are the key mechanism: any two majorities overlap, so conflicting decisions are impossible.</li>
+<li><strong>Cluster sizing</strong>: use odd numbers (3 or 5). More nodes increase write latency without proportionally improving availability.</li>
+<li><strong>Linearizable reads</strong> require extra mechanisms beyond consensus (ReadIndex, leader leases, quorum reads).</li>
+<li><strong>Production considerations</strong>: fsync latency, network jitter, election timeout tuning, heartbeat frequency, and batching all critically impact consensus performance.</li>
+</ul>
+<hr/>
+<h2 id="deep-understanding-questions">Deep Understanding Questions<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#deep-understanding-questions" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>
+<p><strong>A Raft leader commits entry X at index 100 and then crashes. The new leader’s log contains entries up to index 99. Is this possible?</strong> What invariant would have been violated, and what mechanism prevents it?
+Ans:</p>
+</li>
+<li>
+<p><strong>In Paxos, proposer P1 completes phase 1 with proposal number 10 and learns that acceptor A2 previously accepted value “Y” with proposal number 7. P1 wanted to propose “Z”. What must P1 do and why?</strong> What happens if a third proposer P3 then runs phase 1 with proposal number 11 and contacts different acceptors that have no previously accepted value?
+Ans:</p>
+</li>
+<li>
+<p><strong>A 5-node Raft cluster experiences a network partition: {A, B} and {C, D, E}. Node A was the leader. Both sides operate for 10 minutes. When the partition heals, what happens to writes that were submitted to node A during the partition?</strong> Could any of those writes have been reported as successful to clients?
+Ans:</p>
+</li>
+<li>
+<p><strong>Why does Raft use randomized election timeouts instead of a deterministic leader election protocol?</strong> What is the theoretical impossibility result that motivates this, and what is the practical probability that randomized timeouts fail to elect a leader within k rounds?
+Ans:</p>
+</li>
+<li>
+<p><strong>CockroachDB runs thousands of Raft groups on a single node. What operational challenges does this create?</strong> Consider heartbeat traffic, memory usage for log buffers, and the interaction between Raft fsync requirements and shared disk bandwidth.
+Ans:</p>
+</li>
+<li>
+<p><strong>An etcd cluster’s write latency suddenly increases from 5ms to 500ms, but CPU and network metrics are normal. What is the most likely cause?</strong> How does Raft’s fsync requirement explain this, and what monitoring would you add to detect it?
+Ans:</p>
+</li>
+<li>
+<p><strong>Explain why a 4-node Raft cluster is strictly worse than a 3-node cluster for most workloads.</strong> Consider fault tolerance, write latency, and the split-vote scenario with an even number of nodes.
+Ans:</p>
+</li>
+<li>
+<p><strong>In Raft, the leader in term 3 has committed entries through index 50. A new leader is elected in term 4. Can the new leader commit an entry from term 3 that exists at index 51 on a majority of nodes?</strong> Why is this dangerous, and what is Raft’s commitment rule that addresses it?
+Ans:</p>
+</li>
+<li>
+<p><strong>A system uses Raft for consensus and serves reads from followers for lower latency. A client writes value V, receives a success response, then immediately reads the same key from a follower and gets the old value. Is this a bug in the consensus algorithm?</strong> What is happening, and what are three different approaches to fix it?
+Ans:</p>
+</li>
+<li>
+<p><strong>Google Spanner uses Paxos across geographically distributed datacenters. A write must wait for a majority of datacenters to acknowledge. How does this affect write latency compared to a single-datacenter Raft deployment?</strong> What optimization does Spanner use for reads, and what assumption does it depend on?
+Ans:</p>
+</li>
+<li>
+<p><strong>During a Raft leader election, two candidates in the same term each receive exactly half the votes (in a 4-node cluster). What happens next?</strong> How does this differ from the Paxos dueling proposers problem, and why is Raft’s resolution probabilistically faster?
+Ans:</p>
+</li>
+<li>
+<p><strong>A Raft follower’s disk fails and is replaced. The node restarts with an empty log. How does the cluster handle this?</strong> What is the concept of a “learner” replica, and why is it important for cluster stability during this recovery?
+Ans:</p>
+</li>
+</ol></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-2" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#the-story" data-for="the-story">The Story</a></li><li class="depth-0"><a href="#1-why-consensus-exists" data-for="1-why-consensus-exists">1. Why Consensus Exists</a></li><li class="depth-1"><a href="#where-consensus-appears-in-practice" data-for="where-consensus-appears-in-practice">Where Consensus Appears in Practice</a></li><li class="depth-0"><a href="#2-why-consensus-is-hard-the-flp-impossibility" data-for="2-why-consensus-is-hard-the-flp-impossibility">2. Why Consensus is Hard: The FLP Impossibility</a></li><li class="depth-0"><a href="#3-naive-approaches-and-why-they-fail" data-for="3-naive-approaches-and-why-they-fail">3. Naive Approaches and Why They Fail</a></li><li class="depth-1"><a href="#1-designated-leader-no-election" data-for="1-designated-leader-no-election">1. Designated Leader (No Election)</a></li><li class="depth-1"><a href="#2-majority-vote-on-each-request" data-for="2-majority-vote-on-each-request">2. Majority Vote on Each Request</a></li><li class="depth-1"><a href="#3-two-phase-commit-2pc" data-for="3-two-phase-commit-2pc">3. Two-Phase Commit (2PC)</a></li><li class="depth-0"><a href="#4-paxos" data-for="4-paxos">4. Paxos</a></li><li class="depth-1"><a href="#1-the-mental-model" data-for="1-the-mental-model">1. The Mental Model</a></li><li class="depth-1"><a href="#2-roles" data-for="2-roles">2. Roles</a></li><li class="depth-1"><a href="#3-single-decree-paxos-basic-paxos" data-for="3-single-decree-paxos-basic-paxos">3. Single-Decree Paxos (Basic Paxos)</a></li><li class="depth-1"><a href="#4-why-the-adopt-previously-accepted-value-rule-is-essential" data-for="4-why-the-adopt-previously-accepted-value-rule-is-essential">4. Why the “Adopt Previously Accepted Value” Rule is Essential</a></li><li class="depth-1"><a href="#5-the-dueling-proposers-problem-livelock" data-for="5-the-dueling-proposers-problem-livelock">5. The Dueling Proposers Problem (Livelock)</a></li><li class="depth-1"><a href="#6-multi-paxos" data-for="6-multi-paxos">6. Multi-Paxos</a></li><li class="depth-0"><a href="#5-raft" data-for="5-raft">5. Raft</a></li><li class="depth-1"><a href="#1-node-states" data-for="1-node-states">1. Node States</a></li><li class="depth-1"><a href="#2-terms" data-for="2-terms">2. Terms</a></li><li class="depth-1"><a href="#3-leader-election" data-for="3-leader-election">3. Leader Election</a></li><li class="depth-1"><a href="#4-log-replication" data-for="4-log-replication">4. Log Replication</a></li><li class="depth-1"><a href="#5-the-commitment-rule-why-you-cannot-commit-old-term-entries-by-counting" data-for="5-the-commitment-rule-why-you-cannot-commit-old-term-entries-by-counting">5. The Commitment Rule: Why You Cannot Commit Old-Term Entries by Counting</a></li><li class="depth-1"><a href="#6-heartbeats-and-leader-lease" data-for="6-heartbeats-and-leader-lease">6. Heartbeats and Leader Lease</a></li><li class="depth-0"><a href="#6-zab-zookeeper-atomic-broadcast" data-for="6-zab-zookeeper-atomic-broadcast">6. ZAB (ZooKeeper Atomic Broadcast)</a></li><li class="depth-1"><a href="#1-key-differences-from-raft" data-for="1-key-differences-from-raft">1. Key Differences from Raft</a></li><li class="depth-1"><a href="#2-when-zab-matters" data-for="2-when-zab-matters">2. When ZAB Matters</a></li><li class="depth-0"><a href="#7-consensus-in-production-real-world-systems" data-for="7-consensus-in-production-real-world-systems">7. Consensus in Production: Real-World Systems</a></li><li class="depth-1"><a href="#1-etcd-and-kubernetes" data-for="1-etcd-and-kubernetes">1. etcd and Kubernetes</a></li><li class="depth-1"><a href="#2-cockroachdb-and-tikv" data-for="2-cockroachdb-and-tikv">2. CockroachDB and TiKV</a></li><li class="depth-1"><a href="#3-google-spanner-and-chubby" data-for="3-google-spanner-and-chubby">3. Google Spanner and Chubby</a></li><li class="depth-0"><a href="#8-consensus-and-linearizability" data-for="8-consensus-and-linearizability">8. Consensus and Linearizability</a></li><li class="depth-0"><a href="#9-performance-and-operational-considerations" data-for="9-performance-and-operational-considerations">9. Performance and Operational Considerations</a></li><li class="depth-1"><a href="#1-latency" data-for="1-latency">1. Latency</a></li><li class="depth-1"><a href="#2-throughput" data-for="2-throughput">2. Throughput</a></li><li class="depth-1"><a href="#3-cluster-sizing" data-for="3-cluster-sizing">3. Cluster Sizing</a></li><li class="depth-1"><a href="#4-disk-and-network-requirements" data-for="4-disk-and-network-requirements">4. Disk and Network Requirements</a></li><li class="depth-0"><a href="#10-algorithm-comparison" data-for="10-algorithm-comparison">10. Algorithm Comparison</a></li><li class="depth-0"><a href="#11-failure-scenarios-deep-dive" data-for="11-failure-scenarios-deep-dive">11. Failure Scenarios Deep Dive</a></li><li class="depth-1"><a href="#1-leader-crashes-mid-commit" data-for="1-leader-crashes-mid-commit">1. Leader Crashes Mid-Commit</a></li><li class="depth-1"><a href="#2-network-partition-3-2-split-in-a-5-node-cluster" data-for="2-network-partition-3-2-split-in-a-5-node-cluster">2. Network Partition (3-2 Split in a 5-Node Cluster)</a></li><li class="depth-1"><a href="#3-split-brain-can-two-leaders-exist" data-for="3-split-brain-can-two-leaders-exist">3. Split-Brain: Can Two Leaders Exist?</a></li><li class="depth-1"><a href="#4-slow-follower" data-for="4-slow-follower">4. Slow Follower</a></li><li class="depth-1"><a href="#5-leader-overloaded" data-for="5-leader-overloaded">5. Leader Overloaded</a></li><li class="depth-0"><a href="#revision-summary" data-for="revision-summary">Revision Summary</a></li><li class="depth-0"><a href="#deep-understanding-questions" data-for="deep-understanding-questions">Deep Understanding Questions</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>Backlinks</h3><ul id="list-0" class="overflow"><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/01-distributed-systems-primitives" class="internal">01-Distributed-Systems-Primitives</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/02-logical-clocks" class="internal">02-Logical-Clocks</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock" class="internal">04-Distributed-Lock</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions" class="internal">05-Distributed-Transactions</a></li><li><a href="../../../01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol" class="internal">06-Gossip-Protocol</a></li><li><a href="../../../01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking" class="internal">04-Optimistic-Pessimistic-Locking</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul><li><a href="https://github.com/chauhansandeep/firstprinciplesengineering">GitHub</a></li><li><a href="https://github.com/jackyzha0/quartz">Source (Quartz)</a></li></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-67bd5d9d.js" type="module" data-persist="true"></script></html>
