@@ -881,3 +881,51 @@ li.section-li {
     font-weight: 700;
   }
 }
+
+// ---- Search bar (W2-P8) --------------------------------------------------
+// Polish the launcher button and the modal input field.
+.search > .search-button {
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--secondary);
+    background: color-mix(in srgb, var(--secondary) 4%, var(--light));
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--secondary) 18%, transparent);
+  }
+}
+
+// Modal input field
+.search-container input.search-bar {
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--lightgray);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--darkgray);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--secondary) 18%, transparent);
+  }
+}
+
+// Search modal container — rounded corners + softer backdrop
+.search-container {
+  border-radius: 14px;
+}
