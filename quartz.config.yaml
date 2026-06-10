@@ -120,10 +120,7 @@ plugins:
       position: left
       priority: 50
   - source: github:quartz-community/graph
-    enabled: true
-    layout:
-      position: left
-      priority: 45
+    enabled: false
   - source: github:quartz-community/search
     enabled: true
     layout:
@@ -135,8 +132,8 @@ plugins:
   - source: github:quartz-community/backlinks
     enabled: true
     layout:
-      position: left
-      priority: 60
+      position: afterBody
+      priority: 100
   - source: github:quartz-community/article-title
     enabled: true
     layout:
@@ -179,13 +176,7 @@ plugins:
         GitHub: https://github.com/chauhansandeep/firstprinciplesengineering
         Source (Quartz): https://github.com/jackyzha0/quartz
   - source: github:quartz-community/recent-notes
-    enabled: true
-    options:
-      title: Recently updated
-      limit: 8
-      showTags: true
-      hideTagPages: true
-      hideFolderPages: true
+    enabled: false
   - source: github:quartz-community/spacer
     enabled: true
     options: {}
