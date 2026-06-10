@@ -195,14 +195,8 @@
     const pageUrl = location.origin + location.pathname
     const encUrl = encodeURIComponent(pageUrl)
     const encTitle = encodeURIComponent(title)
-    const repo = "chauhansandeep/firstprinciplesengineering"
-    const issueBody = encodeURIComponent(`Re: [${title}](${pageUrl})\n\n`)
-    const issueTitle = encodeURIComponent(`Discussion: ${title}`)
-    const discussHref = `https://github.com/${repo}/issues/new?title=${issueTitle}&body=${issueBody}`
     const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}`
     const twitterHref = `https://twitter.com/intent/tweet?url=${encUrl}&text=${encTitle}`
-    const redditHref = `https://www.reddit.com/submit?url=${encUrl}&title=${encTitle}`
-    const hnHref = `https://news.ycombinator.com/submitlink?u=${encUrl}&t=${encTitle}`
 
     const row = document.createElement("div")
     row.className = "fpe-share"
@@ -211,12 +205,9 @@
       '<a class="fpe-share-link ' + cls + '" href="' + href + '" target="_blank" rel="noopener">' + label + '</a>'
 
     row.innerHTML =
-      '<span class="fpe-share-label">Found a flaw, a sharper take, or a counter-example?</span>' +
-      mkLink(discussHref, "fpe-share-discuss", "💬 Discuss on GitHub") +
+      '<span class="fpe-share-label">Share this post:</span>' +
       '<button class="fpe-share-link fpe-share-secondary fpe-share-copy" type="button" aria-live="polite">🔗 Copy link</button>' +
       mkLink(twitterHref, "fpe-share-secondary fpe-share-x", "𝕏 Post") +
-      mkLink(redditHref, "fpe-share-secondary fpe-share-reddit", "🤖 Reddit") +
-      mkLink(hnHref, "fpe-share-secondary fpe-share-hn", "Y Hacker News") +
       mkLink(linkedinHref, "fpe-share-secondary fpe-share-linkedin", "↗ LinkedIn")
 
     const prevNext = article.querySelector(".fpe-prev-next")
