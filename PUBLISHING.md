@@ -188,6 +188,35 @@ Sixth (redundant): `quartz.config.yaml` adds `**/*.excalidraw.md` to
 
 ---
 
+## Fresh-clone bootstrap
+
+If you (or anyone) clones this repo to a new machine, run these steps once
+before the first `npm run deploy`:
+
+```bash
+git clone https://github.com/ChauhanSandeep/firstprinciplesengineering.git
+cd firstprinciplesengineering
+
+npm install                                  # JS deps from package-lock.json
+npm run install-plugins                      # external Quartz plugins pinned
+                                             # in quartz.lock.json → .quartz/
+ln -sf ../../scripts/pre-commit-guard.sh .git/hooks/pre-commit
+
+# macOS only — needed for `node-canvas` to render Excalidraw SVGs locally:
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
+npm rebuild canvas
+```
+
+`.quartz/plugins/` (~900 MB of external community plugins) and `node_modules/`
+are deliberately gitignored. They're recreated from `quartz.lock.json` and
+`package-lock.json` respectively, so every clone reproduces the same versions.
+
+To preview without the vault present, run `npx quartz build` directly — it
+will render only the hand-maintained `content/index.md` and `content/about.md`.
+A full deploy still requires the vault at the path in `publish.config.mjs`.
+
+---
+
 ## Initial GitHub setup (one-time)
 
 ```bash

@@ -18,7 +18,7 @@
     "format": "npx prettier . --write",
     "test": "tsx --test",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
-    "install-plugins": "npx tsx ./quartz/plugins/loader/install-plugins.ts",
+    "install-plugins": "npx quartz plugin install",
     "sync": "node scripts/sync-from-vault.mjs",
     "sync:soft": "node scripts/sync-from-vault.mjs --soft",
     "fix-paths": "node scripts/fix-excalidraw-paths.mjs",
