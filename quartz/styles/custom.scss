@@ -157,11 +157,12 @@ article {
 // ---- Code blocks ---------------------------------------------------------
 pre {
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--lightgray);
-  padding: 1rem 1.1rem !important;
-  font-size: 0.9em;
-  line-height: 1.55;
+  padding: 1.5rem 1.5rem !important;
+  font-size: 0.92em;
+  line-height: 1.6;
+  overflow-x: auto;
 
   // Language badge (populated by site.js from data-language attr)
   &::before {
