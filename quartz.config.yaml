@@ -43,21 +43,21 @@ configuration:
         gray: "#8c7e6a"           # warm muted — secondary text / icons
         darkgray: "#5a4f40"       # warm subtext
         dark: "#1f1b16"           # near-black, warm — primary text
-        secondary: "#ee6f2d"      # Anthropic orange — primary accent / links
-        tertiary: "#b4532b"       # Anthropic clay — deeper second accent
-        highlight: rgba(238, 111, 45, 0.08)
-        textHighlight: rgba(238, 111, 45, 0.28)
-      # Warm-dark companion — orange/clay lifted for dark-mode contrast
+        secondary: "#cc785c"      # Anthropic "Book Cloth" — muted terracotta accent / links
+        tertiary: "#a05a3f"       # deeper clay — second accent
+        highlight: rgba(204, 120, 92, 0.08)
+        textHighlight: rgba(204, 120, 92, 0.28)
+      # Warm-dark companion — terracotta/clay lifted for dark-mode contrast
       darkMode:
         light: "#1a1714"          # warm near-black — page background
         lightgray: "#2c2823"      # lifted surfaces / borders / card bg
         gray: "#8b8273"           # warm muted
         darkgray: "#b8afa0"       # warm subtext
         dark: "#ede6d6"           # warm off-white — primary text
-        secondary: "#f58a4a"      # Anthropic orange, lifted
-        tertiary: "#d17654"       # Anthropic clay, lifted
-        highlight: rgba(245, 138, 74, 0.12)
-        textHighlight: rgba(245, 138, 74, 0.32)
+        secondary: "#d99077"      # terracotta, lifted for dark
+        tertiary: "#bb7159"       # clay, lifted for dark
+        highlight: rgba(217, 144, 119, 0.12)
+        textHighlight: rgba(217, 144, 119, 0.32)
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
