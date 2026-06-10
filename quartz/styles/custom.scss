@@ -1,10 +1,23 @@
 @use "./variables.scss" as *;
 
 // =============================================================================
-//  First Principles Engineering — Catppuccin theme polish
+//  First Principles Engineering — fly.io-inspired warm hybrid theme
 //  All site-wide visual customizations live here. Pure CSS / SCSS only —
 //  Quartz components are untouched.
 // =============================================================================
+
+// ---- Extra accent tokens -------------------------------------------------
+// Quartz's palette ships --secondary (primary accent) and --tertiary (warm
+// rust second accent). Callouts need a green and a red too. Keep them muted
+// so blue stays the dominant signal.
+:root {
+  --accent-success: #5c8f4e;
+  --accent-danger: #b5341a;
+}
+:root[saved-theme="dark"] {
+  --accent-success: #7fb868;
+  --accent-danger: #e07a4a;
+}
 
 // ---- Theme transition ----------------------------------------------------
 // Smooth fade when toggling light / dark.
@@ -492,29 +505,44 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
   }
 }
 
-// Catppuccin-flavoured callout colors
+// Per-type accent colours. Discipline: blue is the primary signal;
+// green / rust / red are used sparingly so they read as actual semantic
+// warnings, not decoration. Tokens come from :root in this file
+// (--accent-success / --accent-danger) plus Quartz palette tokens.
 .callout[data-callout="note"],
-.callout[data-callout="info"] {
-  --callout-color: var(--secondary); // Mauve
+.callout[data-callout="abstract"],
+.callout[data-callout="summary"],
+.callout[data-callout="tldr"],
+.callout[data-callout="info"],
+.callout[data-callout="todo"] {
+  --callout-color: var(--secondary);
 }
 .callout[data-callout="tip"],
-.callout[data-callout="success"] {
-  --callout-color: #40a02b; // Latte green
-  :root[saved-theme="dark"] & {
-    --callout-color: #a6e3a1; // Mocha green
-  }
+.callout[data-callout="hint"],
+.callout[data-callout="important"],
+.callout[data-callout="success"],
+.callout[data-callout="check"],
+.callout[data-callout="done"] {
+  --callout-color: var(--accent-success);
 }
 .callout[data-callout="warning"],
-.callout[data-callout="caution"] {
-  --callout-color: var(--tertiary); // Peach
+.callout[data-callout="caution"],
+.callout[data-callout="attention"] {
+  --callout-color: var(--tertiary);
 }
 .callout[data-callout="danger"],
 .callout[data-callout="error"],
-.callout[data-callout="failure"] {
-  --callout-color: #d20f39; // Latte red
-  :root[saved-theme="dark"] & {
-    --callout-color: #f38ba8; // Mocha red
-  }
+.callout[data-callout="failure"],
+.callout[data-callout="fail"],
+.callout[data-callout="missing"],
+.callout[data-callout="bug"] {
+  --callout-color: var(--accent-danger);
+}
+.callout[data-callout="question"],
+.callout[data-callout="help"],
+.callout[data-callout="faq"],
+.callout[data-callout="example"] {
+  --callout-color: var(--darkgray);
 }
 .callout[data-callout="quote"],
 .callout[data-callout="cite"] {

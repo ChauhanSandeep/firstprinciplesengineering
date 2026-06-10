@@ -34,25 +34,34 @@
   --callout-icon-quote: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"></path><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"></path></svg>');
   --callout-icon-fold: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"%3E%3C/polyline%3E%3C/svg%3E');
 
+  // ---------------------------------------------------------------------
+  // Per-type accents.
+  // Discipline: blue is the primary signal. Green / rust / red are used
+  // sparingly so they read as actual semantic warnings, not decoration.
+  // Borders are 28% mix of --color over transparent; backgrounds 7%.
+  // ---------------------------------------------------------------------
+
   &[data-callout] {
-    --color: #448aff;
-    --border: #448aff44;
-    --bg: #448aff10;
+    --color: var(--secondary);
+    --border: color-mix(in srgb, var(--secondary) 28%, transparent);
+    --bg: color-mix(in srgb, var(--secondary) 7%, transparent);
     --callout-icon: var(--callout-icon-note);
   }
 
-  &[data-callout="abstract"] {
-    --color: #00b0ff;
-    --border: #00b0ff44;
-    --bg: #00b0ff10;
+  &[data-callout="abstract"],
+  &[data-callout="summary"],
+  &[data-callout="tldr"] {
+    --color: var(--secondary);
+    --border: color-mix(in srgb, var(--secondary) 28%, transparent);
+    --bg: color-mix(in srgb, var(--secondary) 7%, transparent);
     --callout-icon: var(--callout-icon-abstract);
   }
 
   &[data-callout="info"],
   &[data-callout="todo"] {
-    --color: #00b8d4;
-    --border: #00b8d444;
-    --bg: #00b8d410;
+    --color: var(--secondary);
+    --border: color-mix(in srgb, var(--secondary) 28%, transparent);
+    --bg: color-mix(in srgb, var(--secondary) 7%, transparent);
     --callout-icon: var(--callout-icon-info);
   }
 
@@ -60,40 +69,51 @@
     --callout-icon: var(--callout-icon-todo);
   }
 
-  &[data-callout="tip"] {
-    --color: #00bfa5;
-    --border: #00bfa544;
-    --bg: #00bfa510;
+  &[data-callout="tip"],
+  &[data-callout="hint"],
+  &[data-callout="important"] {
+    --color: var(--accent-success);
+    --border: color-mix(in srgb, var(--accent-success) 28%, transparent);
+    --bg: color-mix(in srgb, var(--accent-success) 7%, transparent);
     --callout-icon: var(--callout-icon-tip);
   }
 
-  &[data-callout="success"] {
-    --color: #09ad7a;
-    --border: #09ad7144;
-    --bg: #09ad7110;
+  &[data-callout="success"],
+  &[data-callout="check"],
+  &[data-callout="done"] {
+    --color: var(--accent-success);
+    --border: color-mix(in srgb, var(--accent-success) 28%, transparent);
+    --bg: color-mix(in srgb, var(--accent-success) 7%, transparent);
     --callout-icon: var(--callout-icon-success);
   }
 
-  &[data-callout="question"] {
-    --color: #dba642;
-    --border: #dba64244;
-    --bg: #dba64210;
+  &[data-callout="question"],
+  &[data-callout="help"],
+  &[data-callout="faq"] {
+    --color: var(--darkgray);
+    --border: color-mix(in srgb, var(--darkgray) 28%, transparent);
+    --bg: color-mix(in srgb, var(--darkgray) 7%, transparent);
     --callout-icon: var(--callout-icon-question);
   }
 
-  &[data-callout="warning"] {
-    --color: #db8942;
-    --border: #db894244;
-    --bg: #db894210;
+  &[data-callout="warning"],
+  &[data-callout="caution"],
+  &[data-callout="attention"] {
+    --color: var(--tertiary);
+    --border: color-mix(in srgb, var(--tertiary) 28%, transparent);
+    --bg: color-mix(in srgb, var(--tertiary) 7%, transparent);
     --callout-icon: var(--callout-icon-warning);
   }
 
   &[data-callout="failure"],
+  &[data-callout="fail"],
+  &[data-callout="missing"],
   &[data-callout="danger"],
+  &[data-callout="error"],
   &[data-callout="bug"] {
-    --color: #db4242;
-    --border: #db424244;
-    --bg: #db424210;
+    --color: var(--accent-danger);
+    --border: color-mix(in srgb, var(--accent-danger) 28%, transparent);
+    --bg: color-mix(in srgb, var(--accent-danger) 7%, transparent);
     --callout-icon: var(--callout-icon-failure);
   }
 
@@ -101,20 +121,23 @@
     --callout-icon: var(--callout-icon-bug);
   }
 
-  &[data-callout="danger"] {
+  &[data-callout="danger"],
+  &[data-callout="error"] {
     --callout-icon: var(--callout-icon-danger);
   }
 
   &[data-callout="example"] {
-    --color: #7a43b5;
-    --border: #7a43b544;
-    --bg: #7a43b510;
+    --color: var(--darkgray);
+    --border: color-mix(in srgb, var(--darkgray) 28%, transparent);
+    --bg: color-mix(in srgb, var(--darkgray) 7%, transparent);
     --callout-icon: var(--callout-icon-example);
   }
 
-  &[data-callout="quote"] {
-    --color: var(--secondary);
+  &[data-callout="quote"],
+  &[data-callout="cite"] {
+    --color: var(--darkgray);
     --border: var(--lightgray);
+    --bg: color-mix(in srgb, var(--darkgray) 5%, transparent);
     --callout-icon: var(--callout-icon-quote);
   }
 
