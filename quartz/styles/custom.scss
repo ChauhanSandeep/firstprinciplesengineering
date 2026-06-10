@@ -1,7 +1,7 @@
 @use "./variables.scss" as *;
 
 // =============================================================================
-//  First Principles Engineering — fly.io-inspired warm hybrid theme
+//  First Principles Engineering — Anthropic-inspired warm orange theme
 //  All site-wide visual customizations live here. Pure CSS / SCSS only —
 //  Quartz components are untouched.
 // =============================================================================
@@ -52,35 +52,62 @@ article {
 
   // ---- Heading hierarchy (W2-P4) ---------------------------------------
   // Explicit sizes + weights so the eye can rank sections at a glance.
+  // ---- Per-heading colour variation (Anthropic-warm hierarchy) -----
+  // h1 = brand orange (most prominent)
+  // h2 = deeper clay (anchors sections, with matching underline)
+  // h3 = clay/orange muted toward dark (warmth carries down)
+  // h4 = neutral darkgray
+  // h5 / h6 = muted grays (intentionally small + quiet)
+  // This gives a clear Nord-style "each level reads as a different
+  // chord" rhythm without ever leaving the warm clay/cream family.
   h1 {
     font-size: 2.4rem;
     font-weight: 700;
     line-height: 1.2;
+    color: var(--secondary);
   }
   h2 {
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.3;
+    color: var(--tertiary);
     padding-bottom: 0.4rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--tertiary) 25%, transparent);
   }
 
-  // Dark mode: --lightgray (#2C2823) is too close to the page bg (#1A1714)
-  // so the underline disappears. Use a warmer mid-tone with stronger alpha
-  // so h2 boundaries remain a clear visual signpost.
+  // Dark mode: --tertiary at 25% over warm-dark bg gives a clear,
+  // brand-tinted underline; the same value over warm-cream is visible
+  // but soft, so use the same mix in both modes.
   :root[saved-theme="dark"] & h2 {
-    border-bottom-color: color-mix(in srgb, var(--gray) 35%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--tertiary) 30%, transparent);
   }
   h3 {
     font-size: 1.35rem;
     font-weight: 600;
     line-height: 1.35;
+    color: color-mix(in srgb, var(--secondary) 75%, var(--dark));
   }
   h4 {
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.4;
+    color: var(--dark);
+  }
+  h5 {
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.45;
     color: var(--darkgray);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  h6 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   p,
@@ -214,12 +241,14 @@ article {
 // ---- Article page title (h1.article-title) is outside <article> ----------
 // The article-title plugin renders the page H1 inside .popover-hint sibling
 // of the actual <article> element, so article-scoped rules don't catch it.
+// Mirrors the in-article h1 colour (Anthropic orange = --secondary).
 h1.article-title {
   font-family: var(--headerFont);
   font-size: 2.4rem;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  color: var(--secondary);
   margin-top: 0;
   margin-bottom: 1.25rem;
   font-feature-settings: "ss01", "cv11";

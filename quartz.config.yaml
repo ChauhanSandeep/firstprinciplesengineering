@@ -31,28 +31,30 @@ configuration:
       body: Inter
       code: IBM Plex Mono
     colors:
-      # fly.io-inspired light mode — warm cream + near-black + fly blue
+      # Anthropic-inspired light mode — warm cream + near-black + Claude
+      # orange / clay. Same warm structure as the fly hybrid, but pivoted
+      # to Anthropic's signature warm-clay accent palette.
       lightMode:
         light: "#fbf6e9"          # warm cream — page background
         lightgray: "#eae2d2"      # cream surfaces / borders / card bg
         gray: "#8c7e6a"           # warm muted — secondary text / icons
         darkgray: "#5a4f40"       # warm subtext
         dark: "#1f1b16"           # near-black, warm — primary text
-        secondary: "#4d7cfe"      # fly blue — primary accent / links
-        tertiary: "#c44a1b"       # warm rust — second accent (sparingly)
-        highlight: rgba(77, 124, 254, 0.08)
-        textHighlight: rgba(77, 124, 254, 0.28)
-      # Warm-dark companion — same palette, inverted with lifted blue
+        secondary: "#ee6f2d"      # Anthropic orange — primary accent / links
+        tertiary: "#b4532b"       # Anthropic clay — deeper second accent
+        highlight: rgba(238, 111, 45, 0.08)
+        textHighlight: rgba(238, 111, 45, 0.28)
+      # Warm-dark companion — orange/clay lifted for dark-mode contrast
       darkMode:
         light: "#1a1714"          # warm near-black — page background
         lightgray: "#2c2823"      # lifted surfaces / borders / card bg
         gray: "#8b8273"           # warm muted
         darkgray: "#b8afa0"       # warm subtext
         dark: "#ede6d6"           # warm off-white — primary text
-        secondary: "#7b9dff"      # lifted blue for dark-mode contrast
-        tertiary: "#e07a4a"       # rust, lifted for dark
-        highlight: rgba(123, 157, 255, 0.12)
-        textHighlight: rgba(123, 157, 255, 0.32)
+        secondary: "#f58a4a"      # Anthropic orange, lifted
+        tertiary: "#d17654"       # Anthropic clay, lifted
+        highlight: rgba(245, 138, 74, 0.12)
+        textHighlight: rgba(245, 138, 74, 0.32)
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
