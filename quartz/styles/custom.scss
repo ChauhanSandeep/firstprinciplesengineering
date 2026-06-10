@@ -250,6 +250,7 @@ article {
 // ---- Code blocks ---------------------------------------------------------
 pre {
   position: relative;
+  background: color-mix(in srgb, var(--lightgray) 70%, var(--light));
   border-radius: 12px;
   border: 1px solid var(--lightgray);
   // IDE-like reading width — narrower than article column for code scan.

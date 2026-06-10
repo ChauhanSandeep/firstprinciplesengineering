@@ -67,8 +67,8 @@ plugins:
     enabled: true
     options:
       theme:
-        light: catppuccin-latte
-        dark: catppuccin-mocha
+        light: vitesse-light
+        dark: vitesse-dark
       keepBackground: false
     order: 20
   - source: github:quartz-community/obsidian-flavored-markdown
