@@ -21,11 +21,12 @@
     "install-plugins": "npx tsx ./quartz/plugins/loader/install-plugins.ts",
     "sync": "node scripts/sync-from-vault.mjs",
     "sync:soft": "node scripts/sync-from-vault.mjs --soft",
-    "build": "npm run sync && npx quartz build",
-    "build:soft": "npm run sync:soft && npx quartz build",
+    "fix-paths": "node scripts/fix-excalidraw-paths.mjs",
+    "build": "npm run sync && npx quartz build && npm run fix-paths",
+    "build:soft": "npm run sync:soft && npx quartz build && npm run fix-paths",
     "serve": "npm run sync && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npx quartz build --serve",
-    "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll"
+    "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"*\""
   },
   "engines": {
     "npm": ">=10.9.2",

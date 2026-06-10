@@ -32,7 +32,18 @@ article {
   ul,
   ol,
   blockquote {
-    max-width: 72ch;
+    // Match the Excalidraw image cap so text and diagrams share the same
+    // width (user preference: text should expand alongside diagrams).
+    max-width: 1600px;
+  }
+
+  // Paragraphs that exist only to wrap a block image (Markdown wraps
+  // standalone `![](…)` in a <p>) must not inherit the 72ch text cap —
+  // otherwise the image inside is constrained to ~720px even though the
+  // column is much wider.
+  p:has(> img),
+  p:has(> a > img) {
+    max-width: none;
   }
 
   // Code / pre / figure / table should use the full content width.
@@ -151,23 +162,88 @@ pre {
 }
 
 // ---- Excalidraw embed treatment -----------------------------------------
-// Diagrams render via <img src="…/Foo.excalidraw.svg">. Style them as cards.
+// Diagrams render via <img src="…/Foo.excalidraw.svg">. Most are 1000–1300px
+// wide natively. With the right sidebar removed, the reading column on a
+// modern desktop is already ~1100–1600px wide so we just fill it.
 img[src$=".excalidraw.svg"] {
   display: block;
   margin: 1.5rem auto;
-  max-width: 100%;
   height: auto;
+  width: 100%;
+  max-width: 1600px;
+  box-sizing: border-box;
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 10px;
-  padding: 0.75rem;
+  padding: 0.5rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  cursor: zoom-in;
 
   // In dark mode, the underlying SVG is light-themed Excalidraw, so frame
   // it on a slightly lifted surface so it doesn't shock against #1e1e2e.
   :root[saved-theme="dark"] & {
     background: #fdfdfd;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+img[src$=".excalidraw.svg"]:hover {
+  border-color: color-mix(in srgb, var(--secondary) 40%, var(--lightgray));
+}
+
+// ---- Excalidraw lightbox -------------------------------------------------
+// Fullscreen viewer triggered by site.js when an Excalidraw image is clicked.
+#fpe-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+  animation: fpe-lightbox-in 120ms ease-out;
+
+  & img {
+    max-width: 100%;
+    max-height: 100%;
+    background: #fdfdfd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
+    cursor: default;
+  }
+
+  & .fpe-lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1e1e2e;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 120ms ease;
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+}
+@keyframes fpe-lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

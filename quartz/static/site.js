@@ -67,9 +67,47 @@
     onScroll()
   }
 
+  function hydrateExcalidrawZoom(root) {
+    const imgs = (root || document).querySelectorAll('img[src$=".excalidraw.svg"]')
+    imgs.forEach((img) => {
+      if (img.dataset.fpeZoom === "1") return
+      img.dataset.fpeZoom = "1"
+      img.title = "Click to view full size"
+      img.addEventListener("click", () => openLightbox(img.src, img.alt))
+    })
+  }
+
+  function openLightbox(src, alt) {
+    let overlay = document.getElementById("fpe-lightbox")
+    if (overlay) overlay.remove()
+    overlay = document.createElement("div")
+    overlay.id = "fpe-lightbox"
+    overlay.setAttribute("role", "dialog")
+    overlay.setAttribute("aria-label", "Diagram viewer")
+    overlay.innerHTML =
+      '<button type="button" class="fpe-lightbox-close" aria-label="Close">×</button>' +
+      '<img alt="' + (alt || "") + '" />'
+    overlay.querySelector("img").src = src
+    const close = () => overlay.remove()
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay || e.target.classList.contains("fpe-lightbox-close")) close()
+    })
+    document.addEventListener(
+      "keydown",
+      function onKey(e) {
+        if (e.key === "Escape") {
+          close()
+          document.removeEventListener("keydown", onKey)
+        }
+      },
+    )
+    document.body.appendChild(overlay)
+  }
+
   function init() {
     hydrateCodeBlocks(document)
     ensureProgressBar()
+    hydrateExcalidrawZoom(document)
   }
 
   if (document.readyState === "loading") {

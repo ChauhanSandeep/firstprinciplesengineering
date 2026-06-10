@@ -19,42 +19,40 @@ $desktop: "(min-width: #{map.get($breakpoints, desktop)})";
 // Widened for engineering content (code blocks + Excalidraw diagrams);
 // upstream default ties this to the mobile breakpoint (~800px).
 $pageWidth: 960px;
-$sidePanelWidth: 320px; //380px;
+$sidePanelWidth: 325px; // 25% wider than the previous 260px — more room for explorer/graph
 $topSpacing: 6rem;
 $boldWeight: 700;
 $semiBoldWeight: 600;
 $normalWeight: 400;
 
 $mobileGrid: (
-  templateRows: "auto auto auto auto auto",
-  templateColumns: "auto",
+  templateRows: "auto auto auto auto",
+  templateColumns: "1fr",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
     '"grid-sidebar-left"\
       "grid-header"\
       "grid-center"\
-      "grid-sidebar-right"\
       "grid-footer"',
 );
 $tabletGrid: (
-  templateRows: "auto auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto",
+  templateRows: "auto auto auto",
+  templateColumns: "#{$sidePanelWidth} 1fr",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
     '"grid-sidebar-left grid-header"\
       "grid-sidebar-left grid-center"\
-      "grid-sidebar-left grid-sidebar-right"\
       "grid-sidebar-left grid-footer"',
 );
 $desktopGrid: (
   templateRows: "auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto #{$sidePanelWidth}",
+  templateColumns: "#{$sidePanelWidth} 1fr",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
-    '"grid-sidebar-left grid-header grid-sidebar-right"\
-      "grid-sidebar-left grid-center grid-sidebar-right"\
-      "grid-sidebar-left grid-footer grid-sidebar-right"',
+    '"grid-sidebar-left grid-header"\
+      "grid-sidebar-left grid-center"\
+      "grid-sidebar-left grid-footer"',
 );

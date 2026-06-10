@@ -1,24 +1,27 @@
 # First Principles Engineering — Quartz publishing pipeline
 
-This directory turns notes from the parent Obsidian vault into a public website
+This directory turns notes from a separate Obsidian vault into a public website
 at **https://chauhansandeep.github.io/firstprinciplesengineering**.
 
-It is a separate git repository nested inside the (private) vault repo. Only
-notes you explicitly opt in are exposed.
+It is its own git repository, kept **outside** the (private) vault so the two
+can be pushed independently. Only notes you explicitly opt in are exposed.
 
 ---
 
 ## Architecture
 
 ```
-Idea/ObisdianNotes/                            ← private vault (git repo)
-├── 00-QuickStart/                             ← topic folders
-├── 01-Fundamentals/01-Concepts/  ...          ← currently allowlisted
-├── 02-InterviewProblems/                      ← private (not allowlisted)
-├── Excalidraw/*.excalidraw.md (+ .svg)        ← drawings (only SVGs ship)
-└── quartz/                                    ← THIS folder, separate git repo
-    ├── publish.config.mjs                     ← USER EDITABLE: folder allowlist
-    ├── scripts/sync-from-vault.mjs            ← copies publish-eligible notes
+Idea/
+├── ObisdianNotes/                             ← private vault (git repo)
+│   ├── PUBLISH.md                             ← USER EDITABLE: publish allowlist
+│   ├── 00-QuickStart/                         ← topic folders
+│   ├── 01-Fundamentals/01-Concepts/  ...      ← currently allowlisted
+│   ├── 02-InterviewProblems/                  ← private (not allowlisted)
+│   └── Excalidraw/*.excalidraw.md (+ .svg)    ← drawings (only SVGs ship)
+│
+└── FirstPrinciplesEngineering/                ← THIS folder, separate git repo
+    ├── publish.config.mjs                     ← bootstrap: vaultRoot + manifest name
+    ├── scripts/sync-from-vault.mjs            ← reads PUBLISH.md, copies notes
     ├── scripts/pre-commit-guard.sh            ← refuses to commit content/*.md
     ├── content/                               ← generated (NEVER commit notes)
     │   └── index.md                           ← hand-maintained landing page
@@ -26,6 +29,9 @@ Idea/ObisdianNotes/                            ← private vault (git repo)
     ├── public/                                ← built site (pushed to gh-pages)
     └── .github/workflows/deploy.yml           ← gh-pages → GitHub Pages
 ```
+
+The vault path is set via `vaultRoot` in `publish.config.mjs` (relative to this
+folder, or absolute). Override per‑run with `QUARTZ_VAULT_ROOT=/path/to/vault`.
 
 **Two repos, two branches**:
 - `main` of `chauhansandeep/firstprinciplesengineering`: source only (config,
@@ -40,33 +46,57 @@ A note from the vault is published if **all** of these are true:
 1. It does **not** have `publish: false` in frontmatter (escape hatch).
 2. AND **either** of:
    - It has `publish: true` in frontmatter, **or**
-   - Its path matches a pattern in `publishFolders` in `publish.config.mjs`.
+   - Its path matches a glob in **`PUBLISH.md`** at the vault root (the
+     publishing manifest — see below).
 
 For folder-allowlisted notes, the sync script injects `publish: true` into
 the copied frontmatter so Quartz's `ExplicitPublish` filter (a second gate)
 accepts them.
 
-### Add a folder to the allowlist
-Edit `publish.config.mjs`:
-```js
-export default {
-  publishFolders: [
-    "01-Fundamentals/01-Concepts/**",
-    "01-Fundamentals/02-Databases/**",   // ← new
-  ],
-}
-```
-Then `npm run deploy`.
+### The vault manifest: `~/Idea/ObisdianNotes/PUBLISH.md`
 
-### Add a single note
-In Obsidian, add to its frontmatter:
+Open this file in Obsidian. Its YAML frontmatter (the **Properties**
+panel in modern Obsidian) holds the allowlist:
+
+```markdown
+---
+publish:
+  - 01-Fundamentals/01-Concepts/**
+  - 02-SystemDesign/**                       # ← add a folder
+  - 03-Notes/Some-Specific-Note.md           # ← or a single file
+---
+```
+
+After editing, just run `npm run deploy` from this repo:
+
+```bash
+cd ~/Idea/FirstPrinciplesEngineering && npm run deploy
+```
+
+You never have to leave the vault to change what gets published.
+`PUBLISH.md` itself is always skipped — it never reaches the public site.
+
+### Per-note overrides (no manifest edit needed)
+
+In Obsidian, add to a note's frontmatter:
 ```yaml
 ---
 title: "My Note"
-publish: true
+publish: true        # force-publish
+# or
+publish: false       # hard veto
 ---
 ```
-Then `npm run deploy`.
+`publish: false` always wins. Otherwise `publish: true` wins. Otherwise
+the manifest globs decide.
+
+### Where is the manifest filename configured?
+
+`publish.config.mjs` (in this repo) only sets two things:
+- `vaultRoot`    — where the vault lives.
+- `manifestFile` — name of the in-vault manifest (default `PUBLISH.md`).
+
+The actual list of what to publish lives in the vault.
 
 ### Block a specific note from a published folder
 ```yaml
@@ -120,7 +150,7 @@ On macOS:
 
 ```bash
 brew install pkg-config cairo pango libpng jpeg giflib librsvg
-cd quartz && npm install && npm approve-scripts canvas && npm rebuild canvas
+cd ~/Idea/FirstPrinciplesEngineering && npm install && npm approve-scripts canvas && npm rebuild canvas
 ```
 
 Note: rendering happens locally during `npm run deploy`. The GitHub Actions
@@ -161,7 +191,7 @@ Sixth (redundant): `quartz.config.yaml` adds `**/*.excalidraw.md` to
 ## Initial GitHub setup (one-time)
 
 ```bash
-cd quartz
+cd ~/Idea/FirstPrinciplesEngineering
 git init
 git add -A
 git status                            # confirm content/* is NOT staged

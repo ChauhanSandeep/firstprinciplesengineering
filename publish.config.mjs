@@ -1,22 +1,26 @@
 /**
  * publish.config.mjs
  *
- * USER-EDITABLE: controls which notes get published, in addition to per-note
- * `publish: true` frontmatter.
+ * Bootstrap configuration. The actual publish allowlist lives INSIDE the
+ * vault — see `<vaultRoot>/<manifestFile>` (default: PUBLISH.md).
  *
- * Rules (evaluated by scripts/sync-from-vault.mjs):
- *   1. If a note has `publish: false` in frontmatter → NEVER published. (Escape hatch.)
- *   2. If a note has `publish: true`              → published.
- *   3. If a note's path matches any pattern in `publishFolders` → published
- *      (and the sync script injects `publish: true` into the copied frontmatter
- *      so Quartz's second-gate filter accepts it).
- *   4. Otherwise → not published.
+ * - `vaultRoot`    : path to your Obsidian vault, relative to this folder or
+ *                    absolute. Override at runtime with QUARTZ_VAULT_ROOT.
+ * - `manifestFile` : filename (vault-relative) of the publishing manifest
+ *                    Markdown file. Default: "PUBLISH.md".
  *
- * Patterns use minimatch glob syntax (relative to the vault root).
+ * The manifest is a Markdown file with YAML frontmatter, e.g.:
+ *
+ *   ---
+ *   publish:
+ *     - 01-Fundamentals/01-Concepts/**
+ *     - 02-SystemDesign/**
+ *   ---
+ *
+ * Per-note overrides still work via `publish: true` / `publish: false`
+ * in the note's own frontmatter.
  */
 export default {
-  publishFolders: [
-    // First curated batch — see PUBLISHING.md for how to add more.
-    "01-Fundamentals/01-Concepts/**",
-  ],
+  vaultRoot: "../ObisdianNotes",
+  manifestFile: "PUBLISH.md",
 }

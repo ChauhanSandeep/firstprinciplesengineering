@@ -34,8 +34,21 @@ const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const QUARTZ_ROOT = path.resolve(__dirname, "..")
-const VAULT_ROOT = path.resolve(QUARTZ_ROOT, "..")
+
+// Vault location is configurable via publish.config.mjs `vaultRoot` (relative
+// to the quartz root or absolute). Env var QUARTZ_VAULT_ROOT overrides for
+// one-off runs. Falls back to the quartz folder's parent for backward
+// compatibility with the original in-vault layout.
+const VAULT_ROOT_RAW =
+  process.env.QUARTZ_VAULT_ROOT || publishConfig.vaultRoot || ".."
+const VAULT_ROOT = path.resolve(QUARTZ_ROOT, VAULT_ROOT_RAW)
 const CONTENT_DIR = path.join(QUARTZ_ROOT, "content")
+
+// In-vault publishing manifest (a Markdown file with YAML frontmatter listing
+// what to publish). Configurable via publish.config.mjs `manifestFile`.
+// Default: PUBLISH.md at the vault root.
+const MANIFEST_FILE = publishConfig.manifestFile || "PUBLISH.md"
+const MANIFEST_PATH = path.join(VAULT_ROOT, MANIFEST_FILE)
 
 const SOFT_MODE = process.argv.includes("--soft")
 
@@ -56,7 +69,9 @@ const VAULT_IGNORE = new Set([
 const CONTENT_PRESERVE = new Set(["index.md", "_static"])
 
 const HARD_BLOCK = (rel) =>
-  rel.endsWith(".excalidraw.md") || rel.endsWith(".excalidraw")
+  rel.endsWith(".excalidraw.md") ||
+  rel.endsWith(".excalidraw") ||
+  rel === MANIFEST_FILE
 
 const stats = {
   notesPublishedViaFlag: 0,
@@ -176,9 +191,38 @@ async function copyFile(srcAbs, destAbs) {
   await fs.copyFile(srcAbs, destAbs)
 }
 
+async function loadManifest() {
+  if (!(await exists(MANIFEST_PATH))) {
+    return { patterns: [], source: "missing" }
+  }
+  const raw = await fs.readFile(MANIFEST_PATH, "utf8")
+  let parsed
+  try {
+    parsed = matter(raw)
+  } catch (e) {
+    throw new Error(
+      `Could not parse YAML frontmatter in ${MANIFEST_FILE}: ${e.message}`,
+    )
+  }
+  const fm = parsed.data || {}
+  // Accept `publish:` (preferred) or legacy aliases `publishFolders:` / `paths:`.
+  const list = fm.publish ?? fm.publishFolders ?? fm.paths ?? []
+  if (!Array.isArray(list)) {
+    throw new Error(
+      `'publish' field in ${MANIFEST_FILE} must be a YAML list of glob strings.`,
+    )
+  }
+  const patterns = list
+    .map((s) => (typeof s === "string" ? s.trim() : ""))
+    .filter((s) => s && !s.startsWith("#"))
+  return { patterns, source: "manifest" }
+}
+
+let PUBLISH_PATTERNS = []
+
 function matchesPublishFolder(relPath) {
   const posix = relPath.split(path.sep).join("/")
-  return (publishConfig.publishFolders || []).some((pattern) =>
+  return PUBLISH_PATTERNS.some((pattern) =>
     minimatch(posix, pattern, { dot: false }),
   )
 }
@@ -333,9 +377,46 @@ async function processNote(file, index) {
 }
 
 async function main() {
-  console.log(`📚 Vault:   ${VAULT_ROOT}`)
-  console.log(`🌱 Content: ${CONTENT_DIR}`)
-  console.log(`⚙️  Folders: ${JSON.stringify(publishConfig.publishFolders)}`)
+  if (!(await exists(VAULT_ROOT))) {
+    console.error(
+      `\n❌ Vault path does not exist: ${VAULT_ROOT}\n` +
+        `   Set 'vaultRoot' in publish.config.mjs (relative to quartz root or absolute),\n` +
+        `   or export QUARTZ_VAULT_ROOT=/absolute/path/to/vault for a one-off run.`,
+    )
+    process.exit(1)
+  }
+  if (path.resolve(VAULT_ROOT) === path.resolve(QUARTZ_ROOT)) {
+    console.error(
+      `\n❌ vaultRoot resolves to the quartz folder itself (${VAULT_ROOT}).\n` +
+        `   The vault must be a separate directory.`,
+    )
+    process.exit(1)
+  }
+
+  let manifest
+  try {
+    manifest = await loadManifest()
+  } catch (e) {
+    console.error(`\n❌ ${e.message}`)
+    process.exit(1)
+  }
+  if (manifest.source === "missing") {
+    console.error(
+      `\n❌ Publishing manifest not found at ${MANIFEST_PATH}\n` +
+        `   Create it in your vault with YAML frontmatter, e.g.:\n` +
+        `   ---\n` +
+        `   publish:\n` +
+        `     - 01-Fundamentals/01-Concepts/**\n` +
+        `   ---`,
+    )
+    process.exit(1)
+  }
+  PUBLISH_PATTERNS = manifest.patterns
+
+  console.log(`📚 Vault:    ${VAULT_ROOT}`)
+  console.log(`📝 Manifest: ${MANIFEST_PATH}`)
+  console.log(`🌱 Content:  ${CONTENT_DIR}`)
+  console.log(`⚙️  Publish:  ${JSON.stringify(PUBLISH_PATTERNS)}`)
   if (SOFT_MODE) console.log(`🧪 SOFT MODE: Excalidraw failures will warn, not fail.`)
   console.log()
 
