@@ -602,16 +602,39 @@ a.internal.tag-link {
   }
 }
 
-// ---- Hide empty right-sidebar placeholder -------------------------------
-// Quartz always renders <div class="right sidebar"> with `grid-area:
-// grid-sidebar-right`, but our grid templates intentionally don't declare
-// that area (we removed the right sidebar to widen the reading column).
-// Left unfixed, the orphaned element creates an implicit grid column,
-// which overflows the viewport on mobile (sidebar computes to 414px on a
-// 375px screen). Display:none removes it from the grid entirely.
-#quartz-body > .sidebar.right {
-  display: none;
+// ---- Right sidebar visibility -------------------------------------------
+// On desktop (>=1200px) we re-instate the right sidebar at $sidePanelWidth
+// for the table-of-contents. On tablet/mobile, the base layout already
+// hides .sidebar.right > .toc, but we hide the whole wrapper to avoid the
+// orphaned grid-area issue (Quartz emits the element with grid-area:
+// grid-sidebar-right which would otherwise spawn an implicit column on
+// mobile and overflow the viewport).
+@media all and not ($desktop) {
+  #quartz-body > .sidebar.right {
+    display: none;
+  }
 }
+
+// ---- Right-sidebar TOC styling ------------------------------------------
+// When TOC lives in the right sidebar, make it sticky-scrollable so it
+// stays visible while reading and long lists scroll within their box.
+#quartz-body > .sidebar.right > .toc {
+  position: sticky;
+  top: 4rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto !important;
+  padding-right: 0.5rem;
+
+  ul.toc-content {
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+}
+
+// The inline TOC override below is still useful as a safety net in case
+// the plugin renders the inline layout (e.g. on a page where condition
+// flips), but the sticky right-sidebar rule above is what governs the
+// normal article view.
 
 // ---- Landing-page hero + cards ------------------------------------------
 .fpe-hero {

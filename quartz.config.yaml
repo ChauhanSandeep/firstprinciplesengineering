@@ -82,7 +82,7 @@ plugins:
       layout: modern
     order: 50
     layout:
-      position: beforeBody
+      position: right
       priority: 25
       condition: not-index
   - source: github:quartz-community/crawl-links
