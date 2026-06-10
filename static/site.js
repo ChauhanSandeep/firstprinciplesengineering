@@ -326,7 +326,6 @@
 
     const basePath = (document.body && document.body.dataset && document.body.dataset.basepath) || ""
     const home = (basePath || "") + "/"
-    const rss = (basePath || "") + "/index.xml"
     const about = (basePath || "") + "/about"
     const ghRepo = "https://github.com/chauhansandeep/firstprinciplesengineering"
     const linkedinUrl = "https://www.linkedin.com/in/sandeepcode/"
@@ -380,10 +379,8 @@
         '<div class="fpe-footer-col-title">Connect</div>' +
         '<ul>' +
           mkConnect(ghRepo, "GitHub", "github", true) +
-          mkConnect(ghRepo + "/issues/new", "Open an issue", "issue", true) +
           mkConnect(linkedinUrl, "LinkedIn", "linkedin", true) +
           mkConnect("mailto:" + emailAddr, "Email", "email", false) +
-          mkConnect(rss, "RSS", "rss", false) +
         '</ul>' +
       '</div>'
 
