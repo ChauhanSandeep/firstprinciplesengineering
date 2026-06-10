@@ -11,6 +11,8 @@ publish: true
 
 <p>Writing about Distributed Systems, System Design, Staff Engineering, Algorithms and AI — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
 
+<p class="fpe-hero-cta"><a class="fpe-hero-link" href="about">About this site<span aria-hidden="true"> →</span></a></p>
+
 </div>
 
 ## Featured
