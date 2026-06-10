@@ -46,6 +46,142 @@
     onScroll()
   }
 
+  // Strip `NN-` ordering prefix and convert dashes to spaces. Mirrors the
+  // sync script's prettifyName() and the Explorer mapFn so display is
+  // consistent across all UI surfaces.
+  function prettify(s) {
+    if (!s || typeof s !== "string") return s
+    return s.replace(/^\d+[-_]/, "").replace(/[-_]/g, " ").trim()
+  }
+
+  // Breadcrumbs are server-rendered with raw folder slugs (e.g. "01-Fundamentals
+  // > 01-Concepts > ..."). The breadcrumb plugin doesn't expose a mapFn the
+  // way Explorer does, so we rewrite the text on the client. Idempotent.
+  function prettifyBreadcrumbs(root) {
+    const links = (root || document).querySelectorAll(
+      ".breadcrumb-container .breadcrumb-element > a",
+    )
+    links.forEach((a) => {
+      if (a.dataset.fpePretty === "1") return
+      const original = a.textContent
+      const cleaned = prettify(original)
+      if (cleaned && cleaned !== original) a.textContent = cleaned
+      a.dataset.fpePretty = "1"
+    })
+  }
+
+  // Floating "back to top" button. Appears after scrolling past one viewport
+  // height on any article page. Smooth-scrolls to top.
+  function ensureBackToTop() {
+    if (!document.querySelector("article")) return
+    if (document.getElementById("fpe-back-to-top")) return
+    const btn = document.createElement("button")
+    btn.id = "fpe-back-to-top"
+    btn.type = "button"
+    btn.setAttribute("aria-label", "Back to top")
+    btn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>'
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    })
+    document.body.appendChild(btn)
+    const onScroll = () => {
+      const h = document.documentElement
+      btn.classList.toggle("visible", h.scrollTop > h.clientHeight * 0.6)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    onScroll()
+  }
+
+  // Inject a kbd badge inside the search launcher to surface the Cmd/Ctrl+K
+  // shortcut (the search plugin already binds the shortcut; we just expose it).
+  function decorateSearchButton(root) {
+    const btn = (root || document).querySelector(".search > .search-button")
+    if (!btn || btn.dataset.fpeKbd === "1") return
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+    const kbd = document.createElement("kbd")
+    kbd.className = "fpe-search-kbd"
+    kbd.setAttribute("aria-hidden", "true")
+    kbd.textContent = isMac ? "⌘K" : "Ctrl K"
+    btn.appendChild(kbd)
+    btn.dataset.fpeKbd = "1"
+  }
+
+  // Prev / next article navigation: derives the article's "sibling list" from
+  // its slug ancestry using the JSON index Quartz emits. We pick the parent
+  // folder, list its published children (excluding folder indexes), sort them
+  // by slug (which gives natural ordering because the vault uses `NN-` prefixes),
+  // and link to the immediate prev/next entry.
+  let _contentIndexPromise = null
+  function loadContentIndex() {
+    if (_contentIndexPromise) return _contentIndexPromise
+    const body = document.body
+    const basepath = (body && body.dataset && body.dataset.basepath) || ""
+    const base = basepath.replace(/\/$/, "")
+    const url = (base ? base : "") + "/static/contentIndex.json"
+    _contentIndexPromise = fetch(url)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+    return _contentIndexPromise
+  }
+  async function ensurePrevNext() {
+    const article = document.querySelector("article")
+    if (!article) return
+    if (article.querySelector(".fpe-prev-next")) return
+
+    const body = document.body
+    const slug = body && body.dataset && body.dataset.slug
+    if (!slug || slug === "index" || slug.endsWith("/index")) return
+
+    const data = await loadContentIndex()
+    if (!data) return
+    const index = data.content || data
+
+    const parts = slug.split("/")
+    if (parts.length < 2) return
+    const parent = parts.slice(0, -1).join("/")
+
+    const entries = Object.entries(index)
+      .filter(([s]) => {
+        if (!s.startsWith(parent + "/")) return false
+        const rest = s.slice(parent.length + 1)
+        if (rest.includes("/")) return false
+        if (rest === "index" || rest.endsWith("/index")) return false
+        return true
+      })
+      .map(([s, v]) => ({ slug: s, title: (v && v.title) || s.split("/").pop() }))
+      .sort((a, b) => a.slug.localeCompare(b.slug, undefined, { numeric: true }))
+
+    const idx = entries.findIndex((e) => e.slug === slug)
+    if (idx < 0) return
+    const prev = idx > 0 ? entries[idx - 1] : null
+    const next = idx < entries.length - 1 ? entries[idx + 1] : null
+    if (!prev && !next) return
+
+    const basepath = (body && body.dataset && body.dataset.basepath) || ""
+    const join = (b, s) => {
+      const left = b.replace(/\/$/, "")
+      const right = String(s).replace(/^\//, "")
+      return left ? left + "/" + right : right
+    }
+    const nav = document.createElement("nav")
+    nav.className = "fpe-prev-next"
+    nav.setAttribute("aria-label", "Article navigation")
+    const make = (entry, direction, label) => {
+      if (!entry) return '<span class="fpe-pn-spacer"></span>'
+      const href = join(basepath, entry.slug)
+      const cleanTitle = prettify(entry.title)
+      return (
+        '<a class="fpe-pn ' + direction + '" href="' + href + '">' +
+        '<span class="fpe-pn-label">' + label + '</span>' +
+        '<span class="fpe-pn-title">' + cleanTitle + '</span>' +
+        "</a>"
+      )
+    }
+    nav.innerHTML = make(prev, "prev", "← Previous") + make(next, "next", "Next →")
+    article.appendChild(nav)
+  }
+
   function hydrateExcalidrawZoom(root) {
     const imgs = (root || document).querySelectorAll('img[src$=".excalidraw.svg"]')
     imgs.forEach((img) => {
@@ -87,6 +223,10 @@
     hydrateCodeBlocks(document)
     ensureProgressBar()
     hydrateExcalidrawZoom(document)
+    prettifyBreadcrumbs(document)
+    decorateSearchButton(document)
+    ensureBackToTop()
+    ensurePrevNext()
   }
 
   if (document.readyState === "loading") {
