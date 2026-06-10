@@ -136,6 +136,22 @@ plugins:
     enabled: true
   - source: github:quartz-community/explorer
     enabled: true
+    options:
+      # Strip leading `NN-` ordering prefix and convert dashes/underscores to
+      # spaces so vault folders like `01-Fundamentals/01-Concepts/...` display
+      # as "Fundamentals / Concepts / ...". File titles are prettified at sync
+      # time, but folder names live in `fileSegmentHint` (raw segment) which
+      # this mapFn cleans up at render time. Function is serialized to the
+      # client and re-evaluated there (see explorer.inline.ts).
+      mapFn: |
+        (node) => {
+          if (!node || node.displayName == null) return;
+          const cleaned = String(node.displayName)
+            .replace(/^\d+[-_]/, "")
+            .replace(/[-_]/g, " ")
+            .trim();
+          if (cleaned) node.displayName = cleaned;
+        }
     layout:
       position: left
       priority: 50

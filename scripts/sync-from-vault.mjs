@@ -242,6 +242,47 @@ function shouldPublish(relPath, frontmatter) {
   return { publish: false, source: null }
 }
 
+// Strip leading `NN-` ordering prefix and convert remaining dashes/underscores
+// to spaces so vault filenames like "01-Database-Concepts" render as
+// "Database Concepts" in the published site (page titles, explorer, breadcrumbs).
+// Preserves the file's own casing.
+//
+// Examples:
+//   "01-Database-Concepts"           → "Database Concepts"
+//   "03-gRPC-RPC"                    → "gRPC RPC"
+//   "Distributed-Systems-Primitives" → "Distributed Systems Primitives"
+//   "index"                          → "index"
+function prettifyName(stem) {
+  if (!stem || typeof stem !== "string") return stem
+  return stem
+    .replace(/^\d+[-_]/, "")
+    .replace(/[-_]/g, " ")
+    .trim()
+}
+
+// If the body's first non-empty line is a top-level heading whose text matches
+// the title (case-insensitive, ignoring punctuation/whitespace), drop it. This
+// removes the duplicate H1 you see when the vault note already has `# Title`
+// at the top and the sync injects the same title into frontmatter.
+function stripLeadingDuplicateH1(body, title) {
+  if (!body || !title) return body
+  // Aggressive normalization: lowercase, strip whitespace/dashes/punctuation,
+  // and drop short connecting words ("and", "or", "vs", "the") so a body
+  // heading like "TCP, UDP, and QUIC" still matches a synced title of
+  // "TCP UDP QUIC" derived from the filename.
+  const norm = (s) =>
+    String(s)
+      .toLowerCase()
+      .replace(/\b(and|or|vs|versus|the|a|an)\b/g, "")
+      .replace(/[^a-z0-9]+/g, "")
+  const titleNorm = norm(title)
+  if (!titleNorm) return body
+  const m = body.match(/^\s*#\s+(.+?)\s*\n+/)
+  if (!m) return body
+  if (norm(m[1]) !== titleNorm) return body
+  return body.slice(m[0].length).replace(/^\s+/, "")
+}
+
 async function processNote(file, index) {
   const { abs, rel } = file
   if (HARD_BLOCK(rel)) return
@@ -264,6 +305,40 @@ async function processNote(file, index) {
   let body = parsed.content
   const data = { ...parsed.data }
   data.publish = true
+
+  // Title resolution (highest priority first):
+  //   1. Explicit `title:` in the vault note's frontmatter — honored as-is.
+  //   2. The body's first H1 (`# Foo`) — captured as the display title and
+  //      then removed from the body so it doesn't render twice.
+  //   3. Prettified filename stem — strip leading `NN-` ordering prefix and
+  //      replace dashes with spaces. For `index.md`, use the parent folder
+  //      name so breadcrumbs/explorer show "Distributed Systems" instead of
+  //      "index".
+  // This means the vault stays untouched: notes that already follow the
+  // Obsidian convention of `# Heading\n\n...content...` just work.
+  const stemFromRel = (relPath) => {
+    const base = path.basename(relPath, path.extname(relPath))
+    if (base === "index") {
+      const parent = path.basename(path.dirname(relPath))
+      return parent && parent !== "." ? parent : "index"
+    }
+    return base
+  }
+  const hasExplicitTitle =
+    data.title != null && data.title !== "" && data.title !== "index"
+  if (!hasExplicitTitle) {
+    const leadingH1 = body.match(/^\s*#\s+(.+?)\s*\n+/)
+    if (leadingH1) {
+      data.title = leadingH1[1].trim()
+      body = body.slice(leadingH1[0].length).replace(/^\s+/, "")
+    } else {
+      data.title = prettifyName(stemFromRel(rel))
+    }
+  } else {
+    // Even when the user set an explicit title, strip a duplicate leading H1
+    // so the page never shows two identical headings.
+    body = stripLeadingDuplicateH1(body, data.title)
+  }
 
   const embedRe = /!\[\[([^\]|#]+)(#[^\]|]+)?(?:\|([^\]]+))?\]\]/g
   const linkRe = /(?<!\!)\[\[([^\]|#]+)(#[^\]|]+)?(?:\|([^\]]+))?\]\]/g

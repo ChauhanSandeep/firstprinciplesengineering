@@ -1170,3 +1170,304 @@ ul.toc-content.overflow {
     }
   }
 }
+
+// ====================================================================
+//  Phase 5 polish (5-8 + 9, 10, 11, 13, 18, 19, 21)
+// ====================================================================
+
+// ---- ContentMeta date separator (#8) ------------------------------------
+// The plugin uses `, ` as a separator between date and reading time. A
+// middle dot reads better in a header chrome line. Overrides the plugin's
+// `[show-comma="true"] > *:not(:last-child)::after { content: "," }`.
+.content-meta[show-comma="true"] > *:not(:last-child) {
+  margin-right: 0;
+  &::after {
+    content: " · ";
+    margin: 0 0.25rem;
+    color: var(--gray);
+  }
+}
+
+// ---- Featured / learning-path cards: title-first hierarchy (#7) ----------
+// Was: orange uppercase eyebrow + dark title (eyebrow visually outweighed
+// the title). Now: title takes the orange→clay gradient (primary attention),
+// eyebrow shrinks into a muted lowercase-ish label (secondary context).
+.fpe-article-card > .article-eyebrow {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 0.35rem;
+  opacity: 0.85;
+}
+.fpe-article-card > .article-title {
+  background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+// ---- Breadcrumbs: extra polish ------------------------------------------
+// Text is prettified by site.js (strip `NN-` and dashes). Tighten layout
+// and color so the breadcrumb reads as quiet wayfinding, not body content.
+.breadcrumb-container {
+  color: var(--gray);
+  font-size: 0.82rem;
+  a {
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: none;
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+  .breadcrumb-element:last-child > a {
+    color: var(--darkgray);
+    font-weight: 600;
+  }
+  p {
+    margin: 0 0.15rem;
+    opacity: 0.5;
+  }
+}
+
+// ---- Prev / next article navigation (#9) --------------------------------
+// Injected by site.js at the bottom of each article. Two cards side-by-side
+// on desktop, stacked on mobile.
+.fpe-prev-next {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 2.5rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--lightgray);
+
+  .fpe-pn,
+  .fpe-pn-spacer {
+    display: flex;
+    flex-direction: column;
+    padding: 0.9rem 1.1rem;
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--dark);
+    transition:
+      transform 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  .fpe-pn-spacer {
+    background: transparent;
+    border-color: transparent;
+    pointer-events: none;
+  }
+  .fpe-pn.next {
+    text-align: right;
+  }
+  .fpe-pn-label {
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 0.3rem;
+  }
+  .fpe-pn-title {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    color: var(--secondary);
+    line-height: 1.35;
+  }
+  .fpe-pn:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 14%, transparent);
+  }
+  @media all and ($mobile) {
+    grid-template-columns: 1fr;
+    .fpe-pn.next {
+      text-align: left;
+    }
+  }
+}
+
+// ---- Back-to-top floating button (#10) ----------------------------------
+#fpe-back-to-top {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 50;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--light);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    background-color 150ms ease;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--dark) 22%, transparent);
+
+  &.visible {
+    opacity: 0.92;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  &:hover {
+    opacity: 1;
+    background: var(--tertiary);
+  }
+  svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin: 0 auto;
+  }
+}
+// In reader mode, the close button sits at top-right (1.1rem). The back-to-top
+// stays at bottom-right which is fine, but lower the z-index so it never
+// overlaps the close affordance during paint races.
+:root[reader-mode="on"] #fpe-back-to-top {
+  z-index: 40;
+}
+
+// ---- Search button kbd hint (#19) ---------------------------------------
+.fpe-search-kbd {
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  color: var(--gray);
+  line-height: 1.4;
+}
+.search > .search-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  p {
+    margin: 0;
+  }
+}
+
+// ---- TOC: scroll-spy active highlight (#13) -----------------------------
+// The TOC component sets `.in-view` on currently-visible entries via Quartz's
+// scroll-spy. Style it so the active section is visually distinct without
+// being loud.
+.toc {
+  ul.toc-content {
+    li {
+      transition: color 120ms ease;
+    }
+    li.in-view > a,
+    li > a.active {
+      color: var(--secondary);
+      font-weight: 600;
+    }
+    li > a {
+      border-left: 2px solid transparent;
+      padding-left: 0.5rem;
+      transition: border-color 120ms ease, color 120ms ease;
+    }
+    li.in-view > a {
+      border-left-color: var(--secondary);
+    }
+  }
+}
+
+// ---- Footer polish (#11) ------------------------------------------------
+// The footer plugin is already enabled in the YAML; just style it to fit the
+// warm-paper aesthetic and ensure the link row has breathing room.
+footer {
+  margin: 3rem 0 1.5rem;
+  padding: 1.5rem 0 1rem;
+  border-top: 1px solid var(--lightgray);
+  color: var(--gray);
+  font-size: 0.82rem;
+  text-align: center;
+
+  p {
+    margin: 0 0 0.5rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  ul li {
+    margin: 0;
+  }
+  a {
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--lightgray);
+    transition: color 150ms ease, border-color 150ms ease;
+    &:hover {
+      color: var(--secondary);
+      border-bottom-color: var(--secondary);
+    }
+  }
+}
+
+// ---- 404 / stub page polish (#21) ---------------------------------------
+// Quartz's 404.tsx renders a plain <article class="popover-hint"> with a
+// single <h1>. Make it feel intentional: orange-accented heading, soft card,
+// and a quiet "draft" label so visitors understand it's a known gap, not a
+// broken site.
+body[data-slug="404"] {
+  article.popover-hint {
+    max-width: 640px;
+    margin: 4rem auto 2rem;
+    padding: 2.25rem 2rem 2rem;
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 14px;
+    text-align: left;
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--dark) 6%, transparent);
+    position: relative;
+
+    h1 {
+      font-family: var(--headerFont);
+      font-weight: 700;
+      font-size: 1.65rem;
+      color: var(--secondary);
+      margin: 0 0 1rem;
+      padding-right: 5rem;
+      &::before {
+        content: "DRAFT";
+        position: absolute;
+        top: 1.4rem;
+        right: 1.6rem;
+        font-family: var(--codeFont);
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        padding: 0.15rem 0.55rem;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--secondary) 18%, transparent);
+        color: var(--secondary);
+      }
+    }
+    p, ul, li {
+      color: var(--darkgray);
+    }
+    em {
+      color: var(--gray);
+    }
+  }
+}
