@@ -105,6 +105,46 @@ article {
   table {
     margin-top: 2rem;
     margin-bottom: 2rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border: 1px solid var(--lightgray);
+    border-radius: 12px;
+    font-size: 0.95em;
+
+    thead {
+      background: color-mix(in srgb, var(--lightgray) 60%, transparent);
+
+      th {
+        font-weight: 600;
+        text-align: left;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--lightgray);
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        transition: background-color 120ms ease;
+      }
+      tr:nth-child(even) {
+        background: color-mix(in srgb, var(--lightgray) 25%, transparent);
+      }
+      tr:hover {
+        background: color-mix(in srgb, var(--secondary) 6%, transparent);
+      }
+      td {
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+    }
   }
 
   // Excalidraw + image breathing room (existing img:auto rules set margin
