@@ -17,7 +17,13 @@ const QUARTZ_ROOT = path.resolve(__dirname, "..")
 const PUBLIC_DIR = path.join(QUARTZ_ROOT, "public")
 const EXCALIDRAW_DIR = path.join(PUBLIC_DIR, "excalidraw")
 
-const IMG_SRC_RE = /<img([^>]*?)\bsrc="([^"]*excalidraw\/[^"]+\.excalidraw\.svg)"([^>]*)>/g
+// Match any <img> whose src points at the public/excalidraw/ folder and ends
+// with one of the three Excalidraw export variants the pipeline produces:
+//   - *.excalidraw.svg        (legacy single-theme export)
+//   - *.excalidraw.light.svg  (light-theme companion of the dark/light pair)
+//   - *.excalidraw.dark.svg   (defensive: in case sync ever emits dark first)
+const IMG_SRC_RE =
+  /<img([^>]*?)\bsrc="([^"]*excalidraw\/[^"]+\.excalidraw(?:\.dark|\.light)?\.svg)"([^>]*)>/g
 
 async function walk(dir) {
   const out = []
@@ -50,6 +56,7 @@ async function fileExists(p) {
 let totalFiles = 0
 let totalRewrites = 0
 let totalWidthApplied = 0
+let totalPairsUpgraded = 0
 let missingTargets = 0
 
 // Convert `alt="<digits>"` (Obsidian's `![<size>](…)` syntax) into an explicit
@@ -70,6 +77,49 @@ function applyAltAsWidth(tag) {
   return tag.replace(/<img\b/, `<img width="${n}"`)
 }
 
+// Merge a class name into an <img> tag, preserving existing classes.
+function addClass(tag, className) {
+  const classRe = /\bclass="([^"]*)"/
+  if (classRe.test(tag)) {
+    return tag.replace(classRe, (_m, existing) => {
+      const set = new Set(existing.split(/\s+/).filter(Boolean))
+      set.add(className)
+      return `class="${[...set].join(" ")}"`
+    })
+  }
+  return tag.replace(/<img\b/, `<img class="${className}"`)
+}
+
+// Force-set an attribute on an <img> tag (replaces any existing value).
+function setAttr(tag, name, value) {
+  const re = new RegExp(`\\b${name}="[^"]*"`)
+  if (re.test(tag)) {
+    return tag.replace(re, `${name}="${value}"`)
+  }
+  return tag.replace(/<img\b/, `<img ${name}="${value}"`)
+}
+
+// Swap the src of an <img> tag to a new URL.
+function setSrc(tag, newSrc) {
+  return tag.replace(/\bsrc="[^"]*"/, `src="${newSrc}"`)
+}
+
+// Variant constants — keep in one place so we don't drift across helpers.
+const LIGHT_SUFFIX = ".excalidraw.light.svg"
+const DARK_SUFFIX = ".excalidraw.dark.svg"
+
+// Given the basename of one side of the pair, return the basename of the
+// companion. Returns null if the input isn't part of a pair.
+function companionBasename(fname) {
+  if (fname.endsWith(LIGHT_SUFFIX)) {
+    return fname.slice(0, -LIGHT_SUFFIX.length) + DARK_SUFFIX
+  }
+  if (fname.endsWith(DARK_SUFFIX)) {
+    return fname.slice(0, -DARK_SUFFIX.length) + LIGHT_SUFFIX
+  }
+  return null
+}
+
 const htmls = await walk(PUBLIC_DIR)
 for (const html of htmls) {
   const orig = await fs.readFile(html, "utf8")
@@ -83,10 +133,46 @@ for (const html of htmls) {
       return applyAltAsWidth(match)
     }
     const newSrc = fixSrc(html, src)
-    let nextTag = newSrc === src ? match : `<img${pre}src="${newSrc}"${post}>`
+    let baseTag = newSrc === src ? match : `<img${pre}src="${newSrc}"${post}>`
     if (newSrc !== src) rewrites++
-    nextTag = applyAltAsWidth(nextTag)
-    return nextTag
+    baseTag = applyAltAsWidth(baseTag)
+
+    // If this <img> is one side of a dark/light pair AND the companion is
+    // also present in the built output, upgrade the single tag into a pair:
+    // the visible <img> follows :root[saved-theme]. When the companion is
+    // missing we fall back to duplicating the single export into both slots
+    // (per user-chosen "duplicate, never fail" policy) so the diagram still
+    // shows in both themes — just without theme-specific colors.
+    const companion = companionBasename(fname)
+    if (companion) {
+      const companionAbs = path.join(EXCALIDRAW_DIR, companion)
+      const isLight = fname.endsWith(LIGHT_SUFFIX)
+      const lightFname = isLight ? fname : companion
+      const darkFname = isLight ? companion : fname
+      const lightExists = isLight ? true : existsSync(companionAbs)
+      const darkExists = isLight ? existsSync(companionAbs) : true
+
+      const lightFile = lightExists ? lightFname : darkFname
+      const darkFile = darkExists ? darkFname : lightFname
+
+      const lightRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), lightFile))
+      const darkRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), darkFile))
+
+      let lightTag = setSrc(baseTag, lightRelSrc)
+      lightTag = addClass(lightTag, "excalidraw-light")
+
+      let darkTag = setSrc(baseTag, darkRelSrc)
+      darkTag = addClass(darkTag, "excalidraw-dark")
+      // Hide the duplicate from assistive tech so screen readers don't
+      // announce the same alt text twice.
+      darkTag = setAttr(darkTag, "aria-hidden", "true")
+      darkTag = setAttr(darkTag, "alt", "")
+
+      totalPairsUpgraded++
+      return lightTag + darkTag
+    }
+
+    return baseTag
   })
   if (next !== orig) {
     await fs.writeFile(html, next, "utf8")
@@ -100,5 +186,6 @@ for (const html of htmls) {
 console.log(
   `fix-excalidraw-paths: rewrote ${totalRewrites} <img src> in ${totalFiles} HTML files` +
     `, applied width="alt" on ${totalWidthApplied} images` +
+    `, upgraded ${totalPairsUpgraded} to dark/light pair` +
     (missingTargets > 0 ? ` (skipped ${missingTargets} missing targets)` : ""),
 )

@@ -170,19 +170,48 @@ function resolveWikilink(target, index, fromAbs) {
   return null
 }
 
-async function findExcalidrawSvg(sourceAbs) {
+// Locate the sidecar exports next to an Excalidraw source file.
+//
+// The Obsidian Excalidraw plugin's "Export both dark- and light-themed image"
+// setting writes two SVGs (`*.dark.svg` + `*.light.svg`). Older single-theme
+// exports left a plain `*.svg` instead. We return the full picture so the
+// pipeline can ship the dark/light pair to the post-build step (which emits
+// a theme-aware <img> pair), while still degrading gracefully for legacy
+// single exports and PNG-only setups.
+//
+// `primary` is the file actually embedded in the rewritten markdown. The
+// post-build step in `fix-excalidraw-paths.mjs` looks for the dark companion
+// next to it and upgrades the single <img> into the pair markup when it
+// finds one.
+async function findExcalidrawSidecars(sourceAbs) {
   const dir = path.dirname(sourceAbs)
   const base = path.basename(sourceAbs).replace(/\.md$/, "")
-  const candidates = [
-    path.join(dir, `${base}.svg`),
-    path.join(dir, `${base}.light.svg`),
-    path.join(dir, `${base}.png`),
-    path.join(dir, `${base}.light.png`),
-  ]
-  for (const c of candidates) {
-    if (await exists(c)) return c
-  }
-  return null
+  const p = (suffix) => path.join(dir, `${base}.${suffix}`)
+  const dark = (await exists(p("dark.svg"))) ? p("dark.svg") : null
+  const light = (await exists(p("light.svg"))) ? p("light.svg") : null
+  const legacySvg = (await exists(p("svg"))) ? p("svg") : null
+  const legacyLightPng = (await exists(p("light.png"))) ? p("light.png") : null
+  const legacyPng = (await exists(p("png"))) ? p("png") : null
+
+  // Priority for `primary`: light.svg (pair primary) → svg (legacy) → dark.svg
+  // (defensive: pair where light export failed) → PNG fallbacks. The pair
+  // upgrade in post-build only kicks in when `primary` ends with .light.svg
+  // (and the dark companion is present in the built output).
+  let primary = null
+  if (light) primary = light
+  else if (legacySvg) primary = legacySvg
+  else if (dark) primary = dark
+  else if (legacyLightPng) primary = legacyLightPng
+  else if (legacyPng) primary = legacyPng
+
+  return { primary, dark, light }
+}
+
+// Back-compat shim retained for any caller expecting the old single-path
+// return; the new pipeline uses `findExcalidrawSidecars` directly.
+async function findExcalidrawSvg(sourceAbs) {
+  const { primary } = await findExcalidrawSidecars(sourceAbs)
+  return primary
 }
 
 function isExcalidrawTarget(target) {
@@ -378,7 +407,8 @@ async function processNote(file, index) {
         }
         continue
       }
-      let svgAbs = await findExcalidrawSvg(sourceAbs)
+      let sidecars = await findExcalidrawSidecars(sourceAbs)
+      let svgAbs = sidecars.primary
       if (!svgAbs && sourceAbs.endsWith(".excalidraw.md")) {
         try {
           svgAbs = await ensureSvg(sourceAbs)
@@ -405,10 +435,19 @@ async function processNote(file, index) {
         }
         continue
       }
+      // Copy the primary file plus any dark/light companion(s) so Quartz's
+      // asset emitter ships all variants. The post-build step then upgrades
+      // the single <img> to a theme-aware pair when both are present.
+      const toCopy = new Set([svgAbs])
+      if (sidecars.dark) toCopy.add(sidecars.dark)
+      if (sidecars.light) toCopy.add(sidecars.light)
+      for (const srcAbs of toCopy) {
+        const vaultRel = path.relative(VAULT_ROOT, srcAbs)
+        await copyFile(srcAbs, path.join(CONTENT_DIR, vaultRel))
+        stats.attachmentsCopied++
+      }
       const svgVaultRel = path.relative(VAULT_ROOT, svgAbs)
       const svgDest = path.join(CONTENT_DIR, svgVaultRel)
-      await copyFile(svgAbs, svgDest)
-      stats.attachmentsCopied++
       // Use a markdown image with a relative URL from the note's own
       // location to the SVG. Wikilinks aren't reliably resolved by Quartz
       // for binary assets sitting in a sibling directory, and absolute
@@ -418,7 +457,12 @@ async function processNote(file, index) {
       if (!relUrl.startsWith(".") && !relUrl.startsWith("/")) {
         relUrl = "./" + relUrl
       }
-      const altText = m[3] ? m[3] : path.basename(svgAbs, ".svg")
+      const altText = m[3]
+        ? m[3]
+        : path
+            .basename(svgAbs)
+            .replace(/\.(dark|light)\.(svg|png)$/, "")
+            .replace(/\.(svg|png)$/, "")
       rewrites.push({
         from: fullMatch,
         to: `![${altText}](${encodeURI(relUrl)})`,
