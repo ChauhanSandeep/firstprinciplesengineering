@@ -11,10 +11,10 @@
   <rect width="1200" height="630" fill="#1a1714"/>
   <rect width="1200" height="630" fill="url(#grid)"/>
   <g fill="#ede6d6">
-    <text x="80" y="380" font-size="320" font-weight="700" fill="#ee6f2d" font-family="'IBM Plex Mono', ui-monospace, monospace">[</text>
-    <text x="1020" y="380" font-size="320" font-weight="700" fill="#ee6f2d" font-family="'IBM Plex Mono', ui-monospace, monospace">]</text>
-    <text x="600" y="290" font-size="78" font-weight="700" text-anchor="middle" fill="url(#accent)" font-family="'Fraunces', Georgia, serif">First Principles</text>
-    <text x="600" y="380" font-size="78" font-weight="700" text-anchor="middle" fill="#ede6d6" font-family="'Fraunces', Georgia, serif">Engineering</text>
-    <text x="600" y="470" font-size="28" font-weight="400" text-anchor="middle" fill="#b8afa0" font-family="'IBM Plex Mono', ui-monospace, monospace">distributed systems · architecture · operations</text>
+    <text x="80" y="380" font-size="320" font-weight="700" fill="#ee6f2d" font-family="'JetBrains Mono', ui-monospace, monospace">[</text>
+    <text x="1020" y="380" font-size="320" font-weight="700" fill="#ee6f2d" font-family="'JetBrains Mono', ui-monospace, monospace">]</text>
+    <text x="600" y="290" font-size="78" font-weight="700" text-anchor="middle" fill="url(#accent)" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">First Principles</text>
+    <text x="600" y="380" font-size="78" font-weight="700" text-anchor="middle" fill="#ede6d6" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Engineering</text>
+    <text x="600" y="470" font-size="28" font-weight="400" text-anchor="middle" fill="#b8afa0" font-family="'JetBrains Mono', ui-monospace, monospace">distributed systems · architecture · operations</text>
   </g>
 </svg>
