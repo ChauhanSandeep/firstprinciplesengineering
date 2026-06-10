@@ -2,7 +2,7 @@
 /**
  * scripts/publish/render-report.mjs
  *
- * Final phase of the publish-notes skill. Consumes a JSON "state" object
+ * Final phase of the quartz-publish-notes skill. Consumes a JSON "state" object
  * accumulated across previous phases and emits a markdown report.
  *
  * Input (stdin or --state <path>):

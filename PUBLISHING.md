@@ -120,17 +120,17 @@ npm run deploy       # build + push public/ to gh-pages branch (triggers Action)
 
 ---
 
-## Publishing via the `publish-notes` skill
+## Publishing via the `quartz-publish-notes` skill
 
 For end-to-end publishing (discover → validate → build → smoke → deploy →
 report) without invoking any of the commands above by hand, use the
-`publish-notes` Copilot CLI skill that ships with this repo at
-`.github/skills/publish-notes/SKILL.md`.
+`quartz-publish-notes` Copilot CLI skill that ships with this repo at
+`.github/skills/quartz-publish-notes/SKILL.md`.
 
-Invoke it from inside this repo with:
+Invoke it from inside this repo (or from the vault) with:
 
 ```bash
-copilot ask 'run the publish-notes skill'
+copilot ask 'run the quartz-publish-notes skill'
 ```
 
 The skill is **frontmatter-driven**. Mark a note in the vault with the

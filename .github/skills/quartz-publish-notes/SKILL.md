@@ -1,8 +1,8 @@
 ---
-name: publish-notes
+name: quartz-publish-notes
 description: >-
     End-to-end publishing of new and changed notes from the private Obsidian
-    vault at ~/Idea/ObisdianNotes to the live site at
+    vault at ~/Idea/ObisdianNotes to the live Quartz site at
     https://chauhansandeep.github.io/firstprinciplesengineering. Discovers
     notes flagged `publish: true`, validates Excalidraw dark/light pairs and
     wikilinks, updates Featured / Reading Series cards on the home page,
@@ -10,13 +10,13 @@ description: >-
     gh-pages, and emits a structured report. Stops only on critical issues.
     Invoke when the user says things like "publish my new notes",
     "ship the latest from the vault", "update the site with my latest notes",
-    or "publish-notes".
+    or "quartz-publish-notes".
 user-invocable: true
 ---
 
-# `publish-notes` — vault → live site, end-to-end
+# `quartz-publish-notes` — vault → live site, end-to-end
 
-You are running the **publish-notes skill** for the First Principles
+You are running the **quartz-publish-notes skill** for the First Principles
 Engineering Quartz site. Your job: take new and changed notes from the
 private Obsidian vault and ship them to the public site with top-quality
 output and zero human intervention in the common case. Prompt the user only
@@ -25,7 +25,8 @@ when a genuinely critical issue blocks progress.
 ## Phase 0 — Anchor the working directory (always your first action)
 
 This skill ships with the site repo and is also exposed via a symlink at
-`~/.copilot/skills/publish-notes`, so it may be invoked from **either** of:
+`~/.copilot/skills/quartz-publish-notes`, so it may be invoked from
+**either** of:
 
 - `/Users/sandeep/Idea/FirstPrinciplesEngineering` (site repo), **or**
 - `/Users/sandeep/Idea/ObisdianNotes` (the private vault)

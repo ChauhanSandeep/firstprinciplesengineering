@@ -2,7 +2,7 @@
 /**
  * scripts/publish/playwright-smoke.mjs
  *
- * Phase 6 (local) and phase 7 verification (live) of the publish-notes
+ * Phase 6 (local) and phase 7 verification (live) of the quartz-publish-notes
  * skill. Walks a list of slugs and runs assertions in light, dark, and
  * mobile viewports.
  *

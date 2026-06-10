@@ -2,7 +2,7 @@
 /**
  * scripts/publish/discover.mjs
  *
- * Phase 1 of the publish-notes skill. Walks the Obsidian vault, parses each
+ * Phase 1 of the quartz-publish-notes skill. Walks the Obsidian vault, parses each
  * note's frontmatter, applies the same publish rules the sync script does,
  * and classifies every candidate against the current content/ directory.
  *
