@@ -182,6 +182,53 @@
     article.appendChild(nav)
   }
 
+  function ensureShareRow() {
+    const article = document.querySelector("article")
+    if (!article) return
+    if (article.querySelector(".fpe-share")) return
+
+    const body = document.body
+    const slug = body && body.dataset && body.dataset.slug
+    if (!slug || slug === "index" || slug.endsWith("/index") || slug === "404") return
+
+    const title = (document.querySelector("h1.article-title")?.textContent || document.title || "").trim()
+    const pageUrl = location.origin + location.pathname
+    const repo = "chauhansandeep/firstprinciplesengineering"
+    const issueBody = encodeURIComponent(`Re: [${title}](${pageUrl})\n\n`)
+    const issueTitle = encodeURIComponent(`Discussion: ${title}`)
+    const discussHref = `https://github.com/${repo}/issues/new?title=${issueTitle}&body=${issueBody}`
+    const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`
+
+    const row = document.createElement("div")
+    row.className = "fpe-share"
+    row.innerHTML =
+      '<span class="fpe-share-label">Found a flaw, a sharper take, or a counter-example?</span>' +
+      '<a class="fpe-share-link" href="' + discussHref + '" target="_blank" rel="noopener">💬 Discuss on GitHub</a>' +
+      '<a class="fpe-share-link fpe-share-secondary" href="' + linkedinHref + '" target="_blank" rel="noopener">↗ Share on LinkedIn</a>'
+
+    const prevNext = article.querySelector(".fpe-prev-next")
+    if (prevNext) article.insertBefore(row, prevNext)
+    else article.appendChild(row)
+  }
+
+  function wrapInScrollable(el, className) {
+    if (!el || el.dataset.fpeWrapped === "1") return
+    if (el.parentElement && el.parentElement.classList.contains(className)) {
+      el.dataset.fpeWrapped = "1"
+      return
+    }
+    const wrap = document.createElement("div")
+    wrap.className = className
+    el.parentNode.insertBefore(wrap, el)
+    wrap.appendChild(el)
+    el.dataset.fpeWrapped = "1"
+  }
+
+  function wrapKatex(root) {
+    const blocks = (root || document).querySelectorAll("article .katex-display")
+    blocks.forEach((k) => wrapInScrollable(k, "fpe-katex-wrap"))
+  }
+
   function hydrateExcalidrawZoom(root) {
     const imgs = (root || document).querySelectorAll('img[src$=".excalidraw.svg"]')
     imgs.forEach((img) => {
@@ -223,10 +270,12 @@
     hydrateCodeBlocks(document)
     ensureProgressBar()
     hydrateExcalidrawZoom(document)
+    wrapKatex(document)
     prettifyBreadcrumbs(document)
     decorateSearchButton(document)
     ensureBackToTop()
     ensurePrevNext()
+    ensureShareRow()
   }
 
   if (document.readyState === "loading") {
