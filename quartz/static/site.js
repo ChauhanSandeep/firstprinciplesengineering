@@ -327,7 +327,8 @@
     const basePath = (document.body && document.body.dataset && document.body.dataset.basepath) || ""
     const home = (basePath || "") + "/"
     const rss = (basePath || "") + "/index.xml"
-    const tags = (basePath || "") + "/tags/"
+    const about = (basePath || "") + "/about"
+    const fundamentals = (basePath || "") + "/01-fundamentals/"
     const ghRepo = "https://github.com/chauhansandeep/firstprinciplesengineering"
 
     const rich = document.createElement("div")
@@ -342,13 +343,13 @@
         '<div class="fpe-footer-col-title">Browse</div>' +
         '<ul>' +
           '<li><a href="' + home + '">Home</a></li>' +
-          '<li><a href="' + tags + '">Tags</a></li>' +
-          '<li><a href="' + rss + '">RSS Feed</a></li>' +
+          '<li><a href="' + fundamentals + '">Fundamentals</a></li>' +
         '</ul>' +
       '</div>' +
       '<div class="fpe-footer-col fpe-footer-connect">' +
         '<div class="fpe-footer-col-title">Connect</div>' +
         '<ul>' +
+          '<li><a href="' + about + '">About</a></li>' +
           '<li><a href="' + ghRepo + '" target="_blank" rel="noopener">GitHub</a></li>' +
           '<li><a href="' + ghRepo + '/issues/new" target="_blank" rel="noopener">Open an issue</a></li>' +
           '<li><a href="' + rss + '">RSS</a></li>' +
