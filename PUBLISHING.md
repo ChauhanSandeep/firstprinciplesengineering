@@ -120,6 +120,77 @@ npm run deploy       # build + push public/ to gh-pages branch (triggers Action)
 
 ---
 
+## Publishing via the `publish-notes` skill
+
+For end-to-end publishing (discover → validate → build → smoke → deploy →
+report) without invoking any of the commands above by hand, use the
+`publish-notes` Copilot CLI skill that ships with this repo at
+`.github/skills/publish-notes/SKILL.md`.
+
+Invoke it from inside this repo with:
+
+```bash
+copilot ask 'run the publish-notes skill'
+```
+
+The skill is **frontmatter-driven**. Mark a note in the vault with the
+keys below and the next skill run will pick it up automatically; no CLI
+arguments needed.
+
+### Frontmatter keys the skill understands
+
+| Key                  | Type     | Default                     | Effect                                                                                  |
+| -------------------- | -------- | --------------------------- | --------------------------------------------------------------------------------------- |
+| `publish`            | `bool`   | manifest decides            | `true` ships the note. `false` always blocks (escape hatch).                            |
+| `featured`           | `bool`   | `false`                     | Add a card to the **Featured** grid on the home page.                                   |
+| `card_eyebrow`       | `string` | derived from first folder   | Eyebrow label on the featured card.                                                     |
+| `card_title`         | `string` | derived from H1             | Short title on the featured card (often pithier than the note H1).                      |
+| `card_description`   | `string` | drafted by skill from intro | One-sentence pitch in the site's voice. Prompts when drafting confidence is low.        |
+| `card_order`         | `int`    | recency order               | Explicit position in the Featured grid (lower = earlier).                               |
+| `series`             | `string` | none                        | Series slug. Matches `02-Series/<slug>.md` if it exists, else triggers landing-page draft.|
+| `series_order`       | `int`    | append                      | Position in the series' "Read in order" list.                                           |
+| `socialDescription`  | `string` | first paragraph             | Standard Quartz field; skill ensures it is set for OG preview quality.                  |
+
+All keys are **additive and optional** except `publish`, which already
+exists. Notes without any of the others continue to publish exactly as
+before.
+
+### When the skill stops and asks
+
+The skill is designed to run with zero intervention in the common case.
+It will pause and prompt only when one of these is true:
+
+1. An Excalidraw embed has no `.svg` sidecars at all (build would fail).
+2. A wikilink points into a note that is not published and not in this batch.
+3. A new series is being introduced with fewer than 3 notes (likely a typo).
+4. The Featured grid would exceed 12 cards (visual cap).
+5. More than 5 notes are being added in a single run (sanity gate).
+6. Build, local Playwright smoke, or live Playwright smoke fails.
+
+Everything else proceeds silently and shows up only in the final report
+under "Warnings" or "Follow-ups". The report is saved to
+`~/.copilot/session-state/<session-id>/files/publish-report-<timestamp>.md`.
+
+### Headless helpers
+
+The skill's deterministic steps are implemented as small Node scripts you
+can also invoke directly:
+
+```bash
+node scripts/publish/discover.mjs                  # JSON candidate list
+node scripts/publish/validate-excalidraw.mjs <note>
+node scripts/publish/validate-wikilinks.mjs --batch <slugs.txt>
+node scripts/publish/update-home-cards.mjs --plan <plan.json> [--dry-run]
+node scripts/publish/manage-series.mjs    --plan <plan.json> [--dry-run]
+node scripts/publish/playwright-smoke.mjs --local --slugs <slugs.txt>
+node scripts/publish/render-report.mjs    --state <state.json>
+```
+
+To dry-run the full skill (discover/validate/plan, no writes, no deploy),
+set `PUBLISH_SKILL_DRY_RUN=1` before invoking it.
+
+---
+
 ## Excalidraw rendering — automatic
 
 The vault has **538 `.excalidraw.md` source files**. Quartz cannot embed them
