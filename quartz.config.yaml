@@ -9,7 +9,12 @@ configuration:
   ignorePatterns:
     - private
     - templates
+    - _drafts
+    - _scratch
+    - scratch
+    - drafts
     - .obsidian
+    - .trash
     # Defense in depth: never render a raw Excalidraw source even if one
     # somehow lands in content/.
     - "**/*.excalidraw.md"

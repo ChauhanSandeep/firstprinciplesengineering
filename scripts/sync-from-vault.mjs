@@ -64,6 +64,12 @@ const VAULT_IGNORE = new Set([
   "quartz",
   "ObsidianNotes",
   "__pycache__",
+  "templates",
+  "_drafts",
+  "_scratch",
+  "scratch",
+  "drafts",
+  "private",
 ])
 
 const CONTENT_PRESERVE = new Set(["index.md", "_static"])
