@@ -389,7 +389,7 @@ pre {
 // alt carries Obsidian's display width (from `![1000](…)` syntax). The post-
 // build pass `scripts/fix-excalidraw-paths.mjs` converts that alt into a real
 // `width="<n>"` attribute. We respect that here and just cap responsively.
-img[src$=".excalidraw.svg"] {
+img[src*=".excalidraw."] {
   display: block;
   margin: 1.5rem auto;
   height: auto;
@@ -416,7 +416,7 @@ img[src$=".excalidraw.svg"] {
 
 // ---- Generic article images (PNG / JPG / non-Excalidraw SVG) -------------
 // Harmonize with Excalidraw treatment: soft border, subtle shadow, rounded.
-article img:not([src$=".excalidraw.svg"]) {
+article img:not([src*=".excalidraw."]) {
   display: block;
   margin: 1.5rem auto;
   max-width: 100%;
@@ -1056,18 +1056,29 @@ a.internal.tag-link {
 
 // ---- Folder-page card grid ----------------------------------------------
 // Quartz emits folder/tag listings as <ul.section-ul> with <li.section-li>.
+//
+// The folder-page plugin wraps its body in <div class="popover-hint"> with
+// <article> as a *grandchild* of .center, so the base.scss rule
+// `.center > article { grid-area: grid-center }` doesn't match and .center
+// collapses to its intrinsic width. Re-anchor the popover-hint wrapper into
+// the grid-center area so the listing gets the full center column width.
+.center > .popover-hint {
+  grid-area: grid-center;
+}
+
 .section-ul,
 ul.section-ul {
   list-style: none;
   padding: 0;
   margin: 1.5rem 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
 }
 
 .section-li,
 li.section-li {
+  position: relative;
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 10px;
@@ -1080,7 +1091,6 @@ li.section-li {
     box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 12%, transparent);
   }
 
-  // Quartz inserts these slots; tighten typography.
   .section {
     display: block;
   }
@@ -1105,6 +1115,21 @@ li.section-li {
   a {
     text-decoration: none;
     color: inherit;
+  }
+
+  // Stretch the title link to cover the entire card so the whole card is
+  // clickable, not just the title text.
+  h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  // Tags stay individually clickable above the card-wide overlay.
+  .tags {
+    position: relative;
+    z-index: 2;
   }
 }
 
