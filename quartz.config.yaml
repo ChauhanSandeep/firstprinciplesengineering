@@ -23,7 +23,7 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Lexend Deca
+      header: Inter
       body: Atkinson Hyperlegible
       code: JetBrains Mono
     colors:

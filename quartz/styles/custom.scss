@@ -26,7 +26,16 @@
 
 // ---- Body typography -----------------------------------------------------
 article {
-  line-height: 1.7;
+  line-height: 1.75;
+
+  // Inter has excellent stylistic alternates; opt in to "cv11" (single-storey a)
+  // and "ss01" (turn off the squashed open-counter forms) on headings only.
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1 { letter-spacing: -0.02em; }
 
   p,
   ul,
