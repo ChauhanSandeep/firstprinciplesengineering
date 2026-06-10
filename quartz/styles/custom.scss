@@ -1442,6 +1442,14 @@ body[data-slug="404"] {
     box-shadow: 0 4px 18px color-mix(in srgb, var(--dark) 6%, transparent);
     position: relative;
 
+    .not-found-icon {
+      display: block;
+      width: 44px;
+      height: 44px;
+      color: var(--secondary);
+      opacity: 0.85;
+      margin: 0 0 1.1rem;
+    }
     h1 {
       font-family: var(--headerFont);
       font-weight: 700;
