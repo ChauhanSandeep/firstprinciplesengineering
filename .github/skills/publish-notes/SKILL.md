@@ -22,6 +22,27 @@ private Obsidian vault and ship them to the public site with top-quality
 output and zero human intervention in the common case. Prompt the user only
 when a genuinely critical issue blocks progress.
 
+## Phase 0 — Anchor the working directory (always your first action)
+
+This skill ships with the site repo and is also exposed via a symlink at
+`~/.copilot/skills/publish-notes`, so it may be invoked from **either** of:
+
+- `/Users/sandeep/Idea/FirstPrinciplesEngineering` (site repo), **or**
+- `/Users/sandeep/Idea/ObisdianNotes` (the private vault)
+
+Before doing anything else, **`cd` into the site repo** so every relative
+path (`npm run …`, `scripts/publish/*.mjs`, `content/index.md`, etc.)
+resolves correctly:
+
+```bash
+cd /Users/sandeep/Idea/FirstPrinciplesEngineering
+```
+
+All subsequent commands in the phases below assume this is your cwd. The
+helper scripts under `scripts/publish/` resolve their site/vault paths via
+their own `__dirname`, so they also work if you ever need to call them
+from elsewhere, but `npm run …` does not — so always anchor first.
+
 ## Repository facts you must use
 
 - Site repo: `/Users/sandeep/Idea/FirstPrinciplesEngineering` (Quartz v5)
