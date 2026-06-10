@@ -1722,6 +1722,25 @@ footer.fpe-footer-enhanced {
     }
   }
 
+  // Connect column with icon-prefixed links: align the SVG vertically with the
+  // label and give it a fixed 16px square so all rows line up cleanly.
+  .fpe-footer-connect-iconified ul li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    line-height: 1.3;
+  }
+  .fpe-footer-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    color: color-mix(in srgb, var(--darkgray) 78%, transparent);
+    transition: color 150ms ease;
+  }
+  .fpe-footer-connect-iconified ul li a:hover .fpe-footer-icon {
+    color: var(--secondary);
+  }
+
   // The plugin's existing <p> + <ul> sit below the rich block. Demote them
   // to a small centered credit strip.
   > p,
