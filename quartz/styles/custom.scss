@@ -1067,6 +1067,15 @@ a.internal.tag-link {
 .page > #quartz-body > .center {
   grid-area: grid-center;
   width: 100%;
+  // On short pages, sidebars are sticky `height: 100vh` and span all grid
+  // rows, forcing the grid's total height to ≥ 100vh. That deficit gets
+  // absorbed by the empty grid-header row (above .center), pushing the
+  // listing far down the page. Make .center itself at least 100vh and
+  // anchor it to the start of its grid area so the leftover space falls
+  // *inside* .center (below the cards) instead of above it. On long
+  // articles this is a no-op since the content already exceeds 100vh.
+  min-height: 100vh;
+  align-self: start;
 }
 
 .section-ul,
