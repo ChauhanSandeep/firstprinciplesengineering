@@ -52,14 +52,21 @@ article {
 
   // ---- Heading hierarchy (W2-P4) ---------------------------------------
   // Explicit sizes + weights so the eye can rank sections at a glance.
-  // ---- Per-heading colour variation (Anthropic-warm hierarchy) -----
-  // h1 = brand orange (most prominent)
-  // h2 = deeper clay (anchors sections, with matching underline)
-  // h3 = clay/orange muted toward dark (warmth carries down)
-  // h4 = neutral darkgray
-  // h5 / h6 = muted grays (intentionally small + quiet)
-  // This gives a clear Nord-style "each level reads as a different
-  // chord" rhythm without ever leaving the warm clay/cream family.
+  // ---- Per-heading colour variation (Anthropic warm orange, fading) ---
+  // All headings live in the orange family; each level fades a little
+  // toward neutral gray so the hierarchy reads as a quiet gradient
+  // rather than a stack of competing shades. The fade is intentionally
+  // gentle — even h6 stays clearly orange-family, never muddy gray.
+  //
+  //   h1 = brand orange (100%, most prominent / page title)
+  //   h2 = 94%, with a soft orange-tinted underline
+  //   h3 = 84%
+  //   h4 = 74%
+  //   h5 = 64%, uppercase + tracked
+  //   h6 = 54%, uppercase + tracked
+  //
+  // Mixing in oklch preserves the hue so the fade looks like one colour
+  // gently losing intensity rather than jumping between families.
   h1 {
     font-size: 2.4rem;
     font-weight: 700;
@@ -70,34 +77,31 @@ article {
     font-size: 1.75rem;
     font-weight: 600;
     line-height: 1.3;
-    color: var(--tertiary);
+    color: color-mix(in oklch, var(--secondary) 94%, var(--gray));
     padding-bottom: 0.4rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--tertiary) 25%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--secondary) 14%, transparent);
   }
-
-  // Dark mode: --tertiary at 25% over warm-dark bg gives a clear,
-  // brand-tinted underline; the same value over warm-cream is visible
-  // but soft, so use the same mix in both modes.
   :root[saved-theme="dark"] & h2 {
-    border-bottom-color: color-mix(in srgb, var(--tertiary) 30%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--secondary) 18%, transparent);
   }
   h3 {
     font-size: 1.35rem;
     font-weight: 600;
     line-height: 1.35;
-    color: color-mix(in srgb, var(--secondary) 75%, var(--dark));
+    color: color-mix(in oklch, var(--secondary) 84%, var(--gray));
   }
   h4 {
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.4;
-    color: var(--dark);
+    color: color-mix(in oklch, var(--secondary) 74%, var(--gray));
   }
   h5 {
     font-size: 0.98rem;
     font-weight: 600;
     line-height: 1.45;
-    color: var(--darkgray);
+    color: color-mix(in oklch, var(--secondary) 64%, var(--gray));
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -105,7 +109,7 @@ article {
     font-size: 0.85rem;
     font-weight: 600;
     line-height: 1.5;
-    color: var(--gray);
+    color: color-mix(in oklch, var(--secondary) 54%, var(--gray));
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
