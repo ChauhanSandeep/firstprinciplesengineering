@@ -1066,6 +1066,7 @@ a.internal.tag-link {
 // column regardless of which child layout the page uses.
 .page > #quartz-body > .center {
   grid-area: grid-center;
+  width: 100%;
 }
 
 .section-ul,
