@@ -1620,23 +1620,20 @@ ul.toc-content.overflow {
 // Selectors note: the previous version used `li.in-view` which never
 // matched because the class lives on the <a>. Fixed to `a.in-view`.
 .toc {
-  // Smaller, lighter header so "On this page" reads as meta nav, not
-  // a heading that competes with section H2s.
+  // Match the Explorer heading on the left so both sidebars feel balanced:
+  // same size/weight/colour, no uppercased "meta" treatment.
   button.toc-header {
-    color: var(--gray);
-    opacity: 0.9;
+    color: var(--dark);
     & h3 {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
       margin: 0;
     }
     & .fold {
-      width: 12px;
-      height: 12px;
-      opacity: 0.5;
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
     }
   }
 
@@ -2308,11 +2305,14 @@ body .backlinks > ul.overflow {
 //
 // Suppressed on tablet/mobile where the sidebars stack into row/overlay
 // layouts and a vertical line no longer makes sense.
+// Dividers blend `--gray` into `--lightgray` so the line has real
+// contrast in both light and dark themes (plain --lightgray was nearly
+// invisible against the page background in dark mode).
 @media all and (min-width: 1200px) {
   .page > #quartz-body > .sidebar.left {
-    border-right: 1px solid color-mix(in srgb, var(--lightgray) 75%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--gray) 45%, var(--lightgray));
   }
   .page > #quartz-body > .sidebar.right {
-    border-left: 1px solid color-mix(in srgb, var(--lightgray) 75%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--gray) 45%, var(--lightgray));
   }
 }
