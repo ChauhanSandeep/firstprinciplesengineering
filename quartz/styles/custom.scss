@@ -2321,6 +2321,16 @@ body .backlinks > ul.overflow {
   .page > #quartz-body > .sidebar.right {
     border-left: 1px solid color-mix(in srgb, var(--gray) 45%, var(--lightgray));
   }
+
+  // Breathing room between the centre column and the two divider lines.
+  // Without this, body text and code blocks butt right up against the
+  // sidebar borders. The footer shares the same grid column so we pad
+  // it too to keep its content visually aligned with the article.
+  .page > #quartz-body > .center,
+  .page > #quartz-body > footer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 // ---- Left sidebar: social row -----------------------------------------
