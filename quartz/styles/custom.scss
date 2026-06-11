@@ -1610,23 +1610,90 @@ ul.toc-content.overflow {
 // The TOC component sets `.in-view` on currently-visible entries via Quartz's
 // scroll-spy. Style it so the active section is visually distinct without
 // being loud.
+// ---- TOC: scroll-spy active highlight + visual polish (#13) -------------
+// Stock toc.inline.ts adds `in-view` to the <a> (not the <li>) for every
+// heading the reader has scrolled past, giving a reading-progress effect.
+// We layer two visual tiers on top: passed headings get a touch more
+// opacity, and the *current* heading (the bottom-most .in-view) gets the
+// accent + bold + left-rail treatment matching the explorer.
+//
+// Selectors note: the previous version used `li.in-view` which never
+// matched because the class lives on the <a>. Fixed to `a.in-view`.
 .toc {
+  // Smaller, lighter header so "On this page" reads as meta nav, not
+  // a heading that competes with section H2s.
+  button.toc-header {
+    color: var(--gray);
+    opacity: 0.9;
+    & h3 {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray);
+      margin: 0;
+    }
+    & .fold {
+      width: 12px;
+      height: 12px;
+      opacity: 0.5;
+    }
+  }
+
   ul.toc-content {
+    font-size: 0.83rem;
+    margin: 0.65rem 0 0;
+
     li {
+      line-height: 1.4;
       transition: color 120ms ease;
     }
-    li.in-view > a,
+
+    // Top-level items breathe apart so each section reads as a chunk.
+    > li.depth-0 {
+      margin-top: 0.45rem;
+    }
+    > li.depth-0:first-child {
+      margin-top: 0;
+    }
+
+    // inline-block makes the wrap inside the <a> indent under its own
+    // first line (natural hanging indent) rather than back to the panel's
+    // left margin — no negative margins or text-indent tricks needed.
+    li > a {
+      display: inline-block;
+      color: var(--dark);
+      opacity: 0.55;
+      border-left: 2px solid transparent;
+      padding: 1px 6px;
+      border-radius: 0 4px 4px 0;
+      transition:
+        color 150ms ease,
+        opacity 150ms ease,
+        border-color 150ms ease,
+        background-color 150ms ease;
+    }
+
+    // Passed/visible headings: clearer but still muted.
+    li > a.in-view {
+      opacity: 0.9;
+    }
+
+    // The *current* section: the bottom-most .in-view link. Stock
+    // observer marks every passed heading, so this :not(:has(~ ...))
+    // trick picks out the last one — that's "you are here".
+    li:has(a.in-view):not(:has(~ li a.in-view)) > a,
     li > a.active {
       color: var(--secondary);
       font-weight: 600;
-    }
-    li > a {
-      border-left: 2px solid transparent;
-      padding-left: 0.5rem;
-      transition: border-color 120ms ease, color 120ms ease;
-    }
-    li.in-view > a {
+      opacity: 1;
       border-left-color: var(--secondary);
+      background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
+    }
+
+    li > a:hover {
+      opacity: 1;
+      color: var(--secondary);
     }
   }
 }
