@@ -520,7 +520,9 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     max-height: 100%;
     background: #fdfdfd;
     border-radius: 8px;
-    padding: 1rem;
+    // Slim matting to match the inline excalidraw treatment — just a
+    // hint of border around the diagram, no wide frame.
+    padding: 0.25rem;
     box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
     cursor: default;
   }
