@@ -1207,6 +1207,12 @@ li.section-li {
 
 // ---- Subtle header polish -----------------------------------------------
 .page > #quartz-body > .sidebar.left {
+  // Reclaim the 6rem of $topSpacing that the stock layout reserves above
+  // the site title — there's no fixed header here, so all that space at
+  // the top of the left pane reads as empty/unbalanced. Pull the
+  // brand-mark + title close to the top edge.
+  padding-top: 1.5rem;
+
   & h2.page-title,
   & h2.page-title-text,
   & .page-title a {
