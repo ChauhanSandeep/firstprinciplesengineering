@@ -524,7 +524,25 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     // hint of border around the diagram, no wide frame.
     padding: 0.25rem;
     box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
-    cursor: default;
+    cursor: zoom-in;
+    transition: width 180ms ease, height 180ms ease;
+  }
+
+  // Zoomed state: image is sized 2x its fit-width in JS, the overlay
+  // switches to scroll-pan so the user can drag/scroll around the
+  // enlarged diagram. Click again on the image to return to fit.
+  &.zoomed {
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: auto;
+    cursor: zoom-out;
+
+    & img {
+      cursor: zoom-out;
+      // Let the inline width/height set by JS take effect.
+      max-width: none;
+      max-height: none;
+    }
   }
 
   & .fpe-lightbox-close {
@@ -2213,4 +2231,21 @@ body .backlinks > ul.overflow {
   margin-left: 8px;
   padding-left: 0.85rem;
   border-left-color: color-mix(in srgb, var(--lightgray) 70%, transparent);
+}
+
+// ---- Sidebar dividers ---------------------------------------------------
+// Subtle hairlines between the left explorer, the main content, and the
+// right TOC so the three columns read as distinct panels rather than one
+// flowing wall of text. Borders sit on the sidebars themselves so the
+// column-gap acts as breathing room around the line.
+//
+// Suppressed on tablet/mobile where the sidebars stack into row/overlay
+// layouts and a vertical line no longer makes sense.
+@media all and (min-width: 1200px) {
+  .page > #quartz-body > .sidebar.left {
+    border-right: 1px solid color-mix(in srgb, var(--lightgray) 75%, transparent);
+  }
+  .page > #quartz-body > .sidebar.right {
+    border-left: 1px solid color-mix(in srgb, var(--lightgray) 75%, transparent);
+  }
 }

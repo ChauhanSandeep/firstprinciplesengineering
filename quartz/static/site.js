@@ -302,11 +302,51 @@
     overlay.innerHTML =
       '<button type="button" class="fpe-lightbox-close" aria-label="Close">×</button>' +
       '<img alt="' + (alt || "") + '" />'
-    overlay.querySelector("img").src = src
+    const img = overlay.querySelector("img")
+    img.src = src
     const close = () => overlay.remove()
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay || e.target.classList.contains("fpe-lightbox-close")) close()
     })
+
+    // Click-to-zoom on the maximized image. Toggles between "fit to viewport"
+    // and "2x scrolled" centered on the click point so the pixel you clicked
+    // stays under the cursor — Wikipedia/Apple Photos behaviour. Pointer
+    // events that land on the image don't bubble up to the overlay's close
+    // handler, so a click on the image only zooms, not dismiss.
+    let zoomed = false
+    img.addEventListener("click", (ev) => {
+      ev.stopPropagation()
+      if (!zoomed) {
+        const rect = img.getBoundingClientRect()
+        const fx = (ev.clientX - rect.left) / rect.width
+        const fy = (ev.clientY - rect.top) / rect.height
+        const w = img.offsetWidth
+        const h = img.offsetHeight
+        img.style.maxWidth = "none"
+        img.style.maxHeight = "none"
+        img.style.width = w * 2 + "px"
+        img.style.height = h * 2 + "px"
+        overlay.classList.add("zoomed")
+        zoomed = true
+        requestAnimationFrame(() => {
+          const targetX = fx * img.offsetWidth + img.offsetLeft
+          const targetY = fy * img.offsetHeight + img.offsetTop
+          overlay.scrollLeft = targetX - ev.clientX
+          overlay.scrollTop = targetY - ev.clientY
+        })
+      } else {
+        img.style.width = ""
+        img.style.height = ""
+        img.style.maxWidth = ""
+        img.style.maxHeight = ""
+        overlay.classList.remove("zoomed")
+        overlay.scrollTop = 0
+        overlay.scrollLeft = 0
+        zoomed = false
+      }
+    })
+
     document.addEventListener(
       "keydown",
       function onKey(e) {
