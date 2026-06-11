@@ -2316,3 +2316,122 @@ body .backlinks > ul.overflow {
     border-left: 1px solid color-mix(in srgb, var(--gray) 45%, var(--lightgray));
   }
 }
+
+// ---- Left sidebar: social row + collapse toggle -------------------------
+// Two affordances added via site.js:
+//   .fpe-sidebar-social  — icon row (GitHub, LinkedIn, Email) pinned to
+//                          the bottom of the left pane so connect links
+//                          are reachable without scrolling to the footer.
+//   .fpe-left-toggle     — fixed chevron at top-left that collapses the
+//                          left pane; persists in localStorage.
+
+// Social row at bottom of left pane. Sticks to the bottom edge of the
+// .sidebar.left flex column via margin-top:auto, with a hairline divider
+// above it so it reads as a distinct grouping below the explorer.
+.fpe-sidebar-social {
+  margin-top: auto;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--lightgray) 80%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  & a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: var(--darkgray);
+    opacity: 0.75;
+    text-decoration: none;
+    transition: color 150ms ease, opacity 150ms ease, background-color 150ms ease, transform 120ms ease;
+
+    &:hover {
+      color: var(--secondary);
+      opacity: 1;
+      background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
+      transform: translateY(-1px);
+    }
+
+    & svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+  }
+}
+
+// Stack the social row on mobile (the entire left sidebar reorganises
+// into a row layout there), and just hide — the footer's Connect column
+// already carries the same links on small screens.
+@media all and (max-width: 800px) {
+  .fpe-sidebar-social {
+    display: none;
+  }
+}
+
+// Collapse toggle: fixed top-left chevron, always visible. When
+// `body.fpe-left-collapsed` is set, the chevron flips and the left
+// sidebar is hidden + the grid template re-flows so .center reclaims
+// the freed column.
+.fpe-left-toggle {
+  position: fixed;
+  top: 0.85rem;
+  left: 0.5rem;
+  z-index: 1001;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: color-mix(in srgb, var(--light) 85%, transparent);
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  color: var(--darkgray);
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease, transform 200ms ease;
+
+  &:hover {
+    color: var(--secondary);
+    border-color: var(--secondary);
+  }
+
+  & svg {
+    transition: transform 220ms ease;
+    display: block;
+  }
+}
+
+// Flip the chevron when collapsed so it points the way the sidebar
+// will open from.
+body.fpe-left-collapsed .fpe-left-toggle svg {
+  transform: rotate(180deg);
+}
+
+// Collapsed state: hide the left sidebar and let the centre column
+// reclaim the space. Only meaningful on desktop where the 3-col grid
+// exists; mobile/tablet already collapse this column.
+@media all and (min-width: 1200px) {
+  body.fpe-left-collapsed .page > #quartz-body {
+    grid-template-columns: 0 1fr #{$sidePanelWidth};
+  }
+  body.fpe-left-collapsed .page > #quartz-body > .sidebar.left {
+    display: none;
+  }
+  // Also drop the now-orphan left divider line.
+  body.fpe-left-collapsed .page > #quartz-body > .sidebar.left {
+    border-right: none;
+  }
+}
+
+// On mobile/tablet the toggle isn't meaningful — sidebar already
+// stacks/overlays.
+@media all and (max-width: 1199px) {
+  .fpe-left-toggle {
+    display: none;
+  }
+}
