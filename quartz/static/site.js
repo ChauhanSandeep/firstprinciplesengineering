@@ -465,6 +465,15 @@
   }
 
   function ensureSidebarSocial() {
+    // Defensive: previous build had a collapse toggle that persisted to
+    // localStorage. If a returning visitor has the body class stuck on,
+    // clear it so they don't see a missing sidebar after this feature
+    // was removed.
+    if (document.body.classList.contains("fpe-left-collapsed")) {
+      document.body.classList.remove("fpe-left-collapsed")
+    }
+    try { localStorage.removeItem("fpe-left-collapsed") } catch (e) {}
+
     const left = document.querySelector(".sidebar.left")
     if (!left) return
     if (left.querySelector(".fpe-sidebar-social")) return
@@ -477,44 +486,6 @@
       '<a href="' + FPE_SOCIAL.linkedin + '" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">' + FPE_ICON.linkedin + "</a>" +
       '<a href="mailto:' + FPE_SOCIAL.email + '" aria-label="Email" title="Email">' + FPE_ICON.email + "</a>"
     left.appendChild(social)
-  }
-
-  function ensureLeftCollapseToggle() {
-    if (document.querySelector(".fpe-left-toggle")) return
-
-    const btn = document.createElement("button")
-    btn.type = "button"
-    btn.className = "fpe-left-toggle"
-    btn.setAttribute("aria-controls", "quartz-body")
-    btn.innerHTML =
-      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<polyline points="15 18 9 12 15 6"></polyline>' +
-      "</svg>"
-
-    const sync = () => {
-      const collapsed = document.body.classList.contains("fpe-left-collapsed")
-      btn.title = collapsed ? "Open sidebar" : "Collapse sidebar"
-      btn.setAttribute("aria-label", collapsed ? "Open sidebar" : "Collapse sidebar")
-      btn.setAttribute("aria-expanded", collapsed ? "false" : "true")
-    }
-
-    try {
-      if (localStorage.getItem("fpe-left-collapsed") === "1") {
-        document.body.classList.add("fpe-left-collapsed")
-      }
-    } catch (e) {}
-
-    btn.addEventListener("click", () => {
-      const next = !document.body.classList.contains("fpe-left-collapsed")
-      document.body.classList.toggle("fpe-left-collapsed", next)
-      try {
-        localStorage.setItem("fpe-left-collapsed", next ? "1" : "0")
-      } catch (e) {}
-      sync()
-    })
-
-    sync()
-    document.body.appendChild(btn)
   }
 
   function init() {
@@ -530,7 +501,6 @@
     ensureRichFooter()
     polishToc(document)
     ensureSidebarSocial()
-    ensureLeftCollapseToggle()
   }
 
   if (document.readyState === "loading") {
