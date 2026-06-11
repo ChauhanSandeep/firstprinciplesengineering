@@ -2326,8 +2326,14 @@ body .backlinks > ul.overflow {
   // Without this, body text and code blocks butt right up against the
   // sidebar borders. The footer shares the same grid column so we pad
   // it too to keep its content visually aligned with the article.
+  //
+  // `.center` ships with `box-sizing: content-box`, which would make the
+  // 2rem padding ADD to the 780px grid track and push the element 27px
+  // past the right sidebar's left edge — visually overlapping the
+  // divider/TOC. Force border-box so padding eats into the track instead.
   .page > #quartz-body > .center,
   .page > #quartz-body > footer {
+    box-sizing: border-box;
     padding-left: 2rem;
     padding-right: 2rem;
   }
