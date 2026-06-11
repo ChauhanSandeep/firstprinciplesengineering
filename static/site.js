@@ -428,6 +428,30 @@
     footer.classList.add("fpe-footer-enhanced")
   }
 
+  function polishToc(root) {
+    const tocs = (root || document).querySelectorAll(".toc")
+    tocs.forEach((toc) => {
+      if (toc.dataset.fpeToc === "1") return
+      toc.dataset.fpeToc = "1"
+
+      // Relabel the header: "Table of Contents" -> "On this page" so it
+      // reads as meta nav rather than another H2.
+      const h = toc.querySelector(".toc-header h3")
+      if (h) h.textContent = "On this page"
+
+      // Strip the leading "N." or "N.N" numeric prefix from each link's
+      // displayed text. The indent already conveys hierarchy; doubling
+      // up with explicit numbers crowds the panel. Body headings are
+      // untouched — only the TOC's display text is rewritten.
+      const links = toc.querySelectorAll(".toc-content a[data-for]")
+      links.forEach((a) => {
+        const txt = (a.textContent || "").trim()
+        const stripped = txt.replace(/^\d+(?:\.\d+)*\.?\s+/, "")
+        if (stripped && stripped !== txt) a.textContent = stripped
+      })
+    })
+  }
+
   function init() {
     hydrateCodeBlocks(document)
     ensureProgressBar()
@@ -439,6 +463,7 @@
     ensurePrevNext()
     ensureShareRow()
     ensureRichFooter()
+    polishToc(document)
   }
 
   if (document.readyState === "loading") {
