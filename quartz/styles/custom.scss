@@ -2109,3 +2109,108 @@ body .backlinks > ul.overflow {
   max-height: min(40vh, 280px);
   overflow-y: auto;
 }
+
+// ---- Explorer polish ----------------------------------------------------
+// Stock Quartz explorer paints every folder label in the accent color
+// (--secondary) at weight 600. Combined with the file-link accent for the
+// active page, "you are here" gets lost in a sea of equally-loud labels.
+// This block mutes folder labels, reserves accent + bold + a left rail for
+// the current page only, and prevents long titles from wrapping (which was
+// making "ML System Design Fundamentals" wrap to a second line that read
+// like a duplicate of the parent "Fundamentals" folder).
+.explorer {
+  font-size: 0.85rem;
+}
+
+.explorer-content {
+  ul li {
+    line-height: 1.45;
+  }
+
+  // Single-line file rows with ellipsis on overflow.
+  ul li > a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 2px 6px 2px 6px;
+    margin-left: -0.85rem;
+    padding-left: 0.85rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    transition:
+      color 120ms ease,
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+  ul li > a:hover {
+    background-color: color-mix(in srgb, var(--secondary) 8%, transparent);
+    opacity: 1;
+  }
+
+  // The single highest-priority cue on the panel: the current page.
+  ul li > a.active {
+    color: var(--secondary);
+    font-weight: 600;
+    border-left-color: var(--secondary);
+    background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
+    opacity: 1;
+  }
+
+  // Top-level entries get a touch of vertical breathing room so the
+  // sections feel grouped rather than mashed together once expanded.
+  > ul.explorer-ul > li {
+    margin-top: 0.4rem;
+  }
+  > ul.explorer-ul > li:first-child {
+    margin-top: 0;
+  }
+}
+
+// Mute folder labels — body text colour, normal weight. Accent + bold is
+// reserved for the active page so users can always find "you are here".
+.explorer .folder-container div > a,
+.explorer .folder-container div > button span {
+  color: var(--dark);
+  opacity: 0.78;
+  font-weight: 500;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.explorer .folder-container div > a:hover,
+.explorer .folder-container div > button:hover span {
+  color: var(--secondary);
+  opacity: 1;
+}
+
+// Chevron: subtle anchor, not a competing label.
+.explorer .folder-icon {
+  color: var(--darkgray);
+  opacity: 0.55;
+  margin-right: 4px;
+}
+.explorer .folder-icon:hover {
+  color: var(--secondary);
+  opacity: 1;
+}
+
+// Ancestor folders of the active page get a subtle accent hint so the
+// "current path" is visible even when the file is scrolled out of view.
+// :has() is supported in all modern browsers Quartz targets.
+.explorer li:has(.folder-outer a.active) > .folder-container .folder-title,
+.explorer li:has(.folder-outer a.active) > .folder-container > div > a {
+  color: var(--secondary);
+  opacity: 1;
+  font-weight: 600;
+}
+.explorer li:has(.folder-outer a.active) > .folder-container > .folder-icon {
+  color: var(--secondary);
+  opacity: 1;
+}
+
+// Softer guide rail between nesting levels.
+.explorer .explorer-content .folder-outer > ul {
+  margin-left: 8px;
+  padding-left: 0.85rem;
+  border-left-color: color-mix(in srgb, var(--lightgray) 70%, transparent);
+}
