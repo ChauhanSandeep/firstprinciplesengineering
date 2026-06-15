@@ -75,6 +75,16 @@ description: >-
   </span>
 </a>
 
+<a class="fpe-topic-pill" href="03-Roadmaps/">
+  <span class="topic-icon" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v16M15 6v16"/></svg>
+  </span>
+  <span class="topic-body">
+    <span class="topic-label">Roadmaps</span>
+    <span class="topic-blurb">Dependency-ordered reading paths.</span>
+  </span>
+</a>
+
 <a class="fpe-topic-pill" href="02-Series/">
   <span class="topic-icon" aria-hidden="true">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h13M3 18h13"/><circle cx="20" cy="6" r="1.5"/><circle cx="20" cy="12" r="1.5"/><circle cx="20" cy="18" r="1.5"/></svg>
@@ -187,45 +197,45 @@ description: >-
 
 <div class="fpe-roadmap-grid">
 
-<div class="fpe-roadmap-card" aria-disabled="true">
+<a class="fpe-roadmap-card" href="03-Roadmaps/distributed-systems-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
   <span class="roadmap-title">Distributed Systems Roadmap</span>
   <span class="roadmap-desc">Primitives → logical clocks → consensus → transactions → microservices, with branch-offs into sharding, replication, and CAP/PACELC.</span>
-  <span class="roadmap-status">Coming soon</span>
-</div>
+  <span class="roadmap-status">10 articles · curated order</span>
+</a>
 
-<div class="fpe-roadmap-card" aria-disabled="true">
+<a class="fpe-roadmap-card" href="03-Roadmaps/system-design-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
   <span class="roadmap-title">System Design Roadmap</span>
   <span class="roadmap-desc">Caching → APIs → messaging → databases → architecture patterns → production reliability. A full reading order for system design.</span>
-  <span class="roadmap-status">Coming soon</span>
-</div>
+  <span class="roadmap-status">20 articles · 6 layers</span>
+</a>
 
-<div class="fpe-roadmap-card" aria-disabled="true">
+<a class="fpe-roadmap-card" href="03-Roadmaps/ai-systems-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
   <span class="roadmap-title">AI Systems Roadmap</span>
   <span class="roadmap-desc">Embeddings → chunking → vector stores → RAG → model serving → observability. The production view of ML, not the model view.</span>
-  <span class="roadmap-status">Coming soon</span>
-</div>
+  <span class="roadmap-status">3 articles · growing</span>
+</a>
 
-<div class="fpe-roadmap-card" aria-disabled="true">
+<a class="fpe-roadmap-card" href="03-Roadmaps/staff-engineer-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
   <span class="roadmap-title">Staff Engineer Roadmap</span>
-  <span class="roadmap-desc">Technical depth, system design at scale, scope and influence, technical writing, and the conversations that actually happen at Staff+ interviews.</span>
-  <span class="roadmap-status">Coming soon</span>
-</div>
+  <span class="roadmap-desc">A breadth map for staff scope — distributed-systems vocabulary, database internals, messaging, APIs, architecture patterns, security, operability, and AI systems.</span>
+  <span class="roadmap-status">9 areas · breadth map</span>
+</a>
 
 </div>
 
