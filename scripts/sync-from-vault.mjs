@@ -289,6 +289,27 @@ function prettifyName(stem) {
     .trim()
 }
 
+// Quartz has no markmap renderer, so a ```markmap fenced block renders as a
+// syntax-highlighted dump of the raw outline (and worse, leaks into the
+// auto-generated <meta name="description">, og:description, and og:image:alt
+// SEO previews). Strip the whole "Map of the territory" intro paragraph +
+// fenced ```markmap block + trailing thematic break before the body is
+// processed. This is reversible later (drop this transform once a real
+// markmap renderer is wired in) and only matches the well-known prelude
+// pattern emitted by the vault — it will not touch any other content.
+const MARKMAP_BLOCK_RE =
+  /(^[ \t]*\*\*Map of the territory[^\n]*\n+)?^[ \t]*(```|~~~)markmap\b[\s\S]*?^[ \t]*\2[ \t]*\n+(?:^[ \t]*---[ \t]*\n+)?/gm
+function stripMarkmapBlocks(body) {
+  if (!body) return body
+  let out = body.replace(MARKMAP_BLOCK_RE, "")
+  // Also remove an orphan "Map of the territory" intro line if no fenced
+  // block followed it (the user may have already removed the fence by hand).
+  out = out.replace(/^[ \t]*\*\*Map of the territory[^\n]*\n+/gm, "")
+  // Collapse 3+ consecutive blank lines that the stripping may have left.
+  out = out.replace(/\n{3,}/g, "\n\n")
+  return out
+}
+
 // If the body's first non-empty line is a top-level heading whose text matches
 // the title (case-insensitive, ignoring punctuation/whitespace), drop it. This
 // removes the duplicate H1 you see when the vault note already has `# Title`
@@ -332,6 +353,7 @@ async function processNote(file, index) {
   }
 
   let body = parsed.content
+  body = stripMarkmapBlocks(body)
   const data = { ...parsed.data }
   data.publish = true
 
