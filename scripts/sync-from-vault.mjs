@@ -289,6 +289,42 @@ function prettifyName(stem) {
     .trim()
 }
 
+// Auto-tag a published note from its vault path. Single primary topic-tag
+// per note keeps /tags/<slug>/ pages curated rather than a tag soup; an
+// optional secondary tag is added for sub-areas (NoSQL, Lakehouse) so
+// power users can drill further. User-supplied `tags:` in frontmatter is
+// always preserved — these tags are *additive*.
+//
+// Convention: tag slugs are lowercase kebab-case singular nouns. They
+// align with the top-level categories in topics.config.mjs so the
+// Phase-2 topic-nav and the auto-generated Quartz tag pages refer to the
+// same vocabulary.
+const TAG_MAP = [
+  ["02-Series/", ["series"]],
+  ["03-Roadmaps/", ["roadmap"]],
+  ["01-Fundamentals/01-Concepts/01-Distributed-Systems/", ["distributed-systems"]],
+  ["01-Fundamentals/01-Concepts/02-Architecture/", ["architecture"]],
+  ["01-Fundamentals/01-Concepts/03-Data/", ["data"]],
+  ["01-Fundamentals/01-Concepts/04-Caching/", ["caching"]],
+  ["01-Fundamentals/01-Concepts/05-API/", ["apis"]],
+  ["01-Fundamentals/01-Concepts/06-Security/", ["security"]],
+  ["01-Fundamentals/01-Concepts/07-Operations/", ["operations"]],
+  ["01-Fundamentals/02-Databases/02-NoSQL/", ["databases", "nosql"]],
+  ["01-Fundamentals/02-Databases/05-Lakehouse/", ["databases", "lakehouse"]],
+  ["01-Fundamentals/02-Databases/", ["databases"]],
+  ["01-Fundamentals/03-Technologies/", ["systems"]],
+  ["01-Fundamentals/04-Networking/", ["networking"]],
+  ["01-Fundamentals/05-AI-ML/", ["ai-systems"]],
+]
+
+function autoTagsFor(rel) {
+  const norm = rel.replace(/\\/g, "/")
+  for (const [prefix, tags] of TAG_MAP) {
+    if (norm.startsWith(prefix)) return tags
+  }
+  return []
+}
+
 // Quartz has no markmap renderer, so a ```markmap fenced block renders as a
 // syntax-highlighted dump of the raw outline (and worse, leaks into the
 // auto-generated <meta name="description">, og:description, and og:image:alt
@@ -356,6 +392,21 @@ async function processNote(file, index) {
   body = stripMarkmapBlocks(body)
   const data = { ...parsed.data }
   data.publish = true
+
+  // Auto-tag from path. We never remove user-provided tags; only add ones
+  // the path implies. Single primary topic-tag per note keeps the
+  // /tags/<slug>/ landing pages meaningful instead of a tag soup.
+  const autoTags = autoTagsFor(rel)
+  if (autoTags.length > 0) {
+    const existing = Array.isArray(data.tags)
+      ? data.tags.map(String)
+      : data.tags
+        ? [String(data.tags)]
+        : []
+    const merged = [...existing]
+    for (const t of autoTags) if (!merged.includes(t)) merged.push(t)
+    data.tags = merged
+  }
 
   // Title resolution (highest priority first):
   //   1. Explicit `title:` in the vault note's frontmatter — honored as-is.
