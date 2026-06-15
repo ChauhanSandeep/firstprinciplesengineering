@@ -3200,3 +3200,84 @@ body .backlinks > ul.overflow {
     font-variant-numeric: tabular-nums;
   }
 }
+
+// =========================================================================
+// Status badges — Phase-11
+// -------------------------------------------------------------------------
+// Inline pill next to the article H1: "New" for notes created in the
+// last 30 days, "Updated" for notes touched in the last 14 days that
+// were created earlier. Frontmatter `status:` overrides the rule;
+// `status: evergreen` suppresses the badge entirely.
+// =========================================================================
+
+.fpe-status-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.12rem 0.55rem;
+  font-size: 0.65em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 999px;
+  vertical-align: middle;
+  line-height: 1.5;
+  border: 1px solid transparent;
+
+  &--new {
+    color: #1f6b3a;
+    background: color-mix(in srgb, #2ea043 14%, transparent);
+    border-color: color-mix(in srgb, #2ea043 35%, transparent);
+  }
+  &--updated {
+    color: #8a4a00;
+    background: color-mix(in srgb, #d49b3a 16%, transparent);
+    border-color: color-mix(in srgb, #d49b3a 38%, transparent);
+  }
+}
+[saved-theme="dark"] {
+  .fpe-status-badge--new {
+    color: #6fcf97;
+    background: color-mix(in srgb, #2ea043 22%, transparent);
+    border-color: color-mix(in srgb, #2ea043 45%, transparent);
+  }
+  .fpe-status-badge--updated {
+    color: #ffce80;
+    background: color-mix(in srgb, #d49b3a 22%, transparent);
+    border-color: color-mix(in srgb, #d49b3a 45%, transparent);
+  }
+}
+
+// =========================================================================
+// 404 fuzzy suggestions — Phase-11
+// -------------------------------------------------------------------------
+// Hidden container that the inline script unhides + populates when at
+// least one fuzzy-matched candidate scores above threshold.
+// =========================================================================
+
+.fpe-404-suggestions {
+  margin: 1.5rem auto 0;
+  max-width: 36rem;
+  text-align: left;
+
+  & > .fpe-404-suggestions-title {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--darkgray);
+  }
+  & > .fpe-404-suggestions-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin: 0;
+
+    & a {
+      color: var(--secondary) !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
+      transition: border-color 160ms ease;
+      &:hover {
+        border-bottom-color: var(--secondary);
+      }
+    }
+  }
+}
