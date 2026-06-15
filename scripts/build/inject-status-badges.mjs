@@ -141,7 +141,13 @@ function renderBadge(kind) {
     kind === "new"
       ? `Created within the last ${NEW_WINDOW_DAYS} days`
       : `Updated within the last ${UPDATED_WINDOW_DAYS} days`
-  return `<span class="${MARKER_CLASS} ${MARKER_CLASS}--${escapeHtml(kind)}" title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">${escapeHtml(label)}</span>`
+  const icon =
+    kind === "new"
+      ? // sparkle
+        `<svg class="${MARKER_CLASS}-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/></svg>`
+      : // refresh-clock
+        `<svg class="${MARKER_CLASS}-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>`
+  return `<div class="${MARKER_CLASS}-wrap"><span class="${MARKER_CLASS} ${MARKER_CLASS}--${escapeHtml(kind)}" title="${escapeHtml(title)}" aria-label="${escapeHtml(title)}">${icon}<span class="${MARKER_CLASS}-label">${escapeHtml(label)}</span></span></div>`
 }
 
 async function loadContentIndex() {
@@ -210,9 +216,11 @@ async function main() {
         skipped++
         continue
       }
+      // Place the badge as a sibling AFTER the </h1>, so it sits on
+      // its own line below the title rather than competing with it.
       const next = html.replace(
         H1_RE,
-        (_m, open, inner, close) => `${open}${inner} ${renderBadge(status)}${close}`,
+        (_m, open, inner, close) => `${open}${inner}${close}${renderBadge(status)}`,
       )
       if (next === html) {
         skipped++
