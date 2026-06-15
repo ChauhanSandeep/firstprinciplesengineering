@@ -3296,3 +3296,150 @@ body .backlinks > ul.overflow {
     }
   }
 }
+
+// =========================================================================
+// Home right rail — Newly Released
+// -------------------------------------------------------------------------
+// Fills the otherwise-empty right sidebar on the home page with a
+// vertical list of the most recently new/updated articles. Injected
+// post-build by `scripts/build/inject-home-rail.mjs`.
+// =========================================================================
+
+.fpe-home-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem;
+  margin: 0;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--light) 60%, var(--secondary) 6%);
+  border: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
+
+  .fpe-rail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  }
+  .fpe-rail-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--secondary);
+  }
+  .fpe-rail-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.005em;
+  }
+
+  .fpe-rail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .fpe-rail-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 0.55rem;
+    background: var(--light);
+    border: 1px solid color-mix(in srgb, var(--lightgray) 50%, transparent);
+    text-decoration: none !important;
+    color: inherit;
+    transition:
+      transform 140ms ease,
+      border-color 140ms ease,
+      box-shadow 140ms ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .fpe-rail-card-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--secondary);
+    }
+    .fpe-rail-card-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--dark);
+    }
+    .fpe-rail-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--gray);
+    }
+  }
+
+  .fpe-rail-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 999px;
+    line-height: 1.4;
+    border: 1px solid transparent;
+    &--new {
+      color: #14532d;
+      background: #d1fadf;
+      border-color: #6ddc97;
+    }
+    &--updated {
+      color: #7a3d00;
+      background: #fff1d6;
+      border-color: #e8b15a;
+    }
+  }
+
+  .fpe-rail-footer {
+    align-self: flex-end;
+    font-size: 0.8rem;
+    color: var(--secondary);
+    text-decoration: none !important;
+    padding-top: 0.25rem;
+    transition: opacity 140ms ease;
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+}
+
+[saved-theme="dark"] {
+  .fpe-home-rail {
+    background: color-mix(in srgb, var(--light) 80%, var(--dark) 10%);
+    border-color: color-mix(in srgb, var(--lightgray) 35%, transparent);
+
+    .fpe-rail-card {
+      background: color-mix(in srgb, var(--light) 92%, var(--dark) 8%);
+      border-color: color-mix(in srgb, var(--lightgray) 30%, transparent);
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+    }
+    .fpe-rail-pill--new {
+      color: #b6f0c8;
+      background: rgba(46, 160, 67, 0.22);
+      border-color: rgba(46, 160, 67, 0.5);
+    }
+    .fpe-rail-pill--updated {
+      color: #ffd596;
+      background: rgba(212, 155, 58, 0.22);
+      border-color: rgba(212, 155, 58, 0.5);
+    }
+  }
+}
