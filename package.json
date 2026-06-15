@@ -27,8 +27,9 @@
     "inject-topic-nav": "node scripts/build/inject-topic-nav.mjs",
     "inject-prev-next-related": "node scripts/build/inject-prev-next-related.mjs",
     "inject-comments": "node scripts/build/inject-comments.mjs",
-    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related && npm run inject-comments",
-    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related && npm run inject-comments",
+    "inject-analytics": "node scripts/build/inject-analytics.mjs",
+    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related && npm run inject-comments && npm run inject-analytics",
+    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related && npm run inject-comments && npm run inject-analytics",
     "serve": "npm run sync && npm run validate:home && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npm run validate:home && npx quartz build --serve",
     "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""
