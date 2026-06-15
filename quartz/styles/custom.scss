@@ -3127,3 +3127,54 @@ body .backlinks > ul.overflow {
     min-height: 4rem;
   }
 }
+
+// =========================================================================
+// Series header strip — Phase-09
+// -------------------------------------------------------------------------
+// Slim wayfinding banner injected at the top of every article that
+// belongs to a series defined under content/02-Series/*.md. Tells the
+// reader "you are part 3 of 5 in APIs & Networking" before they read,
+// rather than telling them at the end with prev/next.
+//
+// Visual: pale tinted background using --secondary at low alpha; one
+// line on desktop, wraps gracefully on mobile.
+// =========================================================================
+
+.fpe-series-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
+  margin: 0 0 1.5rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--secondary) 6%, var(--light));
+  font-size: 0.88rem;
+  line-height: 1.4;
+
+  & > .fpe-series-header-eyebrow {
+    color: var(--darkgray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  & > .fpe-series-header-link {
+    color: var(--secondary) !important;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-bottom: 1px solid transparent;
+    transition: border-color 160ms ease;
+    &:hover {
+      border-bottom-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+    }
+  }
+  & > .fpe-series-header-sep {
+    color: var(--gray);
+  }
+  & > .fpe-series-header-pos {
+    color: var(--darkgray);
+    font-variant-numeric: tabular-nums;
+  }
+}
