@@ -25,8 +25,9 @@
     "fix-paths": "node scripts/fix-excalidraw-paths.mjs",
     "inject-recent": "node scripts/build/inject-recent.mjs",
     "inject-topic-nav": "node scripts/build/inject-topic-nav.mjs",
-    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav",
-    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav",
+    "inject-prev-next-related": "node scripts/build/inject-prev-next-related.mjs",
+    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related",
+    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav && npm run inject-prev-next-related",
     "serve": "npm run sync && npm run validate:home && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npm run validate:home && npx quartz build --serve",
     "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""
