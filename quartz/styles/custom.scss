@@ -3443,3 +3443,26 @@ body .backlinks > ul.overflow {
     }
   }
 }
+
+// =========================================================================
+// Folder index pages — uniform card chrome
+// -------------------------------------------------------------------------
+// Folder cards without a landing index.md get a "N items" footer
+// (injected by scripts/build/inject-folder-pages.mjs) so they don't
+// sit next to richer cards as visually-empty boxes.
+// =========================================================================
+
+.fpe-folder-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+
+  .fpe-folder-meta-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+    opacity: 0.85;
+  }
+}
