@@ -31,6 +31,7 @@ sys.path.insert(0, str(SKILL_DIR))
 
 from note_diagram_lib import (  # noqa: E402
     PALETTE, rect, text, line, arrow, bound_text, role_rect, write_diagram,
+    ellipse, diamond,
 )
 
 VAULT_EX_DIR = Path("/Users/sandeep/Idea/ObisdianNotes/Excalidraw")
@@ -39,329 +40,248 @@ TEMPLATE = SKILL_DIR / "render_template.html"
 
 # ---------------------------------------------------------------------------
 # Hero diagram builders
+#
+# Design principle: each hero is a wide banner. Left half = bold orange
+# title + dim subtitle/tagline (says WHAT the roadmap is about). Right half
+# = a small abstract illustration evocative of the topic — NEVER an
+# enumerated list of stages or chapters, because that content will evolve.
+# The illustrations are made from unlabeled shapes only.
 # ---------------------------------------------------------------------------
 
-def _title_band(title: str, subtitle: str, *, width: int = 1600) -> list:
-    """Top band shared across all heroes — bold title + dim subtitle."""
-    return [
-        text(60, 30, title, size=44, color=PALETTE["title"], align="left", width=width - 120),
-        text(60, 90, subtitle, size=18, color=PALETTE["dim"], align="left", width=width - 120),
+CANVAS_W = 1600
+CANVAS_H = 520
+
+
+def _title_block(title: str, taglines: list) -> list:
+    """Bold orange title + 1-3 dim tagline lines on the left half of the banner."""
+    out = [
+        text(80, 140, title, size=72, color=PALETTE["title"], align="left", width=900),
     ]
+    y = 260
+    for line_text in taglines:
+        out.append(text(80, y, line_text, size=26, color=PALETTE["body"],
+                        align="left", width=900))
+        y += 46
+    return out
 
 
-def _pillar(x, y, w, h, role, title, items, *, item_color=None) -> list:
-    """A column pillar with role-tinted header band and a bulleted list."""
-    items_color = item_color or PALETTE["body"]
-    header_h = 56
-    r, t = role_rect(x, y, w, header_h, role, title, label_size=22)
-    body = rect(x, y + header_h, w, h - header_h,
-                fill="transparent", stroke=PALETTE["section_stroke"], stroke_width=1)
-    elements = [r, t, body]
-    pad_x = 22
-    line_y = y + header_h + 20
-    for it in items:
-        elements.append(text(x + pad_x, line_y, it, size=17,
-                              color=items_color, align="left", width=w - pad_x * 2))
-        line_y += 36
-    return elements
-
-
-def _flow_node(x, y, w, h, role, label, *, label_size=20) -> tuple:
-    """A flow-chart node + its visible rect, returns (rect, text, x_center, y_center)."""
-    r, t = role_rect(x, y, w, h, role, label, label_size=label_size)
-    return r, t, x + w / 2, y + h / 2
-
+# ---------- Distributed Systems: a mesh of nodes across an unreliable network ----------
 
 def build_distributed_systems_hero() -> list:
-    """3-pillar journey: Foundations → Coordination → Production reality."""
+    """Abstract: many nodes coordinating across a network, with one broken link."""
     elements: list = []
-    elements += _title_band(
-        "Distributed Systems Roadmap",
-        "Time and identity → consensus and locks → partitioning, gossip, microservices",
-        width=1600,
-    )
-
-    pillar_y = 160
-    pillar_h = 460
-    pillar_w = 460
-    gap = 60
-    x0 = 60
-
-    elements += _pillar(
-        x0, pillar_y, pillar_w, pillar_h, "replica",
-        "1. Foundations",
+    elements += _title_block(
+        "Distributed Systems",
         [
-            "• Distributed Systems Primitives",
-            "• Logical Clocks (Lamport, vector, HLC)",
-            "• CAP and PACELC",
-            "",
-            "Why \"now\" is the hardest word",
-            "in the language.",
+            "Coordination, consistency, and the cost of `now`",
+            "across machines that fail independently.",
         ],
     )
 
-    elements += _pillar(
-        x0 + (pillar_w + gap), pillar_y, pillar_w, pillar_h, "primary",
-        "2. Coordination",
-        [
-            "• Consensus (Paxos, Raft)",
-            "• Distributed Locks + fencing",
-            "• MVCC and snapshot isolation",
-            "• Distributed Transactions (2PC, Saga)",
-            "",
-            "What agreement costs you,",
-            "and when to refuse to pay it.",
-        ],
-    )
+    # Right-side mesh: ~6 nodes arranged loosely; connected by arrows, one dashed.
+    cx0 = 1100  # right region origin
+    cy0 = 80
+    region_w = 440
+    region_h = 380
 
-    elements += _pillar(
-        x0 + 2 * (pillar_w + gap), pillar_y, pillar_w, pillar_h, "infra",
-        "3. Production",
-        [
-            "• Consistent Hashing + virtual nodes",
-            "• Gossip Protocol (SWIM, anti-entropy)",
-            "• Microservices, honestly",
-            "",
-            "The bill that comes due once you",
-            "stop pretending the network is reliable.",
-        ],
-    )
+    # Node positions (relative to region origin), as a loose constellation.
+    positions = [
+        (90,  60),   # 0 top-left
+        (300, 30),   # 1 top-right
+        (60,  220),  # 2 mid-left
+        (220, 170),  # 3 center
+        (380, 200),  # 4 mid-right
+        (160, 340),  # 5 bottom-left
+        (340, 340),  # 6 bottom-right
+    ]
+    roles = ["replica", "primary", "replica", "primary",
+             "replica", "infra", "infra"]
+    nodes = []
+    node_d = 64
+    for (px, py), role in zip(positions, roles):
+        fill = PALETTE[f"{role}_fill"]
+        stroke = PALETTE[f"{role}_stroke"]
+        nodes.append((cx0 + px, cy0 + py))
+        elements.append(ellipse(cx0 + px - node_d / 2, cy0 + py - node_d / 2,
+                                 node_d, node_d, fill=fill, stroke=stroke))
 
-    # Subtle arrows between pillars to imply the journey.
-    arrow_y = pillar_y + 24
-    for i in range(2):
-        sx = x0 + (i + 1) * pillar_w + i * gap - 6
-        ex = x0 + (i + 1) * (pillar_w + gap) + 6
-        elements.append(arrow(sx, arrow_y, ex, arrow_y,
-                              color=PALETTE["arr_neutral"], stroke_width=2))
+    # Connections: form a connected mesh. One link is dashed (network partition).
+    links = [
+        (0, 1, "solid"),
+        (0, 3, "solid"),
+        (1, 3, "solid"),
+        (1, 4, "solid"),
+        (2, 3, "solid"),
+        (3, 4, "dashed"),  # partition
+        (2, 5, "solid"),
+        (3, 5, "solid"),
+        (3, 6, "solid"),
+        (4, 6, "solid"),
+        (5, 6, "solid"),
+    ]
+    for a, b, style in links:
+        x1, y1 = nodes[a]
+        x2, y2 = nodes[b]
+        color = PALETTE["arr_warn"] if style == "dashed" else PALETTE["arr_neutral"]
+        elements.append(line(x1, y1, x2, y2,
+                              color=color, stroke_width=2, stroke_style=style))
 
     return elements
 
+
+# ---------- System Design: an iceberg / layered stack with growth arrow ----------
 
 def build_system_design_hero() -> list:
-    """5-stage horizontal pipeline: Wire → Storage → Caching → APIs → Architecture."""
+    """Abstract: layered system stack with an upward growth/scale arrow."""
     elements: list = []
-    elements += _title_band(
-        "System Design Roadmap",
-        "Transport up to architecture — every component in the order that makes the why obvious",
-        width=1700,
+    elements += _title_block(
+        "System Design",
+        [
+            "From first principles to billions of requests.",
+            "Every component, in the order that makes the why obvious.",
+        ],
     )
 
-    stages = [
-        ("replica",   "Layer 0\nWire",        ["TCP / UDP / QUIC", "DNS, TLS"]),
-        ("client",    "Layer 1\nStorage",     ["RDBMS, KV, Wide-column", "Indexes, MVCC"]),
-        ("highlight", "Layer 2\nCaching",     ["LRU, write-back", "Redis patterns"]),
-        ("primary",   "Layer 3\nAPIs",        ["REST / gRPC", "GraphQL, BFF"]),
-        ("infra",     "Layer 4\nArchitecture", ["Microservices", "Event-driven", "Multi-tenancy"]),
-    ]
+    # Right-side: a stack of 5 nested rectangles getting progressively wider,
+    # implying layers of abstraction. Above the top layer, a growth arrow.
+    base_cx = 1320
+    base_y = 460
+    layer_h = 40
+    gap = 4
+    widths = [560, 480, 400, 320, 240]
+    role_keys = ["infra", "primary", "highlight", "replica", "client"]
+    y = base_y
+    for w, role in zip(widths, role_keys):
+        fill = PALETTE[f"{role}_fill"]
+        stroke = PALETTE[f"{role}_stroke"]
+        elements.append(rect(base_cx - w / 2, y - layer_h, w, layer_h,
+                              fill=fill, stroke=stroke, stroke_width=2))
+        y -= layer_h + gap
 
-    box_w = 280
-    box_h = 220
-    gap = 40
-    y = 200
-    x = 60
-    centers = []
-
-    for role, head, bullets in stages:
-        # Header rect
-        head_h = 70
-        r_head, t_head = role_rect(x, y, box_w, head_h, role, head, label_size=20)
-        elements.append(r_head)
-        elements.append(t_head)
-        # Body rect
-        body = rect(x, y + head_h, box_w, box_h - head_h,
-                    fill="transparent", stroke=PALETTE["section_stroke"], stroke_width=1)
-        elements.append(body)
-        # Bullets
-        bx = x + 18
-        by = y + head_h + 18
-        for b in bullets:
-            elements.append(text(bx, by, "• " + b, size=17,
-                                  color=PALETTE["body"], align="left", width=box_w - 36))
-            by += 30
-        centers.append((x + box_w, y + box_h / 2))
-        x += box_w + gap
-
-    # Connect with neutral arrows
-    for i in range(len(stages) - 1):
-        sx, sy = centers[i]
-        ex = sx + gap
-        elements.append(arrow(sx + 4, sy, ex - 4, sy,
-                              color=PALETTE["arr_neutral"], stroke_width=2))
-
-    # Below the row, a small footer of three principles.
-    footer_y = y + box_h + 40
-    principles = [
-        ("Capacity",   "Back-of-envelope math first."),
-        ("Trade-offs", "Latency vs consistency vs cost."),
-        ("Operability", "How does this fail at 3am?"),
-    ]
-    pw = 480
-    pgap = 30
-    px = 60
-    for head, body in principles:
-        elements.append(text(px, footer_y, head, size=20, color=PALETTE["hero"],
-                              align="left", width=pw))
-        elements.append(text(px, footer_y + 30, body, size=16, color=PALETTE["body"],
-                              align="left", width=pw))
-        px += pw + pgap
+    # Upward growth arrow on the right side of the stack
+    arr_x = base_cx + 320
+    elements.append(arrow(arr_x, base_y, arr_x, base_y - (layer_h + gap) * 5 - 30,
+                           color=PALETTE["title"], stroke_width=3))
+    elements.append(text(arr_x + 16, base_y - (layer_h + gap) * 5 - 10,
+                         "scale", size=20, color=PALETTE["title"],
+                         align="left", width=120))
 
     return elements
 
+
+# ---------- AI Systems: model at the center, infrastructure orbiting ----------
 
 def build_ai_systems_hero() -> list:
-    """Pipeline: Data → Embed → Index → Retrieve → Generate, with eval and serving below."""
+    """Abstract: a central model node with infrastructure satellites around it."""
     elements: list = []
-    elements += _title_band(
-        "AI Systems Roadmap",
-        "The 80% around the model: data, embeddings, retrieval, generation, evaluation",
-        width=1600,
+    elements += _title_block(
+        "AI Systems",
+        [
+            "Engineering the 80% around the model:",
+            "data, retrieval, serving, evaluation, observability.",
+        ],
     )
 
-    stages = [
-        ("client",    "Data",     "Chunking,\nmetadata"),
-        ("replica",   "Embed",    "Sentence,\nimage, code"),
-        ("primary",   "Index",    "HNSW, IVF,\nVector DB"),
-        ("highlight", "Retrieve", "ANN search,\nrerank"),
-        ("infra",     "Generate", "Prompt assembly,\nLLM serving"),
-    ]
+    # Right region — hub and spoke
+    cx = 1320
+    cy = 270
+    hub_d = 110
+    # Central hub (the "model")
+    elements.append(ellipse(cx - hub_d / 2, cy - hub_d / 2, hub_d, hub_d,
+                             fill=PALETTE["primary_fill"],
+                             stroke=PALETTE["primary_stroke"]))
+    elements.append(text(cx - 70, cy - 16, "model", size=22,
+                         color=PALETTE["node_text"], align="center", width=140))
 
-    box_w = 260
-    box_h = 180
-    gap = 50
-    y = 200
-    x = 60
-    centers = []
-
-    for role, head, body in stages:
-        head_h = 60
-        r_head, t_head = role_rect(x, y, box_w, head_h, role, head, label_size=22)
-        elements.append(r_head)
-        elements.append(t_head)
-        r_body = rect(x, y + head_h, box_w, box_h - head_h,
-                      fill="transparent", stroke=PALETTE["section_stroke"], stroke_width=1)
-        elements.append(r_body)
-        elements.append(text(x + 18, y + head_h + 22, body, size=17,
-                              color=PALETTE["body"], align="left", width=box_w - 36))
-        centers.append((x + box_w / 2, y + box_h))
-        x += box_w + gap
-
-    # Arrows between top boxes
-    for i in range(len(stages) - 1):
-        sx = 60 + (i + 1) * box_w + i * gap - 6
-        ex = 60 + (i + 1) * (box_w + gap) + 6
-        elements.append(arrow(sx, y + 90, ex, y + 90,
-                              color=PALETTE["arr_neutral"], stroke_width=2))
-
-    # Bottom row — cross-cutting concerns under the pipeline.
-    bot_y = y + box_h + 70
-    bot_h = 110
-    cross = [
-        ("warning",  "Evaluation",   "Offline benchmarks,\nA/B, hallucination rate"),
-        ("infra",    "Serving",      "GPU autoscaling,\nbatching, KV cache"),
-        ("neutral",  "Observability", "Cost per request,\nlatency p95, eval drift"),
-    ]
-    cw = 480
-    cgap = 30
-    cx = 60
-    for role, head, body in cross:
-        head_h = 44
-        r_head, t_head = role_rect(cx, bot_y, cw, head_h, role, head, label_size=20)
-        elements.append(r_head)
-        elements.append(t_head)
-        body_r = rect(cx, bot_y + head_h, cw, bot_h - head_h,
-                      fill="transparent", stroke=PALETTE["section_stroke"], stroke_width=1)
-        elements.append(body_r)
-        elements.append(text(cx + 18, bot_y + head_h + 14, body, size=16,
-                              color=PALETTE["body"], align="left", width=cw - 36))
-        cx += cw + cgap
+    # 6 satellites in a ring around the hub
+    import math
+    radius = 200
+    sat_d = 56
+    sat_roles = ["replica", "client", "infra", "warning", "highlight", "neutral"]
+    for i, role in enumerate(sat_roles):
+        angle = -math.pi / 2 + i * (2 * math.pi / len(sat_roles))
+        sx = cx + radius * math.cos(angle)
+        sy = cy + radius * math.sin(angle)
+        # spoke to hub
+        edge_x = cx + (hub_d / 2 + 2) * math.cos(angle)
+        edge_y = cy + (hub_d / 2 + 2) * math.sin(angle)
+        sat_edge_x = sx - (sat_d / 2 + 2) * math.cos(angle)
+        sat_edge_y = sy - (sat_d / 2 + 2) * math.sin(angle)
+        elements.append(line(edge_x, edge_y, sat_edge_x, sat_edge_y,
+                              color=PALETTE["section_stroke"],
+                              stroke_width=2, stroke_style="solid"))
+        # satellite circle
+        elements.append(ellipse(sx - sat_d / 2, sy - sat_d / 2, sat_d, sat_d,
+                                 fill=PALETTE[f"{role}_fill"],
+                                 stroke=PALETTE[f"{role}_stroke"]))
 
     return elements
 
 
+# ---------- Staff Engineer: a balance scale (trade-offs) on a horizon ----------
+
 def build_staff_engineer_hero() -> list:
-    """Breadth map: 4 quadrants of staff scope around a center label."""
+    """Abstract: a balance/scale icon — trade-offs are the staff role's daily work."""
     elements: list = []
-    elements += _title_band(
-        "Staff Engineer Roadmap",
-        "Breadth, not depth — the trade-offs a staff engineer pulls from cold",
-        width=1600,
+    elements += _title_block(
+        "Staff Engineer",
+        [
+            "Trade-offs, leverage, and the long view.",
+            "Breadth across systems, depth where it matters.",
+        ],
     )
 
-    # Center "you" node
-    cx = 760
-    cy = 410
-    cw = 200
-    ch = 90
-    r_center, t_center = role_rect(cx, cy, cw, ch, "highlight", "Staff Engineer", label_size=22)
-    elements.append(r_center)
-    elements.append(t_center)
+    # Right region: a stylized balance scale.
+    cx = 1320         # fulcrum x
+    fulcrum_y = 280
+    beam_half = 200
+    arm_tilt = 20     # left tray higher, right tray lower (or vice versa)
 
-    # 4 quadrants
-    quads = [
-        # (role,    title,             items,                                                   pos)
-        ("replica",
-         "Systems & Storage",
-         ["Replication, sharding, consensus",
-          "Storage engines (LSM, B-tree, MVCC)",
-          "Caching at every layer"],
-         (60, 170)),
-        ("primary",
-         "APIs & Messaging",
-         ["REST, gRPC, GraphQL, BFF",
-          "Kafka, queues, streaming",
-          "Idempotency, ordering, retries"],
-         (1080, 170)),
-        ("infra",
-         "Architecture & Ops",
-         ["Microservices vs modular monolith",
-          "Multi-tenancy, multi-region",
-          "Observability, SLOs, on-call"],
-         (60, 580)),
-        ("warning",
-         "Security & Trust",
-         ["AuthN/Z, JWT, OAuth, mTLS",
-          "Crypto primitives in plain English",
-          "Threat modeling, audit logs"],
-         (1080, 580)),
-    ]
+    # Base pedestal
+    elements.append(rect(cx - 80, fulcrum_y + 140, 160, 24,
+                          fill=PALETTE["neutral_fill"],
+                          stroke=PALETTE["neutral_stroke"], stroke_width=2))
+    # Pillar
+    elements.append(rect(cx - 8, fulcrum_y, 16, 140,
+                          fill=PALETTE["neutral_fill"],
+                          stroke=PALETTE["neutral_stroke"], stroke_width=2))
+    # Fulcrum (small triangle approximated as diamond)
+    elements.append(diamond(cx - 20, fulcrum_y - 20, 40, 40,
+                              fill=PALETTE["title"],
+                              stroke=PALETTE["title"]))
 
-    box_w = 620
-    box_h = 220
-    for role, title, items, (x, y) in quads:
-        head_h = 56
-        r_head, t_head = role_rect(x, y, box_w, head_h, role, title, label_size=22)
-        elements.append(r_head)
-        elements.append(t_head)
-        body = rect(x, y + head_h, box_w, box_h - head_h,
-                    fill="transparent", stroke=PALETTE["section_stroke"], stroke_width=1)
-        elements.append(body)
-        ly = y + head_h + 18
-        for it in items:
-            elements.append(text(x + 22, ly, "• " + it, size=17,
-                                  color=PALETTE["body"], align="left", width=box_w - 44))
-            ly += 36
+    # Beam — slightly tilted
+    left_x = cx - beam_half
+    right_x = cx + beam_half
+    left_y = fulcrum_y - arm_tilt
+    right_y = fulcrum_y + arm_tilt
+    elements.append(line(left_x, left_y, right_x, right_y,
+                          color=PALETTE["neutral_stroke"], stroke_width=4))
 
-        # Dim line connecting quadrant header to center
-        # We approximate the center entry point per quadrant
-        if y < cy:  # top quadrants -> arrow down to top of center
-            sx = x + box_w / 2
-            sy = y + box_h
-            ex = cx + cw / 2
-            ey = cy
-        else:  # bottom quadrants -> arrow up to bottom of center
-            sx = x + box_w / 2
-            sy = y
-            ex = cx + cw / 2
-            ey = cy + ch
-        elements.append(line(sx, sy, ex, ey,
-                              color=PALETTE["section_stroke"], stroke_width=1,
-                              stroke_style="dashed"))
+    # Suspending lines + trays
+    tray_w = 110
+    tray_h = 14
+    tray_drop = 70
+    # Left tray (higher)
+    elements.append(line(left_x, left_y, left_x, left_y + tray_drop,
+                          color=PALETTE["neutral_stroke"], stroke_width=2))
+    elements.append(rect(left_x - tray_w / 2, left_y + tray_drop, tray_w, tray_h,
+                          fill=PALETTE["replica_fill"],
+                          stroke=PALETTE["replica_stroke"], stroke_width=2))
+    # Right tray (lower)
+    elements.append(line(right_x, right_y, right_x, right_y + tray_drop,
+                          color=PALETTE["neutral_stroke"], stroke_width=2))
+    elements.append(rect(right_x - tray_w / 2, right_y + tray_drop, tray_w, tray_h,
+                          fill=PALETTE["infra_fill"],
+                          stroke=PALETTE["infra_stroke"], stroke_width=2))
 
-    # Footer hint
-    elements.append(text(60, 830,
-                          "Pick depth in 2–3 areas; have a one-paragraph mental model for the rest.",
-                          size=18, color=PALETTE["dim"], align="left", width=1500))
+    # A small "weight" (cube) on each tray to imply trade-offs
+    elements.append(rect(left_x - 22, left_y + tray_drop - 36, 44, 36,
+                          fill=PALETTE["replica_fill"],
+                          stroke=PALETTE["replica_stroke"], stroke_width=2))
+    elements.append(rect(right_x - 28, right_y + tray_drop - 44, 56, 44,
+                          fill=PALETTE["infra_fill"],
+                          stroke=PALETTE["infra_stroke"], stroke_width=2))
 
     return elements
 
@@ -441,10 +361,10 @@ def render_to_svg(excalidraw_md: Path, svg_out: Path) -> None:
 # ---------------------------------------------------------------------------
 
 HEROES = [
-    ("Roadmap-Distributed-Systems-Hero",  build_distributed_systems_hero,  1600, 700),
-    ("Roadmap-System-Design-Hero",        build_system_design_hero,        1700, 700),
-    ("Roadmap-AI-Systems-Hero",           build_ai_systems_hero,           1600, 700),
-    ("Roadmap-Staff-Engineer-Hero",       build_staff_engineer_hero,       1700, 870),
+    ("Roadmap-Distributed-Systems-Hero",  build_distributed_systems_hero,  CANVAS_W, CANVAS_H),
+    ("Roadmap-System-Design-Hero",        build_system_design_hero,        CANVAS_W, CANVAS_H),
+    ("Roadmap-AI-Systems-Hero",           build_ai_systems_hero,           CANVAS_W, CANVAS_H),
+    ("Roadmap-Staff-Engineer-Hero",       build_staff_engineer_hero,       CANVAS_W, CANVAS_H),
 ]
 
 
