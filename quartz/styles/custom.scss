@@ -2311,6 +2311,67 @@ body .backlinks > ul.overflow {
   border-left-color: color-mix(in srgb, var(--lightgray) 70%, transparent);
 }
 
+// ---- Explorer on mobile -------------------------------------------------
+// On mobile the explorer opens as a full-viewport overlay (100vw × 100dvh,
+// see .quartz/plugins/explorer/.../explorer.scss). At that scale our
+// desktop-tuned 0.85rem typography reads as cramped fine-print on a phone,
+// and the rows are barely tappable. Bump font sizes up to a comfortable
+// mobile body size (~1rem = 16px+), open up line-height for finger-sized
+// tap targets, and add horizontal breathing room so labels aren't flush
+// against the screen edge. Desktop layout is unaffected.
+@media all and ($mobile) {
+  .explorer {
+    font-size: 1rem;
+  }
+
+  // Horizontal padding for the slide-in overlay so labels don't hug the
+  // viewport edge. Vertical padding stays as the stock 4rem top / 2rem
+  // bottom so the close affordance has room above the list.
+  .explorer .explorer-content {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+
+  // Roomier rows for finger taps; align with the new font size.
+  .explorer-content ul li {
+    line-height: 1.7;
+  }
+  .explorer-content ul li > a {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  // Folder labels (collapsed/expanded chevrons) match the file rows.
+  .explorer .folder-container div > a,
+  .explorer .folder-container div > button span {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  // Slightly larger chevron and folder icon for the bigger labels.
+  .explorer .folder-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+  }
+
+  // Top-level entries get a touch more breathing room so the longer
+  // section list is easier to scan on a phone.
+  .explorer-content > ul.explorer-ul > li {
+    margin-top: 0.6rem;
+  }
+
+  // Enlarge the hamburger trigger so it's an obvious 44px tap target
+  // when collapsed at the top-left of the page.
+  .explorer .mobile-explorer {
+    padding: 8px;
+  }
+  .explorer .mobile-explorer .lucide-menu {
+    width: 28px;
+    height: 28px;
+  }
+}
+
 // ---- Sidebar dividers ---------------------------------------------------
 // Subtle hairlines between the left explorer, the main content, and the
 // right TOC so the three columns read as distinct panels rather than one
