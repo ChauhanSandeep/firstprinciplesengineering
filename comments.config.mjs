@@ -24,19 +24,19 @@
 
 export default {
   // Flip to true after the IDs below are real values.
-  enabled: false,
+  enabled: true,
 
   // GitHub repo to host Discussions (must already exist).
-  repo: "chauhansandeep/firstprinciplesengineering",
+  repo: "ChauhanSandeep/firstprinciplesengineering",
 
   // Numeric repo ID — emitted by giscus.app after you select the repo.
   // Format: "R_kgDOXXXXXXX"
-  repoId: "REPLACE_ME",
+  repoId: "R_kgDOS2EPxA",
 
   // Discussion category name and ID.
-  category: "Comments",
+  category: "Announcements",
   // Format: "DIC_kwDOXXXXXXX"
-  categoryId: "REPLACE_ME",
+  categoryId: "DIC_kwDOS2EPxM4C_OKT",
 
   // Page ↔ Discussion mapping strategy.
   //   "pathname" — Giscus matches by URL pathname (recommended for sites
