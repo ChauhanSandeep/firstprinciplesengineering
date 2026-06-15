@@ -2461,3 +2461,393 @@ body .backlinks > ul.overflow {
     display: none;
   }
 }
+
+// =========================================================================
+// Homepage v2 — Phase-01 sections
+// -------------------------------------------------------------------------
+// New homepage layering, in render order:
+//   Hero → Topics → Featured → Popular → Roadmaps → Recent → Reading
+//   Series → YouTube placeholder → Newsletter placeholder → About strip
+//   → How to browse.
+//
+// Reuses existing card vocabulary (.fpe-article-card, .fpe-path-card)
+// wherever shapes match; adds new classes only where the shape is new.
+// All new rules are additive — no existing styles are touched.
+// =========================================================================
+
+// ---- Section-level rhythm ----------------------------------------------
+// Consistent vertical rhythm between sections without re-styling the h2
+// itself (Quartz's article H2 styling already looks correct on the home).
+.fpe-topic-grid + h2,
+.fpe-popular-list + h2,
+.fpe-roadmap-grid + h2,
+.fpe-recent-list + h2,
+.fpe-placeholder-card + h2,
+.fpe-about-strip + h2 {
+  margin-top: 2.75rem;
+}
+
+// Optional eyebrow above each section heading — small caps that mirrors
+// the eyebrow vocabulary used on cards. Used selectively on home only.
+.fpe-section-eyebrow {
+  display: block;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  margin: 2.5rem 0 -0.6rem;
+  & + h2 { margin-top: 0.4rem; }
+}
+
+// "Nothing here yet" state for any section the build step might leave empty.
+.fpe-section-empty {
+  margin: 1rem 0 2.5rem;
+  padding: 1rem 1.25rem;
+  color: var(--gray);
+  background: color-mix(in srgb, var(--gray) 8%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--gray) 30%, transparent);
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+// ---- Topics grid (icon + label + short blurb) --------------------------
+// Topic cards live above Featured; smaller than path cards. Inline SVG
+// icon (stroke=currentColor) sits in a tinted rounded square; the icon
+// color picks up the secondary accent on hover.
+.fpe-topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0 2.5rem;
+}
+
+.fpe-topic-pill {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  & > .topic-icon {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
+    color: var(--secondary);
+    transition: background 180ms ease, color 180ms ease;
+    svg { width: 20px; height: 20px; }
+  }
+  & > .topic-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .topic-label {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+  .topic-blurb {
+    color: var(--darkgray);
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 16%, transparent);
+    & > .topic-icon {
+      background: color-mix(in srgb, var(--secondary) 18%, transparent);
+    }
+  }
+}
+
+// ---- Popular articles (compact numbered list) --------------------------
+// Numbered cards. The number renders in a circled tile to the left; the
+// title and one-line description sit beside it.
+.fpe-popular-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  counter-reset: popular;
+  margin: 1.25rem 0 2.5rem;
+}
+
+@media (min-width: 900px) {
+  .fpe-popular-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 1rem;
+  }
+}
+
+.fpe-popular-item {
+  counter-increment: popular;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  padding: 0.75rem 0.9rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+
+  &::before {
+    content: counter(popular);
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
+    color: var(--secondary);
+    font-family: var(--codeFont);
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  & > .popular-title {
+    grid-column: 2;
+    grid-row: 1;
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  & > .popular-desc {
+    grid-column: 2;
+    grid-row: 2;
+    color: var(--darkgray);
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--secondary);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--secondary) 12%, transparent);
+  }
+}
+
+// ---- Roadmap grid (variant of path card, with a "Roadmap" eyebrow) ----
+.fpe-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 2.5rem;
+}
+
+.fpe-roadmap-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 9rem;
+  padding: 1.2rem 1.25rem 1rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 12px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+
+  & > .roadmap-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tertiary);
+    margin-bottom: 0.4rem;
+    svg { width: 12px; height: 12px; }
+  }
+  & > .roadmap-title {
+    display: block;
+    font-family: var(--headerFont);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+  & > .roadmap-desc {
+    display: block;
+    color: var(--darkgray);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+  & > .roadmap-status {
+    display: inline-block;
+    margin-top: 0.7rem;
+    align-self: flex-start;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--gray) 12%, transparent);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--tertiary);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--tertiary) 18%, transparent);
+  }
+}
+
+// ---- Recent articles list (auto-generated by inject-recent.mjs) -------
+// Visually a tighter variant of the Featured grid.
+.fpe-recent-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0 2.5rem;
+}
+
+// .fpe-recent-card extends .fpe-article-card; we only override what
+// differs (slightly tighter padding so 5 fit comfortably above the fold
+// on a typical desktop scroll position).
+.fpe-recent-card {
+  padding: 0.95rem 1.1rem 0.9rem;
+  & > .article-title { font-size: 1rem; }
+  & > .article-desc  { font-size: 0.85rem; }
+}
+
+// ---- Placeholder cards (YouTube, Newsletter — Coming soon) ------------
+// Single-card sections that announce a future channel without making
+// the home feel half-built. Soft dashed border + accent eyebrow.
+.fpe-placeholder-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 1.25rem 0 2.5rem;
+  padding: 1.2rem 1.35rem;
+  background: color-mix(in srgb, var(--lightgray) 30%, var(--light));
+  border: 1px dashed color-mix(in srgb, var(--gray) 35%, transparent);
+  border-radius: 12px;
+
+  & > .placeholder-icon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--secondary) 12%, transparent);
+    color: var(--secondary);
+    svg { width: 22px; height: 22px; }
+  }
+  & > .placeholder-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+  .placeholder-eyebrow {
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--secondary);
+  }
+  .placeholder-title {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+  .placeholder-desc {
+    color: var(--darkgray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+// ---- About strip (home-page mini About teaser) ------------------------
+// Compact two-column strip that teases the About page without
+// duplicating it. Mobile collapses to one column.
+.fpe-about-strip {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 2fr;
+  gap: 1.25rem;
+  align-items: center;
+  margin: 1.25rem 0 2.5rem;
+  padding: 1.4rem 1.5rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 12px;
+
+  @media all and ($mobile) {
+    grid-template-columns: 1fr;
+    padding: 1.2rem 1.25rem;
+  }
+
+  & > .about-strip-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .about-strip-eyebrow {
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--secondary);
+  }
+  .about-strip-name {
+    font-family: var(--headerFont);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--dark);
+  }
+  .about-strip-role {
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
+  & > .about-strip-right {
+    color: var(--darkgray);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    p { margin: 0 0 0.6rem; }
+    p:last-child { margin-bottom: 0; }
+  }
+  .about-strip-link {
+    color: var(--secondary) !important;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+    transition: border-color 180ms ease;
+    &:hover { border-bottom-color: var(--secondary); }
+  }
+}

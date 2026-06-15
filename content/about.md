@@ -14,6 +14,16 @@ Most engineering writing online is either tutorial-shaped (here's how to configu
 
 This site is a curated slice of my private notebook. Many drafts and half-formed ideas stay unpublished by design; I'd rather publish twenty notes I'm willing to defend than two hundred I'm not.
 
+## What I write about
+
+- **Distributed systems and databases** — the primitives, the failure modes, and the trade-offs that only become obvious in production. Consensus, MVCC, CDC, consistent hashing, the usual cast.
+- **System and architecture design** — event sourcing, BFF, multi-tenancy, strangler-fig migrations. Patterns named for the problem they solve, not the framework that popularised them.
+- **AI systems in production** — RAG, model serving, embeddings, vector stores. Pulled from shipping ML in real environments, not from the model card.
+
+## How this site is built
+
+It's a [Quartz](https://quartz.jzhao.xyz) site rendered from an Obsidian vault — Obsidian is the source of truth, every diagram is an Excalidraw drawing rendered to dark/light SVG pairs, and the entire build runs from a small set of scripts in the [public repo](https://github.com/chauhansandeep/firstprinciplesengineering). If you spot a bug or a stale link, the PR queue is open.
+
 ## Get in touch
 
 <div class="fpe-contact-card">
