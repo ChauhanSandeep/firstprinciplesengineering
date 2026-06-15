@@ -139,80 +139,9 @@
     btn.dataset.fpeKbd = "1"
   }
 
-  // Prev / next article navigation: derives the article's "sibling list" from
-  // its slug ancestry using the JSON index Quartz emits. We pick the parent
-  // folder, list its published children (excluding folder indexes), sort them
-  // by slug (which gives natural ordering because the vault uses `NN-` prefixes),
-  // and link to the immediate prev/next entry.
-  let _contentIndexPromise = null
-  function loadContentIndex() {
-    if (_contentIndexPromise) return _contentIndexPromise
-    const body = document.body
-    const basepath = (body && body.dataset && body.dataset.basepath) || ""
-    const base = basepath.replace(/\/$/, "")
-    const url = (base ? base : "") + "/static/contentIndex.json"
-    _contentIndexPromise = fetch(url)
-      .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null)
-    return _contentIndexPromise
-  }
-  async function ensurePrevNext() {
-    const article = document.querySelector("article")
-    if (!article) return
-    if (article.querySelector(".fpe-prev-next")) return
-
-    const body = document.body
-    const slug = body && body.dataset && body.dataset.slug
-    if (!slug || slug === "index" || slug.endsWith("/index")) return
-
-    const data = await loadContentIndex()
-    if (!data) return
-    const index = data.content || data
-
-    const parts = slug.split("/")
-    if (parts.length < 2) return
-    const parent = parts.slice(0, -1).join("/")
-
-    const entries = Object.entries(index)
-      .filter(([s]) => {
-        if (!s.startsWith(parent + "/")) return false
-        const rest = s.slice(parent.length + 1)
-        if (rest.includes("/")) return false
-        if (rest === "index" || rest.endsWith("/index")) return false
-        return true
-      })
-      .map(([s, v]) => ({ slug: s, title: (v && v.title) || s.split("/").pop() }))
-      .sort((a, b) => a.slug.localeCompare(b.slug, undefined, { numeric: true }))
-
-    const idx = entries.findIndex((e) => e.slug === slug)
-    if (idx < 0) return
-    const prev = idx > 0 ? entries[idx - 1] : null
-    const next = idx < entries.length - 1 ? entries[idx + 1] : null
-    if (!prev && !next) return
-
-    const basepath = (body && body.dataset && body.dataset.basepath) || ""
-    const join = (b, s) => {
-      const left = b.replace(/\/$/, "")
-      const right = String(s).replace(/^\//, "")
-      return left ? left + "/" + right : right
-    }
-    const nav = document.createElement("nav")
-    nav.className = "fpe-prev-next"
-    nav.setAttribute("aria-label", "Article navigation")
-    const make = (entry, direction, label) => {
-      if (!entry) return '<span class="fpe-pn-spacer"></span>'
-      const href = join(basepath, entry.slug)
-      const cleanTitle = prettify(entry.title)
-      return (
-        '<a class="fpe-pn ' + direction + '" href="' + href + '">' +
-        '<span class="fpe-pn-label">' + label + '</span>' +
-        '<span class="fpe-pn-title">' + cleanTitle + '</span>' +
-        "</a>"
-      )
-    }
-    nav.innerHTML = make(prev, "prev", "← Previous") + make(next, "next", "Next →")
-    article.appendChild(nav)
-  }
+  // Prev/next is rendered at build time by scripts/build/inject-prev-next-related.mjs,
+  // which has full series + breadcrumb + related-articles support. The old runtime
+  // ensurePrevNext() implementation was removed to avoid duplicate nav blocks.
 
   function wrapInScrollable(el, className) {
     if (!el || el.dataset.fpeWrapped === "1") return
@@ -446,7 +375,6 @@
     prettifyBreadcrumbs(document)
     decorateSearchButton(document)
     ensureBackToTop()
-    ensurePrevNext()
     ensureRichFooter()
     polishToc(document)
     ensureSidebarSocial()

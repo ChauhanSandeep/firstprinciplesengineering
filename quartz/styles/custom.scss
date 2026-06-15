@@ -3241,7 +3241,14 @@ body .backlinks > ul.overflow {
   }
   & > #cusdis_thread {
     min-height: 4rem;
-    iframe { width: 100% !important; }
+    // Cusdis embeds a singleton iframe and resizes it via postMessage
+    // (event: "resize", data: pixel height). Before the resize message
+    // fires (and as a floor for the empty-form layout), give the iframe
+    // enough room so Name / Email / Reply / Submit are not clipped.
+    iframe {
+      width: 100% !important;
+      min-height: 360px;
+    }
   }
 }
 
