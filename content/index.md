@@ -85,16 +85,6 @@ description: >-
   </span>
 </a>
 
-<a class="fpe-topic-pill" href="02-series/">
-  <span class="topic-icon" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h13M3 18h13"/><circle cx="20" cy="6" r="1.5"/><circle cx="20" cy="12" r="1.5"/><circle cx="20" cy="18" r="1.5"/></svg>
-  </span>
-  <span class="topic-body">
-    <span class="topic-label">Reading Series</span>
-    <span class="topic-blurb">Curated paths in dependency order.</span>
-  </span>
-</a>
-
 </div>
 
 ## Featured

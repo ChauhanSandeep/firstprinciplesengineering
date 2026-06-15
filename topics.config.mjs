@@ -80,13 +80,6 @@ export const topics = [
     icon: ICONS.map,
     blurb: "Dependency-ordered reading paths.",
   },
-  {
-    label: "Reading Series",
-    path: "02-series/",
-    order: 60,
-    icon: ICONS.series,
-    blurb: "Curated paths in dependency order.",
-  },
 ]
 
 export const BASE_PATH = "/firstprinciplesengineering"
