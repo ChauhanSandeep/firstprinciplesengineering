@@ -2569,16 +2569,20 @@ body .backlinks > ul.overflow {
 // color picks up the secondary accent on hover.
 .fpe-topics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem;
+  // Match the Featured grid (300px minmax, 1rem gap) so both
+  // sections share the same column rhythm and the cards line up
+  // visually across breakpoints.
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
   margin: 1.25rem 0 2.5rem;
 }
 
 .fpe-topic-pill {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem 0.95rem;
+  // Mirror .fpe-article-card chrome (block layout, same padding,
+  // same border + radius, same hover) so "What you'll find here"
+  // and "Featured" feel like one consistent card system.
+  display: block;
+  padding: 1.1rem 1.25rem 1rem;
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 10px;
@@ -2589,35 +2593,39 @@ body .backlinks > ul.overflow {
     box-shadow 180ms ease,
     border-color 180ms ease;
 
+  // Icon becomes a small colored chip at the top of the card,
+  // sitting where an eyebrow would otherwise sit on an article card.
   & > .topic-icon {
-    flex: 0 0 auto;
-    width: 36px;
-    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
     border-radius: 9px;
     background: color-mix(in srgb, var(--secondary) 10%, transparent);
     color: var(--secondary);
+    margin-bottom: 0.55rem;
     transition: background 180ms ease, color 180ms ease;
-    svg { width: 20px; height: 20px; }
+    svg { width: 18px; height: 18px; }
   }
   & > .topic-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    min-width: 0;
+    display: block;
   }
   .topic-label {
+    // Match .fpe-article-card > .article-title exactly.
+    display: block;
     font-family: var(--headerFont);
+    font-size: 1.05rem;
     font-weight: 600;
-    font-size: 0.98rem;
-    line-height: 1.2;
+    line-height: 1.3;
+    margin-bottom: 0.35rem;
   }
   .topic-blurb {
+    // Match .fpe-article-card > .article-desc exactly.
+    display: block;
     color: var(--darkgray);
-    font-size: 0.8rem;
-    line-height: 1.35;
+    font-size: 0.88rem;
+    line-height: 1.5;
   }
 
   &:hover {
