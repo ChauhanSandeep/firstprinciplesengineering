@@ -170,6 +170,17 @@ article {
 
   p { margin: 0 0 1.1rem; }
 
+  // ---- Line-height override (HI-style breathing room) -------------------
+  // Quartz base.scss sets `p, li, tbody { line-height: 1.6rem }` which
+  // overrides the `article { line-height: 1.75 }` declaration above. We
+  // re-assert 1.75 (unitless) at article-scope so paragraphs, list items
+  // and table cells inside articles match HelloInterview's airier rhythm
+  // (28px line on 16px text). Sidebars, cards and other chrome keep the
+  // tighter 1.6rem baseline.
+  p, li, tbody {
+    line-height: 1.75;
+  }
+
   ul, ol {
     margin: 0 0 1.25rem;
     padding-left: 1.5rem;
