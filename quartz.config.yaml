@@ -137,6 +137,11 @@ plugins:
   - source: github:quartz-community/explorer
     enabled: true
     options:
+      # User-approved Option A: folder rows in the left explorer
+      # should ONLY toggle expansion, never navigate. Topic landing
+      # pages are still reachable from home topic cards, the TopicNav
+      # strip on each landing page, and breadcrumbs.
+      folderClickBehavior: collapse
       # Strip leading `NN-` ordering prefix and convert dashes/underscores to
       # spaces so vault folders like `01-Fundamentals/01-Concepts/...` display
       # as "Fundamentals / Concepts / ...". File titles are prettified at sync
