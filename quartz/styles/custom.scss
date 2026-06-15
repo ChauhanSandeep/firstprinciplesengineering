@@ -2851,3 +2851,90 @@ body .backlinks > ul.overflow {
     &:hover { border-bottom-color: var(--secondary); }
   }
 }
+
+// =========================================================================
+// Topic Nav — Phase-02 horizontal jump strip
+// -------------------------------------------------------------------------
+// Injected into the home page + every folder index page by
+// scripts/build/inject-topic-nav.mjs after the Quartz build. Carries
+// id="fpe-topic-nav" so the injector is idempotent.
+//
+// Visually: a horizontal scroll-snap bar of icon+label pills, sitting
+// above the page <article>. On wide screens it stretches across the
+// content column; on narrow it scrolls horizontally (snap-aligned).
+// =========================================================================
+
+.fpe-topic-nav {
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border-bottom: 1px solid var(--lightgray);
+
+  & > .fpe-topic-nav-inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0.35rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+}
+
+.fpe-topic-nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+  text-decoration: none !important;
+  color: var(--darkgray) !important;
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+
+  .fpe-topic-nav-icon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    svg { width: 18px; height: 18px; }
+  }
+
+  &:hover {
+    color: var(--dark) !important;
+    background: color-mix(in srgb, var(--secondary) 8%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--secondary) 40%, transparent);
+  }
+
+  &.is-active {
+    color: var(--secondary) !important;
+    border-bottom-color: var(--secondary);
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
+  }
+}
+
+// Mobile: tighten padding so 6 pills are still horizontally scrollable
+// without the strip feeling cramped on touch.
+@media all and ($mobile) {
+  .fpe-topic-nav {
+    margin: 0 0 1rem;
+  }
+  .fpe-topic-nav-item {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+    .fpe-topic-nav-icon, .fpe-topic-nav-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

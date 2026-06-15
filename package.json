@@ -24,8 +24,9 @@
     "validate:home": "node scripts/validate-home-cards.mjs",
     "fix-paths": "node scripts/fix-excalidraw-paths.mjs",
     "inject-recent": "node scripts/build/inject-recent.mjs",
-    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent",
-    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent",
+    "inject-topic-nav": "node scripts/build/inject-topic-nav.mjs",
+    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav",
+    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-recent && npm run inject-topic-nav",
     "serve": "npm run sync && npm run validate:home && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npm run validate:home && npx quartz build --serve",
     "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""
