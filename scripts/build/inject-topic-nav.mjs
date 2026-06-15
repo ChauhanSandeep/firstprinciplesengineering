@@ -5,8 +5,14 @@
  * Post-build step: injects a horizontal topic navigation strip into:
  *
  *   - the home page (`public/index.html`)
- *   - every folder index page that Quartz auto-generates
- *     (`public/<folder>/index.html`)
+ *   - each of the 7 top-level topic landing pages configured in
+ *     `topics.config.mjs` (e.g. `01-fundamentals/02-databases/01-fundamentals/`)
+ *
+ * The strip is intentionally NOT injected on deeper folder index
+ * pages (`01-fundamentals/01-concepts/`, `01-fundamentals/02-databases/`,
+ * …) — once a reader is deep inside a topic, the left explorer +
+ * breadcrumbs are the right wayfinding, and a row of 7 unrelated
+ * top-level topic tabs adds confusion, not value.
  *
  * Goal — give visitors a topic-first jump bar so they can reach
  * "Databases" without first parsing the vault's internal folder
@@ -17,8 +23,7 @@
  * Quartz Community layout plugins all source from `github:` repos —
  * adding a local component is significantly more wiring than a
  * post-build HTML injection. The injection is cheap, idempotent, and
- * scoped to landing pages only (NOT individual articles, where the
- * existing breadcrumb already gives spatial context).
+ * scoped to exactly the pages where it earns its keep.
  *
  * Where the strip lands
  * ---------------------
@@ -36,10 +41,13 @@ const __dirname = path.dirname(__filename)
 const SITE_ROOT = path.resolve(__dirname, "..", "..")
 const PUBLIC_DIR = path.join(SITE_ROOT, "public")
 
-const SKIP_SLUGS_RE = [
-  /^404$/, // 404 page has its own layout
-  /^tags(\/|$)/, // tag index + tag detail pages
-]
+// Eligible-page check — built from topics.config.mjs once at startup.
+// A page qualifies iff its slug is either "" (home) or matches one
+// of the configured topic paths (stripped of trailing slash, lower-cased).
+const ELIGIBLE_SLUGS = new Set(
+  topics.map((t) => t.path.replace(/^\/+|\/+$/g, "").toLowerCase()),
+)
+ELIGIBLE_SLUGS.add("") // home
 
 // Inject after the breadcrumb container if present, else immediately
 // before the page <article>. Both options keep the strip inside the
@@ -116,12 +124,9 @@ async function injectInto(abs, slug) {
 
 async function main() {
   const pages = await walkLandingPages(PUBLIC_DIR)
-  // Filter: only landing pages — home (slug "") OR folder index pages.
-  // Skip tag/404 by slug. (Every index.html in PUBLIC_DIR is either
-  // home or a folder/series landing.)
-  const targets = pages.filter(
-    (p) => !SKIP_SLUGS_RE.some((re) => re.test(p.slug)),
-  )
+  // Only inject on home + the configured top-level topic landing pages.
+  // Deeper folder indexes get the explorer + breadcrumbs instead.
+  const targets = pages.filter((p) => ELIGIBLE_SLUGS.has(p.slug.toLowerCase()))
 
   let injected = 0
   let skipped = 0
@@ -131,7 +136,8 @@ async function main() {
     else skipped++
   }
   console.log(
-    `inject-topic-nav: injected into ${injected} landing page(s); skipped ${skipped}.`,
+    `inject-topic-nav: injected into ${injected} landing page(s); skipped ${skipped} eligible; ` +
+      `total folder index pages scanned: ${pages.length}.`,
   )
 }
 
