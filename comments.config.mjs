@@ -28,9 +28,11 @@ export default {
 
   // Rendering mode:
   //   "discuss-cta"  — zero-friction CTA: LinkedIn DM / email / GitHub
-  //                    repo link. No reader account required. Best for
-  //                    early-stage blogs where the visitor login flow
-  //                    of Giscus / utterances kills participation.
+  //                    repo link. No reader account required.
+  //   "cusdis"       — Cusdis comment thread (https://cusdis.com).
+  //                    Anonymous comments OK, ~5 KB embed, author
+  //                    moderates via Cusdis dashboard. Requires
+  //                    `cusdisAppId` below to be a real UUID.
   //   "giscus"       — full Giscus threaded comments. Requires GitHub
   //                    login to post. All `repo*`, `category*`, theme,
   //                    mapping fields below are used in this mode.
@@ -47,6 +49,13 @@ export default {
     email: "engineeringfromfirstprinciples@gmail.com",
     githubRepo: "chauhansandeep/firstprinciplesengineering",
   },
+
+  // ---- cusdis mode --------------------------------------------------------
+  // Setup: visit https://cusdis.com, sign in, create a project, copy the
+  // App ID (UUID) into `cusdisAppId` below, and flip `mode: "cusdis"`.
+  cusdisAppId: "REPLACE_ME",
+  // Host for the Cusdis API. Use the hosted service unless you self-host.
+  cusdisHost: "https://cusdis.com",
 
   // ---- giscus mode --------------------------------------------------------
   // GitHub repo to host Discussions (must already exist).

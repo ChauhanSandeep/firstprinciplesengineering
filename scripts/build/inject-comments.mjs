@@ -211,10 +211,57 @@ function slugFromHtml(abs) {
   return rel.replace(/\.html$/, "").split(path.sep).join("/").toLowerCase()
 }
 
-async function inject(abs, slug, block) {
+function renderCusdisBlock({ slug, title }) {
+  const appId = escapeHtml(config.cusdisAppId)
+  const host = escapeHtml(config.cusdisHost || "https://cusdis.com")
+  const pageId = escapeHtml(slug)
+  const pageUrl = `https://chauhansandeep.github.io/firstprinciplesengineering/${slug}`
+  const pageTitle = escapeHtml(title || slug)
+  return [
+    `<section ${MARKER} class="fpe-cusdis" aria-label="Discussion">`,
+    `  <h2 class="fpe-cusdis-heading">Discussion</h2>`,
+    `  <p class="fpe-cusdis-lede">Comments are open. Anonymous is fine — pick any name and post. Comments appear after a quick moderation check.</p>`,
+    `  <div id="cusdis_thread"`,
+    `       data-host="${host}"`,
+    `       data-app-id="${appId}"`,
+    `       data-page-id="${pageId}"`,
+    `       data-page-url="${escapeHtml(pageUrl)}"`,
+    `       data-page-title="${pageTitle}"`,
+    `       data-theme="auto"></div>`,
+    `  <script async defer src="${host}/js/cusdis.es.js"></script>`,
+    `  <script>`,
+    `  (function(){`,
+    `    // Re-theme the Cusdis iframe when the page theme toggles.`,
+    `    function applyTheme(){`,
+    `      var t = document.documentElement.getAttribute("saved-theme") === "dark" ? "dark" : "light";`,
+    `      if (window.CUSDIS && typeof window.CUSDIS.setTheme === "function") {`,
+    `        window.CUSDIS.setTheme(t);`,
+    `      }`,
+    `    }`,
+    `    var mo = new MutationObserver(applyTheme);`,
+    `    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["saved-theme"] });`,
+    `    // First-shot: in case the embed loaded before the script tag runs.`,
+    `    setTimeout(applyTheme, 600);`,
+    `  })();`,
+    `  </script>`,
+    `</section>`,
+  ].join("\n")
+}
+
+function readTitleFromHtml(html) {
+  const m = html.match(/<h1[^>]*class="[^"]*article-title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i)
+  if (!m) return null
+  return m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() || null
+}
+
+async function inject(abs, slug, blockOrBuilder) {
   if (SKIP_SLUG_RE.some((re) => re.test(slug))) return { skipped: "filter" }
   const html = await fs.readFile(abs, "utf8")
   if (html.includes(MARKER)) return { skipped: "already" }
+  const block =
+    typeof blockOrBuilder === "function"
+      ? blockOrBuilder({ slug, title: readTitleFromHtml(html) })
+      : blockOrBuilder
   // Prefer to land after the Phase-3 prev/next aside; fall back to
   // before </article>.
   let next
@@ -243,7 +290,7 @@ async function main() {
     return
   }
 
-  let block
+  let block // string (static) or function ({ slug, title }) -> string
   if (mode === "discuss-cta") {
     if (
       !config.discuss ||
@@ -256,6 +303,15 @@ async function main() {
       return
     }
     block = renderDiscussCtaBlock()
+  } else if (mode === "cusdis") {
+    if (!config.cusdisAppId || config.cusdisAppId === "REPLACE_ME") {
+      console.log(
+        "inject-comments: mode='cusdis' but cusdisAppId is unset/REPLACE_ME " +
+          "in comments.config.mjs; skipping.",
+      )
+      return
+    }
+    block = renderCusdisBlock
   } else if (mode === "giscus") {
     if (
       config.repoId === "REPLACE_ME" ||
@@ -271,7 +327,7 @@ async function main() {
   } else {
     console.log(
       `inject-comments: unknown mode '${mode}'; expected one of ` +
-        `'discuss-cta' | 'giscus' | 'off'. Skipping.`,
+        `'discuss-cta' | 'cusdis' | 'giscus' | 'off'. Skipping.`,
     )
     return
   }

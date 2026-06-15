@@ -3211,6 +3211,46 @@ body .backlinks > ul.overflow {
 }
 
 // =========================================================================
+// Cusdis comments mount (alternative to Giscus / discuss-cta)
+// -------------------------------------------------------------------------
+// Cusdis embeds an iframe inside #cusdis_thread. We give the panel the
+// same card chrome as .fpe-discuss-cta for visual consistency, and a
+// min-height on the mount so the page doesn't jump as the iframe loads.
+// =========================================================================
+
+.fpe-cusdis {
+  margin: 2.5rem 0 1rem;
+  padding: 1.5rem 1.5rem 1.4rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+  background: color-mix(in srgb, var(--secondary) 5%, var(--light));
+
+  & > .fpe-cusdis-heading {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.005em;
+  }
+  & > .fpe-cusdis-lede {
+    margin: 0 0 1rem;
+    color: var(--darkgray);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    max-width: 56ch;
+  }
+  & > #cusdis_thread {
+    min-height: 4rem;
+    iframe { width: 100% !important; }
+  }
+}
+
+[saved-theme="dark"] .fpe-cusdis {
+  background: color-mix(in srgb, var(--secondary) 10%, var(--light));
+  border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+}
+
+// =========================================================================
 // Series header strip — Phase-09
 // -------------------------------------------------------------------------
 // Slim wayfinding banner injected at the top of every article that
