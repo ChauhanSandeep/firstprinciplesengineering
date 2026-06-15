@@ -316,10 +316,16 @@
     // off-theme duplicate via `display:none`, so click events only land on
     // the variant the reader currently sees — no theme-routing needed here.
     const imgs = (root || document).querySelectorAll('img[src*=".excalidraw."]')
-    imgs.forEach((img) => {
+    imgs.forEach((img, i) => {
       if (img.dataset.fpeZoom === "1") return
       img.dataset.fpeZoom = "1"
       img.title = "Click to view full size"
+      // Lazy-load every diagram except the first two — those are likely
+      // above the fold and we want them rendered immediately for LCP.
+      // `decoding=async` is safe everywhere; it lets the browser decode
+      // the SVG off the main thread.
+      if (i >= 2 && !img.loading) img.loading = "lazy"
+      if (!img.decoding) img.decoding = "async"
       img.addEventListener("click", () => openLightbox(img.src, img.alt))
     })
   }
@@ -331,14 +337,30 @@
     overlay.id = "fpe-lightbox"
     overlay.setAttribute("role", "dialog")
     overlay.setAttribute("aria-label", "Diagram viewer")
+    // Inherit current theme so the lightbox chrome (background tint,
+    // close-button colour) follows light/dark. Quartz toggles
+    // `saved-theme="dark"` on <html>.
+    const theme = document.documentElement.getAttribute("saved-theme") || "light"
+    overlay.dataset.theme = theme
     overlay.innerHTML =
-      '<button type="button" class="fpe-lightbox-close" aria-label="Close">×</button>' +
+      '<div class="fpe-lightbox-toolbar">' +
+        '<a class="fpe-lightbox-action fpe-lightbox-open" href="' + src + '" target="_blank" rel="noopener" title="Open in new tab" aria-label="Open diagram in new tab">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<path d="M14 3h7v7"></path><path d="M10 14L21 3"></path>' +
+            '<path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>' +
+          '</svg>' +
+        '</a>' +
+        '<button type="button" class="fpe-lightbox-action fpe-lightbox-close" aria-label="Close">×</button>' +
+      '</div>' +
       '<img alt="' + (alt || "") + '" />'
     const img = overlay.querySelector("img")
     img.src = src
     const close = () => overlay.remove()
     overlay.addEventListener("click", (e) => {
-      if (e.target === overlay || e.target.classList.contains("fpe-lightbox-close")) close()
+      // Toolbar actions handle their own clicks; outside-image clicks dismiss.
+      if (e.target.closest(".fpe-lightbox-action")) return
+      if (e.target === overlay) close()
+      if (e.target.classList && e.target.classList.contains("fpe-lightbox-close")) close()
     })
 
     // Click-to-zoom on the maximized image. Toggles between "fit to viewport"
