@@ -2938,3 +2938,152 @@ body .backlinks > ul.overflow {
     }
   }
 }
+
+// =========================================================================
+// Article footer — Phase-03 prev/next + related
+// -------------------------------------------------------------------------
+// Injected after </article> by scripts/build/inject-prev-next-related.mjs.
+// Always wrapped in <aside id="fpe-prev-next-related"> for idempotency.
+// Contains, in order:
+//   1. Series tag (compact pill linking to the series landing page)
+//   2. Two-column Prev / Next cards (series-aware if available)
+//   3. Related list (up to 5 distinct articles)
+//
+// Each block degrades gracefully — if no series, no series strip; if no
+// siblings, no prev/next row; if no related, no related list. Empty
+// .fpe-pn-card.fpe-pn-empty keeps the two-column grid honest when only
+// one side has content.
+// =========================================================================
+
+.fpe-prev-next-related {
+  margin: 2.5rem 0 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--lightgray);
+
+  & > .fpe-series-row {
+    margin-bottom: 1rem;
+  }
+}
+
+.fpe-series-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--secondary) 10%, transparent);
+  color: var(--secondary) !important;
+  text-decoration: none !important;
+  font-size: 0.85rem;
+  transition: background 160ms ease;
+
+  & > .fpe-series-eyebrow {
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+  & > .fpe-series-name {
+    font-weight: 600;
+  }
+  & > .fpe-series-position {
+    font-family: var(--codeFont);
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  &:hover {
+    background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  }
+}
+
+.fpe-series-pn,
+.fpe-sibling-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  @media all and ($mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fpe-pn-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  text-decoration: none !important;
+  color: var(--dark) !important;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+
+  & > .fpe-pn-eyebrow {
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray);
+  }
+  & > .fpe-pn-title {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+  &.fpe-pn-next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--secondary);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--secondary) 14%, transparent);
+  }
+}
+
+.fpe-pn-empty {
+  visibility: hidden;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+}
+
+.fpe-related {
+  margin-top: 1.25rem;
+
+  & > .fpe-related-eyebrow {
+    margin: 0 0 0.5rem;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray);
+  }
+  & > .fpe-related-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    & > li > .fpe-related-link {
+      display: inline-block;
+      padding: 0.25rem 0;
+      color: var(--secondary) !important;
+      text-decoration: none !important;
+      font-size: 0.95rem;
+      border-bottom: 1px solid transparent;
+      transition: border-color 160ms ease;
+      &:hover {
+        border-bottom-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+      }
+    }
+  }
+}
