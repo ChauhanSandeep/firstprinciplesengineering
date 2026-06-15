@@ -301,13 +301,14 @@ function renderRelated(related) {
 function renderFooter(seriesMeta, siblingPrev, siblingNext, related, contentIndex) {
   const inner = []
   if (seriesMeta) inner.push(renderSeriesStrip(seriesMeta, contentIndex))
-  // Avoid duplicate prev/next: if series provides them, don't repeat
-  // the sibling row unless siblings differ from series.
-  const seriesProvides = !!(seriesMeta && (seriesMeta.prev || seriesMeta.next))
-  const siblingDiffers =
-    (siblingPrev && siblingPrev !== seriesMeta?.prev) ||
-    (siblingNext && siblingNext !== seriesMeta?.next)
-  if ((siblingPrev || siblingNext) && (!seriesProvides || siblingDiffers)) {
+  // When the article is in a series, the series-defined reading order
+  // wins. Folder-based prev/next would otherwise cause visual
+  // duplication whenever one side happens to match (e.g. series.next
+  // === sibling.next but the prev sides differ — user sees the same
+  // article labelled both "Next" and "Next in series"). The Related
+  // block below still gives readers cross-folder exploration.
+  const inSeries = !!seriesMeta
+  if (!inSeries && (siblingPrev || siblingNext)) {
     inner.push(renderSiblings(siblingPrev, siblingNext, contentIndex))
   }
   inner.push(renderRelated(related))
