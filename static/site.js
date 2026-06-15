@@ -214,83 +214,6 @@
     article.appendChild(nav)
   }
 
-  function ensureShareRow() {
-    const article = document.querySelector("article")
-    if (!article) return
-    if (article.querySelector(".fpe-share")) return
-
-    const body = document.body
-    const slug = body && body.dataset && body.dataset.slug
-    if (!slug || slug === "index" || slug.endsWith("/index") || slug === "404") return
-
-    const title = (document.querySelector("h1.article-title")?.textContent || document.title || "").trim()
-    const pageUrl = location.origin + location.pathname
-    const encUrl = encodeURIComponent(pageUrl)
-    const encTitle = encodeURIComponent(title)
-    const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encUrl}`
-    const twitterHref = `https://twitter.com/intent/tweet?url=${encUrl}&text=${encTitle}`
-
-    const row = document.createElement("div")
-    row.className = "fpe-share"
-
-    const mkLink = (href, cls, label) =>
-      '<a class="fpe-share-link ' + cls + '" href="' + href + '" target="_blank" rel="noopener">' + label + '</a>'
-
-    row.innerHTML =
-      '<span class="fpe-share-label">Share this post:</span>' +
-      '<button class="fpe-share-link fpe-share-secondary fpe-share-copy" type="button" aria-live="polite">🔗 Copy link</button>' +
-      mkLink(twitterHref, "fpe-share-secondary fpe-share-x", "𝕏 Post") +
-      mkLink(linkedinHref, "fpe-share-secondary fpe-share-linkedin", "↗ LinkedIn")
-
-    const prevNext = article.querySelector(".fpe-prev-next")
-    if (prevNext) article.insertBefore(row, prevNext)
-    else article.appendChild(row)
-
-    const copyBtn = row.querySelector(".fpe-share-copy")
-    if (copyBtn) {
-      const originalLabel = copyBtn.textContent
-      let revertTimer = null
-      copyBtn.addEventListener("click", async () => {
-        const showCopied = () => {
-          copyBtn.textContent = "✓ Copied!"
-          copyBtn.classList.add("fpe-share-copied")
-          if (revertTimer) clearTimeout(revertTimer)
-          revertTimer = setTimeout(() => {
-            copyBtn.textContent = originalLabel
-            copyBtn.classList.remove("fpe-share-copied")
-          }, 1600)
-        }
-        try {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            await navigator.clipboard.writeText(pageUrl)
-            showCopied()
-            return
-          }
-        } catch (_) {
-          // fall through to legacy path
-        }
-        try {
-          const ta = document.createElement("textarea")
-          ta.value = pageUrl
-          ta.setAttribute("readonly", "")
-          ta.style.position = "absolute"
-          ta.style.left = "-9999px"
-          document.body.appendChild(ta)
-          ta.select()
-          document.execCommand("copy")
-          document.body.removeChild(ta)
-          showCopied()
-        } catch (_) {
-          copyBtn.textContent = "Copy failed"
-          if (revertTimer) clearTimeout(revertTimer)
-          revertTimer = setTimeout(() => {
-            copyBtn.textContent = originalLabel
-          }, 1600)
-        }
-      })
-    }
-  }
-
   function wrapInScrollable(el, className) {
     if (!el || el.dataset.fpeWrapped === "1") return
     if (el.parentElement && el.parentElement.classList.contains(className)) {
@@ -358,9 +281,14 @@
     const close = () => overlay.remove()
     overlay.addEventListener("click", (e) => {
       // Toolbar actions handle their own clicks; outside-image clicks dismiss.
+      // The close button gets its own listener below — handle it BEFORE the
+      // early-return so it isn't swallowed by the .fpe-lightbox-action guard.
+      if (e.target.closest(".fpe-lightbox-close")) {
+        close()
+        return
+      }
       if (e.target.closest(".fpe-lightbox-action")) return
       if (e.target === overlay) close()
-      if (e.target.classList && e.target.classList.contains("fpe-lightbox-close")) close()
     })
 
     // Click-to-zoom on the maximized image. Toggles between "fit to viewport"
@@ -519,7 +447,6 @@
     decorateSearchButton(document)
     ensureBackToTop()
     ensurePrevNext()
-    ensureShareRow()
     ensureRichFooter()
     polishToc(document)
     ensureSidebarSocial()
