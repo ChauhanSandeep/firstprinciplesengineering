@@ -3353,6 +3353,22 @@ body .backlinks > ul.overflow {
   background: color-mix(in srgb, var(--light) 60%, var(--secondary) 6%);
   border: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
 
+  // Stick to viewport so the rail scrolls with the reader instead of
+  // hanging in empty space below shorter sections. Same treatment as the
+  // right-sidebar TOC on article pages.
+  position: sticky;
+  top: 4rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  // Subtle scrollbar so the cap doesn't feel jarring when content
+  // exceeds the viewport.
+  scrollbar-width: thin;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--lightgray) 60%, transparent);
+    border-radius: 3px;
+  }
+
   .fpe-rail-header {
     display: flex;
     align-items: center;

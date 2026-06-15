@@ -29,7 +29,7 @@ const HOME_HTML = path.join(PUBLIC_DIR, "index.html")
 const STATUS_INDEX = path.join(PUBLIC_DIR, "static", "statusIndex.json")
 const CONTENT_INDEX = path.join(PUBLIC_DIR, "static", "contentIndex.json")
 
-const MAX_ITEMS = 5
+const MAX_ITEMS = 4
 const MARKER_ID = "fpe-home-rail"
 const BASE_PATH = "/firstprinciplesengineering"
 const RIGHT_SIDEBAR_RE = /(<div class="right sidebar"[^>]*>)([\s\S]*?)(<\/div>)/i
