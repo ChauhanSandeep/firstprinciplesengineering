@@ -515,6 +515,13 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
   cursor: zoom-out;
   animation: fpe-lightbox-in 120ms ease-out;
 
+  // Theme-aware backdrop. Dark scrim in dark mode, near-white in light
+  // — keeps the diagram colour faithful at full size instead of
+  // washing it under a constant dark overlay.
+  &[data-theme="light"] {
+    background: rgba(245, 245, 245, 0.95);
+  }
+
   & img {
     max-width: 100%;
     max-height: 100%;
@@ -526,6 +533,10 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
     cursor: zoom-in;
     transition: width 180ms ease, height 180ms ease;
+    // Let the browser handle pinch-to-zoom on touch devices without
+    // also panning the page. Desktop click-to-2x still works because
+    // pointer events are unaffected.
+    touch-action: pinch-zoom;
   }
 
   // Zoomed state: image is sized 2x its fit-width in JS, the overlay
@@ -545,10 +556,16 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     }
   }
 
-  & .fpe-lightbox-close {
+  & .fpe-lightbox-toolbar {
     position: absolute;
     top: 1rem;
     right: 1.25rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  & .fpe-lightbox-action {
     width: 2.25rem;
     height: 2.25rem;
     border: 0;
@@ -563,8 +580,13 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     justify-content: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     transition: transform 120ms ease;
+    text-decoration: none;
     &:hover {
       transform: scale(1.08);
+    }
+    & svg {
+      width: 1.1rem;
+      height: 1.1rem;
     }
   }
 }
