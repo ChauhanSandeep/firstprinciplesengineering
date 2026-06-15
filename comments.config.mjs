@@ -26,6 +26,29 @@ export default {
   // Flip to true after the IDs below are real values.
   enabled: true,
 
+  // Rendering mode:
+  //   "discuss-cta"  — zero-friction CTA: LinkedIn DM / email / GitHub
+  //                    repo link. No reader account required. Best for
+  //                    early-stage blogs where the visitor login flow
+  //                    of Giscus / utterances kills participation.
+  //   "giscus"       — full Giscus threaded comments. Requires GitHub
+  //                    login to post. All `repo*`, `category*`, theme,
+  //                    mapping fields below are used in this mode.
+  //   "off"          — inject nothing.
+  // Toggle this string to swap between modes without losing the other
+  // mode's config.
+  mode: "discuss-cta",
+
+  // ---- discuss-cta mode ---------------------------------------------------
+  // These are surfaced as the three buttons in the CTA. Drop one by
+  // setting its value to null/undefined.
+  discuss: {
+    linkedinUrl: "https://www.linkedin.com/in/sandeepcode/",
+    email: "engineeringfromfirstprinciples@gmail.com",
+    githubRepo: "chauhansandeep/firstprinciplesengineering",
+  },
+
+  // ---- giscus mode --------------------------------------------------------
   // GitHub repo to host Discussions (must already exist).
   repo: "ChauhanSandeep/firstprinciplesengineering",
 

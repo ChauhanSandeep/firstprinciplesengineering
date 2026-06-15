@@ -66,6 +66,51 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;")
 }
 
+function renderDiscussCtaBlock() {
+  const d = config.discuss || {}
+  const buttons = []
+  if (d.linkedinUrl) {
+    buttons.push(
+      `    <a class="fpe-discuss-link fpe-discuss-linkedin" href="${escapeHtml(d.linkedinUrl)}" target="_blank" rel="noopener">` +
+        `<span class="fpe-discuss-icon" aria-hidden="true">` +
+          `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5V9h3v10zM6.5 7.7A1.7 1.7 0 1 1 6.5 4.3a1.7 1.7 0 0 1 0 3.4zM19 19h-3v-5c0-1.2-.5-2-1.6-2-1.2 0-1.9.8-1.9 2v5h-3V9h2.9v1.3A3.4 3.4 0 0 1 15.6 9c2.1 0 3.4 1.4 3.4 4v6z"/></svg>` +
+        `</span>` +
+        `<span class="fpe-discuss-label">Message on LinkedIn</span>` +
+      `</a>`,
+    )
+  }
+  if (d.email) {
+    buttons.push(
+      `    <a class="fpe-discuss-link fpe-discuss-email" href="mailto:${escapeHtml(d.email)}">` +
+        `<span class="fpe-discuss-icon" aria-hidden="true">` +
+          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>` +
+        `</span>` +
+        `<span class="fpe-discuss-label">Send an email</span>` +
+      `</a>`,
+    )
+  }
+  if (d.githubRepo) {
+    const repoUrl = `https://github.com/${d.githubRepo}/issues/new`
+    buttons.push(
+      `    <a class="fpe-discuss-link fpe-discuss-github" href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener">` +
+        `<span class="fpe-discuss-icon" aria-hidden="true">` +
+          `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 1a11 11 0 0 0-3.5 21.4c.55.1.75-.24.75-.53v-1.8c-3.06.67-3.7-1.48-3.7-1.48-.5-1.27-1.22-1.6-1.22-1.6-1-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.69 2.58 1.2 3.21.92.1-.72.39-1.21.7-1.49-2.45-.28-5.02-1.22-5.02-5.43 0-1.2.43-2.18 1.13-2.95-.11-.28-.49-1.4.11-2.92 0 0 .92-.3 3.02 1.13a10.4 10.4 0 0 1 5.5 0c2.1-1.43 3.02-1.13 3.02-1.13.6 1.51.22 2.64.11 2.92.7.77 1.13 1.75 1.13 2.95 0 4.22-2.58 5.14-5.04 5.42.4.34.75 1.02.75 2.06v3.05c0 .3.2.64.76.53A11 11 0 0 0 12 1z"/></svg>` +
+        `</span>` +
+        `<span class="fpe-discuss-label">Open an issue on GitHub</span>` +
+      `</a>`,
+    )
+  }
+  return [
+    `<section ${MARKER} class="fpe-discuss-cta" aria-label="Discussion">`,
+    `  <h2 class="fpe-discuss-heading">Have a question or a correction?</h2>`,
+    `  <p class="fpe-discuss-lede">These notes are learning in public. If something is wrong, unclear, or contradicts your production experience, I'd genuinely like to hear about it.</p>`,
+    `  <div class="fpe-discuss-links">`,
+    ...buttons,
+    `  </div>`,
+    `</section>`,
+  ].join("\n")
+}
+
 function renderCommentsBlock() {
   const repoQuoted = escapeHtml(config.repo)
   const repoIdQ = escapeHtml(config.repoId)
@@ -192,18 +237,45 @@ async function main() {
     )
     return
   }
-  if (
-    config.repoId === "REPLACE_ME" ||
-    config.categoryId === "REPLACE_ME"
-  ) {
+  const mode = config.mode || "giscus"
+  if (mode === "off") {
+    console.log("inject-comments: mode='off' in comments.config.mjs; skipping.")
+    return
+  }
+
+  let block
+  if (mode === "discuss-cta") {
+    if (
+      !config.discuss ||
+      (!config.discuss.linkedinUrl && !config.discuss.email && !config.discuss.githubRepo)
+    ) {
+      console.log(
+        "inject-comments: mode='discuss-cta' but no discuss.* contact URLs " +
+          "configured; skipping.",
+      )
+      return
+    }
+    block = renderDiscussCtaBlock()
+  } else if (mode === "giscus") {
+    if (
+      config.repoId === "REPLACE_ME" ||
+      config.categoryId === "REPLACE_ME"
+    ) {
+      console.log(
+        "inject-comments: placeholder IDs in comments.config.mjs; skipping " +
+          "(see file's header for setup steps).",
+      )
+      return
+    }
+    block = renderCommentsBlock()
+  } else {
     console.log(
-      "inject-comments: placeholder IDs in comments.config.mjs; skipping " +
-        "(see file's header for setup steps).",
+      `inject-comments: unknown mode '${mode}'; expected one of ` +
+        `'discuss-cta' | 'giscus' | 'off'. Skipping.`,
     )
     return
   }
 
-  const block = renderCommentsBlock()
   const pages = await walkHtml(PUBLIC_DIR)
   let injected = 0
   let skipped = 0
@@ -214,7 +286,7 @@ async function main() {
     else skipped++
   }
   console.log(
-    `inject-comments: injected into ${injected} article(s); skipped ${skipped}.`,
+    `inject-comments: mode=${mode}; injected into ${injected} article(s); skipped ${skipped}.`,
   )
 }
 

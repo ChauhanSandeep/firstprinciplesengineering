@@ -3112,6 +3112,105 @@ body .backlinks > ul.overflow {
 }
 
 // =========================================================================
+// Discuss CTA (alternative to Giscus)
+// -------------------------------------------------------------------------
+// Zero-friction "Have a question or correction?" block emitted by
+// inject-comments.mjs when comments.config.mjs `mode: "discuss-cta"`.
+// Pure HTML — no scripts, no iframes, no reader account required.
+// Three buttons: LinkedIn DM (primary), email (mailto), GitHub issue.
+// =========================================================================
+
+.fpe-discuss-cta {
+  margin: 2.5rem 0 1rem;
+  padding: 1.5rem 1.5rem 1.4rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+  background: color-mix(in srgb, var(--secondary) 5%, var(--light));
+
+  & > .fpe-discuss-heading {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.005em;
+  }
+  & > .fpe-discuss-lede {
+    margin: 0 0 1.05rem;
+    color: var(--darkgray);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    max-width: 56ch;
+  }
+  & > .fpe-discuss-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .fpe-discuss-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    font-family: var(--headerFont);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none !important;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    transition:
+      transform 140ms ease,
+      background 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      box-shadow 140ms ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--secondary) 10%, var(--light));
+      border-color: color-mix(in srgb, var(--secondary) 55%, transparent);
+      color: var(--dark);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+  }
+  // Primary tone for LinkedIn (the channel the author is most active on)
+  .fpe-discuss-link.fpe-discuss-linkedin {
+    background: var(--secondary);
+    color: var(--light);
+    border-color: var(--secondary);
+    &:hover {
+      background: var(--tertiary);
+      border-color: var(--tertiary);
+      color: var(--light);
+    }
+  }
+  .fpe-discuss-icon {
+    display: inline-flex;
+    width: 1.05rem;
+    height: 1.05rem;
+    svg { width: 100%; height: 100%; display: block; }
+  }
+}
+
+[saved-theme="dark"] .fpe-discuss-cta {
+  background: color-mix(in srgb, var(--secondary) 10%, var(--light));
+  border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+
+  .fpe-discuss-link {
+    background: color-mix(in srgb, var(--light) 88%, var(--dark) 12%);
+    color: var(--dark);
+    border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 18%, var(--light));
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// =========================================================================
 // Series header strip — Phase-09
 // -------------------------------------------------------------------------
 // Slim wayfinding banner injected at the top of every article that
