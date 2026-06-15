@@ -39,7 +39,7 @@ export default {
   //   "off"          — inject nothing.
   // Toggle this string to swap between modes without losing the other
   // mode's config.
-  mode: "discuss-cta",
+  mode: "cusdis",
 
   // ---- discuss-cta mode ---------------------------------------------------
   // These are surfaced as the three buttons in the CTA. Drop one by
@@ -53,7 +53,7 @@ export default {
   // ---- cusdis mode --------------------------------------------------------
   // Setup: visit https://cusdis.com, sign in, create a project, copy the
   // App ID (UUID) into `cusdisAppId` below, and flip `mode: "cusdis"`.
-  cusdisAppId: "REPLACE_ME",
+  cusdisAppId: "acd616d5-e127-4993-9be1-e4d0f5cf58c1",
   // Host for the Cusdis API. Use the hosted service unless you self-host.
   cusdisHost: "https://cusdis.com",
 
