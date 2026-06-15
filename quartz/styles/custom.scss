@@ -3087,3 +3087,43 @@ body .backlinks > ul.overflow {
     }
   }
 }
+
+// =========================================================================
+// Comments — Phase-04 Giscus mount
+// -------------------------------------------------------------------------
+// Wraps the lazily-mounted Giscus iframe. Falls back to a "Discuss on
+// GitHub" link when JS is disabled or the iframe never loads.
+//
+// Status: dormant on the live site until comments.config.mjs is enabled.
+// The script is wired into the build chain regardless; it logs and
+// skips when disabled, so this CSS lays in waiting.
+// =========================================================================
+
+.fpe-comments {
+  margin: 2.5rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--lightgray);
+
+  & > .fpe-comments-heading {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  & > .fpe-comments-fallback {
+    margin: 0 0 1rem;
+    color: var(--darkgray);
+    font-size: 0.92rem;
+    a {
+      color: var(--secondary) !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+      transition: border-color 160ms ease;
+      &:hover { border-bottom-color: var(--secondary); }
+    }
+  }
+  & > .fpe-comments-mount {
+    // Giscus inserts its own iframe inside this div; give it a min
+    // height so the page doesn't jump as the iframe finishes loading.
+    min-height: 4rem;
+  }
+}
