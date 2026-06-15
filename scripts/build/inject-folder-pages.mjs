@@ -47,6 +47,7 @@ const PUBLIC_DIR = path.join(SITE_ROOT, "public")
 
 const PAGE_LISTING_MARKER = `class="page-listing"`
 const FOLDER_NORMALIZED_MARKER = `data-fpe-folder-normalized`
+const MAX_TAGS_PER_CARD = 3
 
 // Match `NN-Something` or `NNN-Something` (numeric prefix + hyphen).
 const PREFIX_RE = /^\s*\d{1,3}-(.+?)\s*$/
@@ -190,6 +191,18 @@ async function rewriteCards(html, htmlAbsPath) {
         )
       }
     }
+
+    // Cap visible tags per card so a note with many tags doesn't
+    // blow up its card height past the reserved 3-pill row. Drops
+    // tags beyond the cap entirely (not "+N more" — keep it clean).
+    body = body.replace(
+      /<ul class="tags">([\s\S]*?)<\/ul>/i,
+      (mm, inner) => {
+        const tagItems = inner.match(/<li>[\s\S]*?<\/li>/g) || []
+        if (tagItems.length <= MAX_TAGS_PER_CARD) return mm
+        return `<ul class="tags">${tagItems.slice(0, MAX_TAGS_PER_CARD).join("")}</ul>`
+      },
+    )
 
     parts.push(`<li class="section-li">${body}</li>`)
     lastIndex = cardRe.lastIndex

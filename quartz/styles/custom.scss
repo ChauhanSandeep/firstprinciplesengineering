@@ -1177,6 +1177,13 @@ li.section-li {
   border: 1px solid var(--lightgray);
   border-radius: 10px;
   padding: 1rem 1.1rem 0.9rem;
+  // Uniform card height across the grid: every card opens space for
+  // meta line + title (≤ 2 lines) + a tag row reserving up to 3 pills.
+  // Cards without tags simply leave that reserved row blank, so the
+  // grid looks visually consistent.
+  min-height: 9.5rem;
+  display: flex;
+  flex-direction: column;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 
   &:hover {
@@ -1186,7 +1193,10 @@ li.section-li {
   }
 
   .section {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
   }
   .meta {
     font-family: var(--codeFont);
@@ -1194,11 +1204,15 @@ li.section-li {
     color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: 0.35rem;
+    margin: 0 0 0.35rem;
+    min-height: 1rem; // reserve a line so cards without meta align with cards that have meta
   }
   h3 {
     margin: 0.1rem 0 0.35rem;
     font-size: 1.05rem;
+  }
+  .desc {
+    flex: 1 1 auto; // pushes tags down to the bottom
   }
   p {
     color: var(--darkgray);
@@ -1220,10 +1234,26 @@ li.section-li {
     z-index: 1;
   }
 
-  // Tags stay individually clickable above the card-wide overlay.
+  // Tag row pinned to the bottom; reserves space for up to ~3 pills
+  // (two rows fit comfortably) even when empty, so card heights stay
+  // uniform across the listing grid.
   .tags {
     position: relative;
     z-index: 2;
+    margin: 0.65rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    min-height: 1.65rem; // reserves one pill-row even when there are no tags
+
+    li {
+      margin: 0;
+    }
+    a.internal.tag-link {
+      margin: 0; // gap is provided by the flex container
+    }
   }
 }
 
