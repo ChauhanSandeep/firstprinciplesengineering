@@ -3,7 +3,7 @@
  * validate-home-cards.mjs
  *
  * Guard against the most common way to silently ship a broken front page:
- * homepage Recommended Reads / legacy Reading Series cards in `content/index.md` pointing
+ * homepage Recommended Reads cards in `content/index.md` pointing
  * at notes that don't exist (because the target was renamed, unpublished,
  * or never synced from the vault).
  *
@@ -20,9 +20,6 @@
  * What it validates
  * -----------------
  *   <a class="fpe-article-card" href="…">  →  must resolve to a note
- *   <a class="fpe-path-card"    href="…">  →  must resolve to a note or
- *                                              a folder (index.md), if a legacy
- *                                              path-card section is present
  *
  * Resolution is filesystem-only against `content/`:
  *   `foo/bar`   → `content/foo/bar.md` OR `content/foo/bar/index.md`
@@ -51,7 +48,7 @@ const CONTENT_DIR = path.join(ROOT, "content")
 const INDEX_MD = path.join(CONTENT_DIR, "index.md")
 
 // Card classes we validate. Anything else on index.md is ignored.
-const CARD_CLASSES = ["fpe-article-card", "fpe-path-card"]
+const CARD_CLASSES = ["fpe-article-card"]
 
 // Match `<a class="… fpe-article-card …" … href="…">`. Tolerates other
 // classes mixed in, different attribute ordering, and single/double quotes.

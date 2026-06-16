@@ -45,7 +45,6 @@ function esc(s) {
 // Map a slug to a short eyebrow label.
 // `01-fundamentals/02-databases/01-fundamentals/06-mvcc` → "Databases"
 // `03-roadmaps/ai-systems-roadmap` → "Roadmaps"
-// `02-series/databases-from-first-principles` → "Series"
 const EYEBROW_MAP = {
   "01-fundamentals/01-concepts/01-distributed-systems": "Distributed Systems",
   "01-fundamentals/01-concepts/02-architecture": "Architecture",
@@ -58,7 +57,6 @@ const EYEBROW_MAP = {
   "01-fundamentals/03-technologies": "Systems",
   "01-fundamentals/04-networking": "Networking",
   "01-fundamentals/05-ai-ml": "AI Systems",
-  "02-series": "Series",
   "03-roadmaps": "Roadmaps",
 }
 

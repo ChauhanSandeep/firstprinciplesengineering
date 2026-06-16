@@ -58,11 +58,10 @@ matching the lightest existing weight (sidebar-social svg also uses
 
 ## Card hover affordance
 
-Existing `.fpe-article-card` / `.fpe-path-card` lift on hover
+Existing `.fpe-article-card` cards lift on hover
 (`transform: translateY(-3px)`, secondary-tinted border + shadow).
 
-Phase 1 reuses this pattern for `.fpe-topic-pill`,
-`.fpe-popular-item`, `.fpe-roadmap-card`, `.fpe-recent-card`. The
+The homepage reuses this pattern for `.fpe-roadmap-card`. The
 lift distance is slightly smaller for the more compact cards
 (`-1px` for popular, `-2px` for topic/roadmap) so a row of 4–6
 elements doesn't visually jitter when the cursor traverses them.
@@ -78,7 +77,7 @@ of the lift when they aren't single-link cards.
 
 Out of scope for Phase 1. Both are working and on-brand. The Topics
 section the user requested lives in the page body, not in the global
-header — Phase 2 (`<TopicNav>` component) will introduce a
+header.
 sub-header-like horizontal nav strip if the explorer reshape exposes
 a need for it.
 

@@ -296,11 +296,9 @@ function prettifyName(stem) {
 // always preserved — these tags are *additive*.
 //
 // Convention: tag slugs are lowercase kebab-case singular nouns. They
-// align with the top-level categories in topics.config.mjs so the
-// Phase-2 topic-nav and the auto-generated Quartz tag pages refer to the
-// same vocabulary.
+// align with the public topic vocabulary used by search, tags, and roadmap
+// organization.
 const TAG_MAP = [
-  ["02-Series/", ["series"]],
   ["03-Roadmaps/", ["roadmap"]],
   ["01-Fundamentals/01-Concepts/01-Distributed-Systems/", ["distributed-systems"]],
   ["01-Fundamentals/01-Concepts/02-Architecture/", ["architecture"]],

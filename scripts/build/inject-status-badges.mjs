@@ -18,7 +18,7 @@
  *     any badge regardless of dates.
  *
  * Idempotent via `class="fpe-status-badge"`. Skips index pages,
- * /tags, /02-series landings, /03-roadmaps landings, /about, /404.
+ * /tags, /03-roadmaps landings, /about, /404.
  *
  * Emits sidecar `public/static/statusIndex.json` so the 404 page
  * (and a future explorer overlay) can show "new/updated" markers
@@ -52,7 +52,6 @@ const SKIP_SLUG_RE = [
   /^404$/,
   /\/index$/,
   /^tags(\/|$)/,
-  /^02-series$/,
   /^03-roadmaps$/,
 ]
 

@@ -973,7 +973,8 @@ a.internal.tag-link {
 // Headings used as section dividers between hero / featured / paths.
 .fpe-hero + h2,
 .fpe-featured-grid + h2,
-.fpe-learning-paths + h2 {
+.fpe-roadmap-grid + h2,
+.fpe-about-strip + h2 {
   margin-top: 2.75rem;
 }
 
@@ -1026,124 +1027,6 @@ a.internal.tag-link {
     transform: translateY(-2px);
     border-color: var(--secondary);
     box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 16%, transparent);
-  }
-}
-
-// ---- Learning paths (broader cards with article count) -----------------
-.fpe-learning-paths {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  margin: 1.25rem 0 2.5rem;
-}
-
-.fpe-path-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 8.5rem;
-  padding: 1.2rem 1.25rem 1rem;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 12px;
-  text-decoration: none !important;
-  color: var(--dark) !important;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-
-  & > .path-title {
-    display: block;
-    font-family: var(--headerFont);
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  & > .path-desc {
-    display: block;
-    color: var(--darkgray);
-    font-size: 0.88rem;
-    line-height: 1.5;
-    flex-grow: 1;
-  }
-  & > .path-count {
-    display: inline-block;
-    margin-top: 0.7rem;
-    align-self: flex-start;
-    font-family: var(--codeFont);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--gray);
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--gray) 12%, transparent);
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: var(--secondary);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 16%, transparent);
-
-    & > .path-count {
-      color: var(--secondary);
-      background: color-mix(in srgb, var(--secondary) 14%, transparent);
-    }
-  }
-}
-
-// Legacy topic grid (kept for any other page that still uses it)
-.fpe-topic-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0 3rem;
-}
-
-.fpe-topic-card {
-  display: block;
-  padding: 1.25rem 1.25rem 1.1rem;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 10px;
-  text-decoration: none !important;
-  color: var(--dark) !important;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-
-  & > .topic-eyebrow {
-    display: block;
-    font-family: var(--codeFont);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--secondary);
-    margin-bottom: 0.35rem;
-  }
-  & > .topic-title {
-    display: block;
-    font-family: var(--headerFont);
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-  }
-  & > .topic-desc {
-    color: var(--darkgray);
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: var(--secondary);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 18%, transparent);
   }
 }
 
@@ -2438,202 +2321,18 @@ body .backlinks > ul.overflow {
 }
 
 // =========================================================================
-// Homepage v2 — Phase-01 sections
+// Homepage sections
 // -------------------------------------------------------------------------
-// New homepage layering, in render order:
-//   Hero → Topics → Featured → Popular → Roadmaps → Recent → Reading
-//   Series → YouTube placeholder → Newsletter placeholder → About strip
-//   → How to browse.
-//
-// Reuses existing card vocabulary (.fpe-article-card, .fpe-path-card)
-// wherever shapes match; adds new classes only where the shape is new.
-// All new rules are additive — no existing styles are touched.
+// Current homepage layering:
+//   Hero → Roadmaps → Recommended Reads → About strip.
 // =========================================================================
 
 // ---- Section-level rhythm ----------------------------------------------
 // Consistent vertical rhythm between sections without re-styling the h2
 // itself (Quartz's article H2 styling already looks correct on the home).
-.fpe-topic-grid + h2,
-.fpe-popular-list + h2,
 .fpe-roadmap-grid + h2,
-.fpe-recent-list + h2,
-.fpe-placeholder-card + h2,
 .fpe-about-strip + h2 {
   margin-top: 2.75rem;
-}
-
-// Optional eyebrow above each section heading — small caps that mirrors
-// the eyebrow vocabulary used on cards. Used selectively on home only.
-.fpe-section-eyebrow {
-  display: block;
-  font-family: var(--codeFont);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--secondary);
-  margin: 2.5rem 0 -0.6rem;
-  & + h2 { margin-top: 0.4rem; }
-}
-
-// "Nothing here yet" state for any section the build step might leave empty.
-.fpe-section-empty {
-  margin: 1rem 0 2.5rem;
-  padding: 1rem 1.25rem;
-  color: var(--gray);
-  background: color-mix(in srgb, var(--gray) 8%, transparent);
-  border: 1px dashed color-mix(in srgb, var(--gray) 30%, transparent);
-  border-radius: 10px;
-  font-size: 0.92rem;
-}
-
-// ---- Topics grid (icon + label + short blurb) --------------------------
-// Topic cards live above Featured; smaller than path cards. Inline SVG
-// icon (stroke=currentColor) sits in a tinted rounded square; the icon
-// color picks up the secondary accent on hover.
-.fpe-topics-grid {
-  display: grid;
-  // Match the Featured grid (300px minmax, 1rem gap) so both
-  // sections share the same column rhythm and the cards line up
-  // visually across breakpoints.
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  margin: 1.25rem 0 2.5rem;
-}
-
-.fpe-topic-pill {
-  // Mirror .fpe-article-card chrome (block layout, same padding,
-  // same border + radius, same hover) so "What you'll find here"
-  // and "Featured" feel like one consistent card system.
-  display: block;
-  padding: 1.1rem 1.25rem 1rem;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 10px;
-  text-decoration: none !important;
-  color: var(--dark) !important;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-
-  // Icon becomes a small colored chip at the top of the card,
-  // sitting where an eyebrow would otherwise sit on an article card.
-  & > .topic-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 9px;
-    background: color-mix(in srgb, var(--secondary) 10%, transparent);
-    color: var(--secondary);
-    margin-bottom: 0.55rem;
-    transition: background 180ms ease, color 180ms ease;
-    svg { width: 18px; height: 18px; }
-  }
-  & > .topic-body {
-    display: block;
-  }
-  .topic-label {
-    // Match .fpe-article-card > .article-title exactly.
-    display: block;
-    font-family: var(--headerFont);
-    font-size: 1.05rem;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 0.35rem;
-  }
-  .topic-blurb {
-    // Match .fpe-article-card > .article-desc exactly.
-    display: block;
-    color: var(--darkgray);
-    font-size: 0.88rem;
-    line-height: 1.5;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: var(--secondary);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 16%, transparent);
-    & > .topic-icon {
-      background: color-mix(in srgb, var(--secondary) 18%, transparent);
-    }
-  }
-}
-
-// ---- Popular articles (compact numbered list) --------------------------
-// Numbered cards. The number renders in a circled tile to the left; the
-// title and one-line description sit beside it.
-.fpe-popular-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.6rem;
-  counter-reset: popular;
-  margin: 1.25rem 0 2.5rem;
-}
-
-@media (min-width: 900px) {
-  .fpe-popular-list {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem 1rem;
-  }
-}
-
-.fpe-popular-item {
-  counter-increment: popular;
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 0.85rem;
-  align-items: start;
-  padding: 0.75rem 0.9rem;
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 10px;
-  text-decoration: none !important;
-  color: var(--dark) !important;
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
-
-  &::before {
-    content: counter(popular);
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: color-mix(in srgb, var(--secondary) 10%, transparent);
-    color: var(--secondary);
-    font-family: var(--codeFont);
-    font-weight: 700;
-    font-size: 0.95rem;
-    line-height: 1;
-  }
-  & > .popular-title {
-    grid-column: 2;
-    grid-row: 1;
-    font-family: var(--headerFont);
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 1.3;
-  }
-  & > .popular-desc {
-    grid-column: 2;
-    grid-row: 2;
-    color: var(--darkgray);
-    font-size: 0.85rem;
-    line-height: 1.45;
-  }
-
-  &:hover {
-    transform: translateY(-1px);
-    border-color: var(--secondary);
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--secondary) 12%, transparent);
-  }
 }
 
 // ---- Roadmap grid (variant of path card, with a "Roadmap" eyebrow) ----
@@ -2708,75 +2407,6 @@ body .backlinks > ul.overflow {
   }
 }
 
-// ---- Recent articles list (auto-generated by inject-recent.mjs) -------
-// Visually a tighter variant of the Featured grid.
-.fpe-recent-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.85rem;
-  margin: 1.25rem 0 2.5rem;
-}
-
-// .fpe-recent-card extends .fpe-article-card; we only override what
-// differs (slightly tighter padding so 5 fit comfortably above the fold
-// on a typical desktop scroll position).
-.fpe-recent-card {
-  padding: 0.95rem 1.1rem 0.9rem;
-  & > .article-title { font-size: 1rem; }
-  & > .article-desc  { font-size: 0.85rem; }
-}
-
-// ---- Placeholder cards (YouTube, Newsletter — Coming soon) ------------
-// Single-card sections that announce a future channel without making
-// the home feel half-built. Soft dashed border + accent eyebrow.
-.fpe-placeholder-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin: 1.25rem 0 2.5rem;
-  padding: 1.2rem 1.35rem;
-  background: color-mix(in srgb, var(--lightgray) 30%, var(--light));
-  border: 1px dashed color-mix(in srgb, var(--gray) 35%, transparent);
-  border-radius: 12px;
-
-  & > .placeholder-icon {
-    flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--secondary) 12%, transparent);
-    color: var(--secondary);
-    svg { width: 22px; height: 22px; }
-  }
-  & > .placeholder-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 0;
-  }
-  .placeholder-eyebrow {
-    font-family: var(--codeFont);
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--secondary);
-  }
-  .placeholder-title {
-    font-family: var(--headerFont);
-    font-weight: 600;
-    font-size: 1.05rem;
-    line-height: 1.25;
-  }
-  .placeholder-desc {
-    color: var(--darkgray);
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-}
-
 // ---- About strip (home-page mini About teaser) ------------------------
 // Compact two-column strip that teases the About page without
 // duplicating it. Mobile collapses to one column.
@@ -2836,104 +2466,16 @@ body .backlinks > ul.overflow {
 }
 
 // =========================================================================
-// Topic Nav — Phase-02 horizontal jump strip
-// -------------------------------------------------------------------------
-// Injected into the home page + every folder index page by
-// scripts/build/inject-topic-nav.mjs after the Quartz build. Carries
-// id="fpe-topic-nav" so the injector is idempotent.
-//
-// Visually: a horizontal scroll-snap bar of icon+label pills, sitting
-// above the page <article>. On wide screens it stretches across the
-// content column; on narrow it scrolls horizontally (snap-aligned).
-// =========================================================================
-
-.fpe-topic-nav {
-  margin: 0 0 1.5rem;
-  padding: 0;
-  border-bottom: 1px solid var(--lightgray);
-
-  & > .fpe-topic-nav-inner {
-    display: flex;
-    align-items: stretch;
-    gap: 0.35rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
-  }
-}
-
-.fpe-topic-nav-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 0.85rem;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 2px solid transparent;
-  text-decoration: none !important;
-  color: var(--darkgray) !important;
-  font-size: 0.88rem;
-  font-weight: 500;
-  white-space: nowrap;
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  transition:
-    color 160ms ease,
-    background 160ms ease,
-    border-color 160ms ease;
-
-  .fpe-topic-nav-icon {
-    display: inline-flex;
-    width: 18px;
-    height: 18px;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-    svg { width: 18px; height: 18px; }
-  }
-
-  &:hover {
-    color: var(--dark) !important;
-    background: color-mix(in srgb, var(--secondary) 8%, transparent);
-    border-bottom-color: color-mix(in srgb, var(--secondary) 40%, transparent);
-  }
-
-  &.is-active {
-    color: var(--secondary) !important;
-    border-bottom-color: var(--secondary);
-    background: color-mix(in srgb, var(--secondary) 10%, transparent);
-  }
-}
-
-// Mobile: tighten padding so 6 pills are still horizontally scrollable
-// without the strip feeling cramped on touch.
-@media all and ($mobile) {
-  .fpe-topic-nav {
-    margin: 0 0 1rem;
-  }
-  .fpe-topic-nav-item {
-    padding: 0.5rem 0.7rem;
-    font-size: 0.85rem;
-    .fpe-topic-nav-icon, .fpe-topic-nav-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-}
-
-// =========================================================================
 // Article footer — Phase-03 prev/next + related
 // -------------------------------------------------------------------------
 // Injected after </article> by scripts/build/inject-prev-next-related.mjs.
 // Always wrapped in <aside id="fpe-prev-next-related"> for idempotency.
 // Contains, in order:
-//   1. Series tag (compact pill linking to the series landing page)
-//   2. Two-column Prev / Next cards (series-aware if available)
-//   3. Related list (up to 5 distinct articles)
+//   1. Two-column Prev / Next cards
+//   2. Related list (up to 5 distinct articles)
 //
-// Each block degrades gracefully — if no series, no series strip; if no
-// siblings, no prev/next row; if no related, no related list. Empty
+// Each block degrades gracefully — if no siblings, no prev/next row; if
+// no related, no related list. Empty
 // .fpe-pn-card.fpe-pn-empty keeps the two-column grid honest when only
 // one side has content.
 // =========================================================================
@@ -2942,45 +2484,8 @@ body .backlinks > ul.overflow {
   margin: 2.5rem 0 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--lightgray);
-
-  & > .fpe-series-row {
-    margin-bottom: 1rem;
-  }
 }
 
-.fpe-series-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--secondary) 10%, transparent);
-  color: var(--secondary) !important;
-  text-decoration: none !important;
-  font-size: 0.85rem;
-  transition: background 160ms ease;
-
-  & > .fpe-series-eyebrow {
-    font-family: var(--codeFont);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
-  }
-  & > .fpe-series-name {
-    font-weight: 600;
-  }
-  & > .fpe-series-position {
-    font-family: var(--codeFont);
-    font-size: 0.75rem;
-    opacity: 0.8;
-  }
-  &:hover {
-    background: color-mix(in srgb, var(--secondary) 18%, transparent);
-  }
-}
-
-.fpe-series-pn,
 .fpe-sibling-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3255,57 +2760,6 @@ body .backlinks > ul.overflow {
 [saved-theme="dark"] .fpe-cusdis {
   background: color-mix(in srgb, var(--secondary) 10%, var(--light));
   border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
-}
-
-// =========================================================================
-// Series header strip — Phase-09
-// -------------------------------------------------------------------------
-// Slim wayfinding banner injected at the top of every article that
-// belongs to a series defined under content/02-Series/*.md. Tells the
-// reader "you are part 3 of 5 in APIs & Networking" before they read,
-// rather than telling them at the end with prev/next.
-//
-// Visual: pale tinted background using --secondary at low alpha; one
-// line on desktop, wraps gracefully on mobile.
-// =========================================================================
-
-.fpe-series-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.6rem;
-  margin: 0 0 1.5rem;
-  padding: 0.55rem 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--secondary) 6%, var(--light));
-  font-size: 0.88rem;
-  line-height: 1.4;
-
-  & > .fpe-series-header-eyebrow {
-    color: var(--darkgray);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-  & > .fpe-series-header-link {
-    color: var(--secondary) !important;
-    font-weight: 600;
-    text-decoration: none !important;
-    border-bottom: 1px solid transparent;
-    transition: border-color 160ms ease;
-    &:hover {
-      border-bottom-color: color-mix(in srgb, var(--secondary) 50%, transparent);
-    }
-  }
-  & > .fpe-series-header-sep {
-    color: var(--gray);
-  }
-  & > .fpe-series-header-pos {
-    color: var(--darkgray);
-    font-variant-numeric: tabular-nums;
-  }
 }
 
 // =========================================================================

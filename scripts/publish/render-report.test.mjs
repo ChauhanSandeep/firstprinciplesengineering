@@ -49,7 +49,6 @@ const MIN_STATE = {
         vaultPath: "01-Fundamentals/05-AI-ML/04-RAG.md",
         status: "new",
         featured: true,
-        series: "ai-systems",
       },
     ],
     stats: { parsed: 50, candidates: 1, new: 1, changed: 0, unchanged: 49 },
@@ -72,7 +71,7 @@ describe("render-report.mjs", () => {
       assert.strictEqual(code, 0)
       assert.match(stdout, /# Publish report/)
       assert.match(stdout, /## Shipped/)
-      assert.match(stdout, /## Cards & Series/)
+      assert.match(stdout, /## Homepage cards/)
       assert.match(stdout, /## Warnings/)
       assert.match(stdout, /## Errors/)
       assert.match(stdout, /## Follow-ups/)

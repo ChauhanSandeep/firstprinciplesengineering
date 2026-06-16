@@ -13,7 +13,6 @@
  *     excalidraw: { results, summary },
  *     wikilinks:  { results, summary },
  *     cardsPlan:  { ... },            // the plan handed to update-home-cards
- *     seriesPlan: { ... },            // the plan handed to manage-series
  *     build:      { ok: bool, durationMs, stderr },
  *     smokeLocal: { passed, pages },
  *     deploy:     { ok: bool, commit, gitTag },
@@ -65,36 +64,29 @@ function renderShipped(state) {
     (c) => c.status === "new" || c.status === "changed",
   )
   if (pubs.length === 0) return "No notes published this run.\n"
-  const lines = ["| Status | Note | Featured | Series | Live URL |", "|---|---|---|---|---|"]
+  const lines = ["| Status | Note | Featured | Live URL |", "|---|---|---|---|"]
   const live = state.deploy?.baseUrl || state.smokeLive?.baseUrl || ""
   for (const c of pubs) {
     const liveUrl = live
       ? `[link](${live.replace(/\/$/, "")}/${c.slug})`
       : c.slug
     lines.push(
-      `| ${c.status} | \`${c.vaultPath}\` | ${c.featured ? "★" : ""} | ${
-        c.series || ""
-      } | ${liveUrl} |`,
+      `| ${c.status} | \`${c.vaultPath}\` | ${c.featured ? "★" : ""} | ${liveUrl} |`,
     )
   }
   return lines.join("\n") + "\n"
 }
 
-function renderCardsAndSeries(state) {
+function renderCardChanges(state) {
   const parts = []
   const cp = state.cardsPlan || {}
-  const sp = state.seriesPlan || {}
   const added = (cp.featured_add || []).length
   const removed = (cp.featured_remove || []).length
   const updated = (cp.featured_update || []).length
-  const sAdd = (sp.series_add || []).length
-  const sRem = (sp.series_remove || []).length
-  const sUpd = (sp.series_update || []).length
-  const sPages = (sp.series_pages || []).length
 
   if (added + removed + updated > 0) {
     parts.push(
-      `**Featured grid:** +${added} / -${removed} / ~${updated} cards`,
+      `**Recommended Reads:** +${added} / -${removed} / ~${updated} cards`,
     )
     for (const c of cp.featured_add || []) {
       parts.push(`  - + \`${c.href}\` — ${c.title}`)
@@ -103,18 +95,7 @@ function renderCardsAndSeries(state) {
       parts.push(`  - − \`${h}\``)
     }
   }
-  if (sAdd + sRem + sUpd + sPages > 0) {
-    parts.push(
-      `**Reading Series:** +${sAdd} / -${sRem} / ~${sUpd} cards, ${sPages} landing page(s) written`,
-    )
-    for (const s of sp.series_add || []) {
-      parts.push(`  - + \`${s.slug || s.href}\` — ${s.title}`)
-    }
-    for (const s of sp.series_pages || []) {
-      parts.push(`  - 📄 wrote \`02-Series/${s.slug}.md\``)
-    }
-  }
-  return parts.length === 0 ? "No card or series changes.\n" : parts.join("\n") + "\n"
+  return parts.length === 0 ? "No homepage card changes.\n" : parts.join("\n") + "\n"
 }
 
 function renderWarnings(state) {
@@ -205,9 +186,9 @@ function render(state) {
     "",
     renderShipped(state),
     "",
-    "## Cards & Series",
+    "## Homepage cards",
     "",
-    renderCardsAndSeries(state),
+    renderCardChanges(state),
     "",
     "## Warnings",
     "",

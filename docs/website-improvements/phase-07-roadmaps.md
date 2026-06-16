@@ -18,11 +18,10 @@
 
 **Site side** (this PR):
 
-- `topics.config.mjs` — adds a "Roadmaps" topic (icon: `map`, order
-  55) pointing to `03-Roadmaps/`. Now 7 top-level topics total.
+- `03-Roadmaps/` — adds the public roadmap landing pages.
 - `content/index.md`:
   - Adds a Roadmaps pill to the home Topics grid (between APIs &
-    Networking and Reading Series).
+    Networking).
   - Converts the home `## Roadmaps` section's 4 "Coming soon"
     placeholder `<div>` cards into real `<a>` anchor links pointing
     at the new roadmap pages. Status pill copy updated per roadmap

@@ -147,8 +147,6 @@ arguments needed.
 | `card_title`         | `string` | derived from H1             | Short title on the featured card (often pithier than the note H1).                      |
 | `card_description`   | `string` | drafted by skill from intro | One-sentence pitch in the site's voice. Prompts when drafting confidence is low.        |
 | `card_order`         | `int`    | recency order               | Explicit position in the Recommended Reads grid (lower = earlier).                      |
-| `series`             | `string` | none                        | Series slug. Matches `02-Series/<slug>.md` if it exists, else triggers landing-page draft.|
-| `series_order`       | `int`    | append                      | Position in the series' "Read in order" list.                                           |
 | `socialDescription`  | `string` | first paragraph             | Standard Quartz field; skill ensures it is set for OG preview quality.                  |
 
 All keys are **additive and optional** except `publish`, which already
@@ -181,7 +179,6 @@ node scripts/publish/discover.mjs                  # JSON candidate list
 node scripts/publish/validate-excalidraw.mjs <note>
 node scripts/publish/validate-wikilinks.mjs --batch <slugs.txt>
 node scripts/publish/update-home-cards.mjs --plan <plan.json> [--dry-run]
-node scripts/publish/manage-series.mjs    --plan <plan.json> [--dry-run]
 node scripts/publish/playwright-smoke.mjs --local --slugs <slugs.txt>
 node scripts/publish/render-report.mjs    --state <state.json>
 ```

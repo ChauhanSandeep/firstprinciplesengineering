@@ -19,15 +19,15 @@ without redesigning what already worked.
 
 | Phase | PR  | What changed                                                          | Why                                                                        |
 | ----- | --- | --------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 01    | #5  | Homepage sections (Topics, Popular, Roadmaps, Recent, About strip)    | Communicate FPE clearly above the fold                                     |
-| 02    | #6  | Display-only topic labels via `topics.config.mjs` + `<TopicNav>`       | Users think in topics, not Obsidian folder names                           |
+| 01    | #5  | Removed / superseded                                                   | Homepage now uses Roadmaps + Recommended Reads only                        |
+| 02    | #6  | Removed / superseded                                                   | Topic tabs added clutter and duplicated search/explorer/roadmaps           |
 | 03    | #7  | Prev/Next + Related at article footer + content-meta polish            | Closes the "what's next" loop on every page                                |
 | 04    | #8  | Giscus comments scaffold (dormant)                                    | Community-ready without breaking the build                                 |
 | 05    | #9  | Plausible analytics scaffold (dormant)                                | Privacy-friendly metric collection on a future toggle                      |
 | 06    | #10 | Canonical + Article/BreadcrumbList JSON-LD + `seo:audit`               | Discoverability + structured search results                                |
 | 07    | #11 | 4 roadmap landing pages + Roadmaps top-level topic                     | Major entry points beyond raw note listing                                 |
 | 08    | #12 | Auto-tagging at sync + 16 tag pages + search hint + crosslink suggester | Make exploration effortless                                                |
-| 09    | #13 | Series header strip + `series:validate`                                | Wayfinding before reading; nav after                                       |
+| 09    | #13 | Removed / superseded                                                    | Series pages were later removed so Roadmaps remain the only learning-path surface |
 | 10    | #14 | Lightbox toolbar (open-in-new-tab), theme-aware backdrop, lazy diagrams | Diagram experience is the site's main differentiator                       |
 | 11    | #15 | Status badges from vault git + fuzzy 404 suggestions                   | "New / Updated" signals + a useful 404                                     |
 | 14    | #16 | SVGO post-build optimization (–5.5 MB across 302 files)                | Pure win on bandwidth + LCP                                                |
@@ -46,10 +46,7 @@ npx quartz build                          # content/ → public/
   ↓
 npm run fix-paths                          # excalidraw URL rewrites + dark/light pair
   ↓
-npm run inject-recent                      # Phase 1
-npm run inject-topic-nav                   # Phase 2
 npm run inject-prev-next-related           # Phase 3
-npm run inject-series-header               # Phase 9
 npm run inject-comments                    # Phase 4 (skips when disabled)
 npm run inject-analytics                   # Phase 5 (skips when disabled)
 npm run inject-seo                         # Phase 6

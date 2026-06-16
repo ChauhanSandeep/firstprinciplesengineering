@@ -6,7 +6,8 @@
   `TAG_MAP` of path prefix → tag slugs. Every synced note gets one
   primary topic tag (and a secondary tag for sub-areas like NoSQL or
   Lakehouse). User-supplied `tags:` in frontmatter is **preserved**;
-  auto-tags are additive. Vocabulary aligns with `topics.config.mjs`
+  auto-tags are additive. Vocabulary aligns with `TAG_MAP` in
+  `scripts/sync-from-vault.mjs`
   so the topic-nav and `/tags/<slug>/` pages refer to the same names.
 - **`scripts/build/inject-search-hint.mjs`** (new, wired into `npm
   run build`) — post-build placeholder swap on the Quartz search
@@ -51,7 +52,7 @@ Three different discoverability gaps, three different tools:
   gets `databases` even though MVCC is also a distributed-systems
   topic. Adding `tags:` in the vault frontmatter merges, so the user
   can layer on secondary tags. The path-tag is intentionally the
-  primary one — `topics.config.mjs`'s top-level groups are the
+  primary one — the top-level groups are the
   visible navigation.
 - **`inject-search-hint.mjs` is fragile to upstream copy changes.**
   If the Quartz Search plugin renames its placeholder string, the
@@ -98,7 +99,7 @@ Three different discoverability gaps, three different tools:
   home `Popular` section's injector at that flag.
 - **Topic-tag page polish.** Default Quartz tag pages render
   reasonably, but a custom intro paragraph + topic icon pulled from
-  `topics.config.mjs` would make them feel curated rather than
+  a dedicated topic-config surface would make them feel curated rather than
   auto-generated. Needs a custom `quartz/components/TagContent.tsx`.
 - **Apply cross-link suggestions in a vault PR**. The suggester is
   read-only by design; a human reviewer needs to accept each

@@ -16,7 +16,7 @@
  *       vaultPath, vaultAbs, contentPath, contentAbs, slug,
  *       frontmatter, status: 'new'|'changed'|'unchanged',
  *       publishSource: 'flag'|'folder',
- *       featured: bool, series: string|null, seriesOrder: number|null,
+ *       featured: bool,
  *       card: { eyebrow, title, description, order } | null,
  *     }],
  *     removed: [{ contentPath, reason }],
@@ -188,16 +188,12 @@ async function main() {
 
     const fm = parsed.data || {}
     const featured = fm.featured === true
-    const series = typeof fm.series === "string" ? fm.series.trim() : null
-    const seriesOrder = Number.isFinite(fm.series_order)
-      ? fm.series_order
-      : null
 
     // Card metadata: explicit fm keys override; otherwise we leave nulls and
     // let the skill draft them in-context (drafting is judgement work, not
     // deterministic enough for this script).
     const card =
-      featured || series
+      featured
         ? {
             eyebrow:
               typeof fm.card_eyebrow === "string"
@@ -222,8 +218,6 @@ async function main() {
       status,
       publishSource: decision.source,
       featured,
-      series,
-      seriesOrder,
       card,
     })
   }

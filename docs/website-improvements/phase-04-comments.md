@@ -33,7 +33,7 @@ No build break until those steps are done — `inject-comments` logs
 Post-build step (after `inject-prev-next-related`):
 
 - Walks every article HTML under `public/`.
-- Skips home / about / 404 / landing & series pages / tag indexes.
+- Skips home / about / 404 / landing pages / tag indexes.
 - Inserts a `<section id="fpe-comments">` immediately AFTER the
   Phase-3 `<aside id="fpe-prev-next-related">` so the footer reads
   top-down: *"you just finished this · here's what's next · here's
@@ -80,7 +80,7 @@ When `enabled: false` the chain is a no-op for this step.
   feature is enabled but stops at thumbs-up / heart on the parent
   thread — no inline article rating.
 - **Comments scope: articles only.** Excluded from the home, About,
-  series landings, folder indexes, tag pages, 404. Discussion makes
+  folder indexes, tag pages, 404. Discussion makes
   sense on substantive content; index pages would dilute the signal.
 - **Lazy load, not async load.** First-paint cost is zero — the
   client script is only fetched when the mount is within 200px of

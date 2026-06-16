@@ -5,7 +5,7 @@ description: >-
     vault at ~/Idea/ObisdianNotes to the live Quartz site at
     https://chauhansandeep.github.io/firstprinciplesengineering. Discovers
     notes flagged `publish: true`, validates Excalidraw dark/light pairs and
-    wikilinks, updates the home Recommended Reads cards and series landing pages,
+    wikilinks, updates the home Recommended Reads cards,
     builds, validates with Playwright (light/dark/mobile), deploys to
     gh-pages, and emits a structured report. Stops only on critical issues.
     Invoke when the user says things like "publish my new notes",
@@ -54,8 +54,9 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 - Existing safety net: `scripts/pre-commit-guard.sh` rejects commits to `content/*` other than `index.md`, `about.md`, `_static/**`.
 - The home page (`content/index.md`) has one primary article-card section:
   - `## Recommended Reads` — `<a class="fpe-article-card">` blocks with `.article-eyebrow`, `.article-title`, `.article-desc`
-- Reading Series do **not** appear as a homepage section anymore. Series live
-  in `02-Series/<slug>.md`, roadmap pages, and article-level series strips.
+- Reading Series are no longer a public site surface. Do not create
+  `02-Series/*` pages, folder `index.md` reading-order pages, or article-level
+  series strips.
 
 ## Frontmatter convention (vault notes)
 
@@ -66,13 +67,11 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 | `description`       | recommended       | first paragraph                           | Page description and (fallback) social description.                                 |
 | `socialDescription` | optional          | `description`                             | OG-image text override.                                                             |
 | `tags`              | optional          | —                                         | Tag list.                                                                           |
-| `featured`          | optional          | `false`                                   | Promote to home `## Featured` grid.                                                 |
+| `featured`          | optional          | `false`                                   | Promote to home `## Recommended Reads` grid.                                        |
 | `card_eyebrow`      | optional          | first folder segment, stripped of `NN-`   | Eyebrow label on the card.                                                          |
 | `card_title`        | optional          | H1                                        | Short title on the card.                                                            |
 | `card_description`  | optional          | drafted by skill                          | One-sentence pitch in the site's voice.                                             |
-| `card_order`        | optional          | recency                                   | Stable position in the Featured grid (lower = earlier).                             |
-| `series`            | optional          | none                                      | Slug matching `02-Series/<slug>.md` OR a new series.                                |
-| `series_order`      | optional          | append                                    | Position within the series' "Read in order" list.                                   |
+| `card_order`        | optional          | recency                                   | Stable position in the Recommended Reads grid (lower = earlier).                    |
 
 ## Phases — run in order
 
@@ -100,8 +99,6 @@ Collect their JSON output into one batch report.
 Materialize the full diff:
 
 - Recommended Reads changes to `content/index.md` (insert/remove/reorder cards).
-- Reading-Series landing-page changes in the vault under `02-Series/<slug>.md`.
-  Do not add Reading Series cards back to the homepage.
 - Card metadata to fill in for notes that omitted `card_description` etc.
   Draft these now using the site's existing voice as the in-context example:
   - One sentence, opinionated, often ends with a concrete claim or named
@@ -120,29 +117,21 @@ tool). Only proceed after explicit confirmation.
 2. Wikilink targets a not-published, not-in-batch note.
    → Prompt: "Include `<target>` in this batch (set `publish: true`), or
    rewrite the link as plain text?"
-3. A **new** series introduced with `<3` notes — likely a typo.
-   → Prompt to confirm series name.
-4. Featured grid would exceed **12 cards**.
+3. Recommended Reads would exceed **12 cards**.
    → Prompt for which existing card to demote.
-5. More than **5 notes** added in a single run.
+4. More than **5 notes** added in a single run.
    → Prompt: "This run will publish N notes; proceed?"
-6. New series landing page drafted with low confidence (no clear intro to
-   base it on).
-   → Show draft, ask for approval.
 
 Non-critical issues (missing one Excalidraw variant, soft warnings, etc.)
 are collected for the report and **do not stop the run**.
 
 ### 5. Execute
 
-- Edit vault files (new series landing pages, card-metadata frontmatter
-  the user omitted but you drafted with high confidence).
+- Edit vault files (card-metadata frontmatter the user omitted but you
+  drafted with high confidence).
 - Edit `content/index.md` to apply card changes:
   `node scripts/publish/update-home-cards.mjs --plan <plan.json>`
-  `node scripts/publish/manage-series.mjs --plan <plan.json>`
-  (both accept `--dry-run` and `--index <path>` for testing; the series
-  mutator also takes `--series-dir <path>` for the vault landing-page
-  directory.)
+  (accepts `--dry-run` and `--index <path>` for testing.)
 - Run `npm run build` (sync + quartz build + fix-paths). Failure → critical,
   stop, surface error.
 

@@ -24,10 +24,6 @@ documented; missing values fall back gracefully.
 | `status`            | optional          | computed from vault git history                  | `new`, `updated`, `evergreen` (Phase 11). `evergreen` suppresses the badge.         |
 | `popular`           | optional          | `false`                                          | Legacy flag; homepage now uses one curated Recommended Reads grid.                  |
 
-Series membership is **not** declared per-note. It lives in the
-`02-Series/<slug>.md` landing page under a `## Read in order` list
-of wikilinks. Phase 9's `validate-series` keeps it honest.
-
 ## Build-time injectors
 
 All under `scripts/build/`. All are post-`quartz build` HTML patchers.
@@ -35,16 +31,14 @@ All are idempotent via a marker class or id.
 
 | Script                            | Purpose                                                    | Marker                                  |
 | --------------------------------- | ---------------------------------------------------------- | --------------------------------------- |
-| `inject-recent.mjs`               | Legacy Recent injector; skips when the home Recent slot is absent | `id="fpe-recent-auto-slot"` if present |
-| `inject-topic-nav.mjs`            | Adds `<TopicNav>` strip to landing pages                    | `class="fpe-topic-nav"`                 |
 | `inject-prev-next-related.mjs`    | Footer prev/next + Related block                            | `class="fpe-prev-next-related"`         |
-| `inject-series-header.mjs`        | Top-of-article series wayfinding banner                     | `id="fpe-series-header"`                |
 | `inject-comments.mjs`             | Giscus mount (dormant)                                      | `class="fpe-comments"`                  |
 | `inject-analytics.mjs`            | Plausible script tag (dormant)                              | `data-fpe-analytics`                    |
 | `inject-seo.mjs`                  | Canonical + Article + BreadcrumbList JSON-LD                 | `data-fpe-jsonld`                       |
 | `inject-search-hint.mjs`          | Swap search placeholder + aria-label                         | substring swap                          |
 | `inject-status-badges.mjs`        | New/Updated pill next to H1; emits `statusIndex.json`        | `class="fpe-status-badge"`              |
 | `inject-404-suggestions.mjs`      | Fuzzy match suggestions on 404 page                          | `id="fpe-404-suggestions"`              |
+| `remove-series-pages.mjs`         | Deletes former public series/index URLs after FolderPage emits | explicit path list                     |
 | `optimize-svgs.mjs`               | SVGO pass over `*.excalidraw*.svg`                          | (in-place; SVGO is itself idempotent)   |
 
 ## Publish-time tools
@@ -57,11 +51,9 @@ a `--plan` argument.
 | `discover.mjs`               | Walk the vault, classify candidates (`new`/`changed`/…)        |
 | `validate-excalidraw.mjs`    | Verify `*.dark.svg` + `*.light.svg` sidecars                   |
 | `validate-wikilinks.mjs`     | Resolve every `[[Target]]` against the publish set             |
-| `validate-series.mjs`        | Phase 9: ensure series order is contiguous + members resolve   |
 | `seo-audit.mjs`              | Phase 6: title/desc length, OG, canonical, JSON-LD             |
 | `suggest-crosslinks.mjs`     | Phase 8: candidate wikilink insertions per note                |
 | `update-home-cards.mjs`      | Mutate `content/index.md` Recommended Reads grid               |
-| `manage-series.mjs`          | Create/update `02-Series/*.md` landing pages                   |
 | `playwright-smoke.mjs`       | Light/dark/mobile smoke pass against local or live URL          |
 | `render-report.mjs`          | Markdown report of a publish run                                |
 
@@ -110,13 +102,10 @@ edits.
 4. If it emits a sidecar JSON file, document its location in the
    relevant phase doc.
 
-## Adding a new top-level topic
+## Adding a new topic tag
 
-1. Add an entry to `topics.config.mjs` with `label`, `path`,
-   `icon` (existing key in the same file), `order`.
-2. Add the matching path prefix to `TAG_MAP` in
+1. Add the matching path prefix to `TAG_MAP` in
    `scripts/sync-from-vault.mjs` if you want auto-tagging.
-3. Add the source folder to the vault's `PUBLISH.md` allowlist if
+2. Add the source folder to the vault's `PUBLISH.md` allowlist if
    it's not already covered.
-4. Re-run `npm run build`. The home topics grid, `<TopicNav>`, and
-   the explorer should all pick it up.
+3. Re-run `npm run build`.
