@@ -63,6 +63,9 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 | Key                 | Required          | Default                                   | Effect                                                                              |
 | ------------------- | ----------------- | ----------------------------------------- | ----------------------------------------------------------------------------------- |
 | `publish`           | yes (for publish) | —                                         | `true` = publish; `false` = always skip.                                            |
+| `published_at`      | recommended       | git created date                          | First public publication date, `YYYY-MM-DD`; used by status badges and home rail.   |
+| `updated_at`        | recommended       | git modified date                         | Last meaningful public update date, `YYYY-MM-DD`; used by status badges and home rail. |
+| `status`            | recommended       | date-derived                              | Public badge: `new`, `updated`, or `evergreen` to suppress the badge.               |
 | `title`             | yes               | —                                         | Page title.                                                                         |
 | `description`       | recommended       | first paragraph                           | Page description and (fallback) social description.                                 |
 | `socialDescription` | optional          | `description`                             | OG-image text override.                                                             |

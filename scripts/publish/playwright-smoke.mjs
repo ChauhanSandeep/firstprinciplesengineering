@@ -34,10 +34,10 @@
  *   }
  */
 import fs from "node:fs/promises"
+import http from "node:http"
 import path from "node:path"
 import url from "node:url"
 import net from "node:net"
-import { spawn } from "node:child_process"
 import { setTimeout as sleep } from "node:timers/promises"
 
 const __filename = url.fileURLToPath(import.meta.url)
@@ -72,17 +72,63 @@ async function readLiveBaseUrl() {
 
 async function startLocalServer() {
   const port = await freePort()
-  const child = spawn("python3", ["-m", "http.server", String(port)], {
-    cwd: PUBLIC_DIR,
-    stdio: ["ignore", "ignore", "pipe"],
+  const server = http.createServer(async (req, res) => {
+    try {
+      const rawPath = new URL(req.url || "/", `http://localhost:${port}`).pathname
+      const pathname = decodeURIComponent(rawPath)
+      const candidates = []
+      const abs = path.join(PUBLIC_DIR, pathname)
+      if (pathname.endsWith("/")) {
+        candidates.push(path.join(abs, "index.html"))
+      } else {
+        candidates.push(abs, `${abs}.html`, path.join(abs, "index.html"))
+      }
+
+      for (const candidate of candidates) {
+        const rel = path.relative(PUBLIC_DIR, candidate)
+        if (rel.startsWith("..") || path.isAbsolute(rel)) continue
+        try {
+          const data = await fs.readFile(candidate)
+          const ext = path.extname(candidate)
+          const contentType =
+            ext === ".html"
+              ? "text/html; charset=utf-8"
+              : ext === ".css"
+                ? "text/css; charset=utf-8"
+                : ext === ".js"
+                  ? "text/javascript; charset=utf-8"
+                  : ext === ".json"
+                    ? "application/json; charset=utf-8"
+                    : ext === ".svg"
+                      ? "image/svg+xml"
+                      : ext === ".webp"
+                        ? "image/webp"
+                        : ext === ".png"
+                          ? "image/png"
+                          : ext === ".ico"
+                            ? "image/x-icon"
+                            : "application/octet-stream"
+          res.writeHead(200, { "content-type": contentType })
+          res.end(data)
+          return
+        } catch {}
+      }
+      res.writeHead(404, { "content-type": "text/plain; charset=utf-8" })
+      res.end("not found")
+    } catch (e) {
+      res.writeHead(500, { "content-type": "text/plain; charset=utf-8" })
+      res.end(e.message)
+    }
   })
-  // Wait briefly for it to come up. http.server prints to stderr on bind.
-  await sleep(800)
+  await new Promise((resolve, reject) => {
+    server.once("error", reject)
+    server.listen(port, resolve)
+  })
   return {
     base: `http://localhost:${port}`,
     stop: () => {
       try {
-        child.kill("SIGTERM")
+        server.close()
       } catch {}
     },
   }
