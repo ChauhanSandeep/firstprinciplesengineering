@@ -6,10 +6,10 @@
  *
  * A note is published if:
  *   - It does NOT have `publish: false` in frontmatter (always-skip escape hatch), AND
- *   - It has `publish: true` in frontmatter, OR its path matches a pattern in
- *     publish.config.mjs's `publishFolders`.
+ *   - It has `publish: true` in frontmatter, OR its path matches a legacy
+ *     pattern in the vault manifest.
  *
- * For folder-allowlisted notes, the script injects `publish: true` into the
+ * For legacy manifest-selected notes, the script injects `publish: true` into the
  * copied frontmatter so Quartz's ExplicitPublish filter accepts them as a
  * second gate.
  *
@@ -81,7 +81,7 @@ const HARD_BLOCK = (rel) =>
 
 const stats = {
   notesPublishedViaFlag: 0,
-  notesPublishedViaFolder: 0,
+  notesPublishedViaManifest: 0,
   notesExcluded: 0,
   attachmentsCopied: 0,
   excalidrawRewrites: 0,
@@ -267,7 +267,7 @@ function shouldPublish(relPath, frontmatter) {
   if (frontmatter?.publish === true)
     return { publish: true, source: "flag" }
   if (matchesPublishFolder(relPath))
-    return { publish: true, source: "folder" }
+    return { publish: true, source: "manifest" }
   return { publish: false, source: null }
 }
 
@@ -569,7 +569,7 @@ async function processNote(file, index) {
   await fs.writeFile(outAbs, matter.stringify(body, data), "utf8")
 
   if (decision.source === "flag") stats.notesPublishedViaFlag++
-  else stats.notesPublishedViaFolder++
+  else stats.notesPublishedViaManifest++
 }
 
 async function main() {
@@ -596,23 +596,14 @@ async function main() {
     console.error(`\n❌ ${e.message}`)
     process.exit(1)
   }
-  if (manifest.source === "missing") {
-    console.error(
-      `\n❌ Publishing manifest not found at ${MANIFEST_PATH}\n` +
-        `   Create it in your vault with YAML frontmatter, e.g.:\n` +
-        `   ---\n` +
-        `   publish:\n` +
-        `     - 01-Fundamentals/01-Concepts/**\n` +
-        `   ---`,
-    )
-    process.exit(1)
-  }
   PUBLISH_PATTERNS = manifest.patterns
 
   console.log(`📚 Vault:    ${VAULT_ROOT}`)
-  console.log(`📝 Manifest: ${MANIFEST_PATH}`)
+  console.log(
+    `📝 Manifest: ${manifest.source === "missing" ? `${MANIFEST_PATH} (missing, optional)` : MANIFEST_PATH}`,
+  )
   console.log(`🌱 Content:  ${CONTENT_DIR}`)
-  console.log(`⚙️  Publish:  ${JSON.stringify(PUBLISH_PATTERNS)}`)
+  console.log(`⚙️  Legacy manifest patterns: ${JSON.stringify(PUBLISH_PATTERNS)}`)
   if (SOFT_MODE) console.log(`🧪 SOFT MODE: Excalidraw failures will warn, not fail.`)
   console.log()
 
@@ -631,10 +622,10 @@ async function main() {
   }
 
   const totalPublished =
-    stats.notesPublishedViaFlag + stats.notesPublishedViaFolder
+    stats.notesPublishedViaFlag + stats.notesPublishedViaManifest
   console.log(`\n── sync summary ─────────────────────────`)
   console.log(`  Published (flag):       ${stats.notesPublishedViaFlag}`)
-  console.log(`  Published (folder):     ${stats.notesPublishedViaFolder}`)
+  console.log(`  Published (manifest):   ${stats.notesPublishedViaManifest}`)
   console.log(`  Excluded:               ${stats.notesExcluded}`)
   console.log(`  Attachments copied:     ${stats.attachmentsCopied}`)
   console.log(`  Excalidraw rewrites:    ${stats.excalidrawRewrites}`)
@@ -684,7 +675,7 @@ async function main() {
   }
   if (totalPublished === 0) {
     console.error(
-      "\n❌ No notes were published. Add `publish: true` to a note, or expand publishFolders in publish.config.mjs.",
+      "\n❌ No notes were published. Add `publish: true` to note frontmatter, or add a temporary legacy glob to PUBLISH.md.",
     )
     process.exit(1)
   }

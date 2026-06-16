@@ -16,7 +16,8 @@ description: >-
 <p>Writing about software engineering foundations, system design interviews, and AI systems — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
 
 <figure class="fpe-hero-figure">
-  <img src="_static/home-hero.svg" alt="Excalidraw-style system sketch for First Principles Engineering with a central why node, foundation layers, connected system shapes, and a trade-offs arrow.">
+  <img class="fpe-hero-image fpe-hero-image--light" src="_static/home-hero-light.svg" alt="Excalidraw-style system sketch for First Principles Engineering with a central why node, foundation layers, connected system shapes, and a trade-offs arrow.">
+  <img class="fpe-hero-image fpe-hero-image--dark" src="_static/home-hero-dark.svg" alt="">
 </figure>
 
 </div>

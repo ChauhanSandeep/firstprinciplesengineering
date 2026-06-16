@@ -13,15 +13,15 @@ can be pushed independently. Only notes you explicitly opt in are exposed.
 ```
 Idea/
 ├── ObisdianNotes/                             ← private vault (git repo)
-│   ├── PUBLISH.md                             ← USER EDITABLE: publish allowlist
+│   ├── PUBLISH.md                             ← optional legacy publish allowlist
 │   ├── 00-QuickStart/                         ← topic folders
 │   ├── 01-Fundamentals/01-Concepts/  ...      ← currently allowlisted
 │   ├── 02-InterviewProblems/                  ← private (not allowlisted)
 │   └── Excalidraw/*.excalidraw.md (+ .svg)    ← drawings (only SVGs ship)
 │
 └── FirstPrinciplesEngineering/                ← THIS folder, separate git repo
-    ├── publish.config.mjs                     ← bootstrap: vaultRoot + manifest name
-    ├── scripts/sync-from-vault.mjs            ← reads PUBLISH.md, copies notes
+    ├── publish.config.mjs                     ← bootstrap: vaultRoot + optional manifest name
+    ├── scripts/sync-from-vault.mjs            ← reads note frontmatter, copies notes
     ├── scripts/pre-commit-guard.sh            ← refuses to commit content/*.md
     ├── content/                               ← generated (NEVER commit notes)
     │   └── index.md                           ← hand-maintained landing page
@@ -46,24 +46,22 @@ A note from the vault is published if **all** of these are true:
 1. It does **not** have `publish: false` in frontmatter (escape hatch).
 2. AND **either** of:
    - It has `publish: true` in frontmatter, **or**
-   - Its path matches a glob in **`PUBLISH.md`** at the vault root (the
-     publishing manifest — see below).
+   - Its path matches a legacy glob in **`PUBLISH.md`** at the vault root.
 
-For folder-allowlisted notes, the sync script injects `publish: true` into
+For legacy manifest-selected notes, the sync script injects `publish: true` into
 the copied frontmatter so Quartz's `ExplicitPublish` filter (a second gate)
 accepts them.
 
-### The vault manifest: `~/Idea/ObisdianNotes/PUBLISH.md`
+### Note frontmatter
 
-Open this file in Obsidian. Its YAML frontmatter (the **Properties**
-panel in modern Obsidian) holds the allowlist:
+The preferred workflow is to decide publishing inside the note itself:
 
-```markdown
+```yaml
 ---
-publish:
-  - 01-Fundamentals/01-Concepts/**
-  - 02-SystemDesign/**                       # ← add a folder
-  - 03-Notes/Some-Specific-Note.md           # ← or a single file
+publish: true
+published_at: '2026-06-16'
+updated_at: '2026-06-16'
+status: new # new | updated | evergreen
 ---
 ```
 
@@ -74,6 +72,19 @@ cd ~/Idea/FirstPrinciplesEngineering && npm run deploy
 ```
 
 You never have to leave the vault to change what gets published.
+
+### The optional vault manifest: `~/Idea/ObisdianNotes/PUBLISH.md`
+
+`PUBLISH.md` is now a legacy fallback for temporary folder/path allowlists. Keep
+its `publish:` list empty unless you intentionally want to publish a whole path
+glob without editing each note.
+
+```markdown
+---
+publish: []
+---
+```
+
 `PUBLISH.md` itself is always skipped — it never reaches the public site.
 
 ### Per-note overrides (no manifest edit needed)
@@ -87,18 +98,18 @@ publish: true        # force-publish
 publish: false       # hard veto
 ---
 ```
-`publish: false` always wins. Otherwise `publish: true` wins. Otherwise
-the manifest globs decide.
+`publish: false` always wins. Otherwise `publish: true` wins. Otherwise the
+optional manifest globs decide.
 
 ### Where is the manifest filename configured?
 
 `publish.config.mjs` (in this repo) only sets two things:
 - `vaultRoot`    — where the vault lives.
-- `manifestFile` — name of the in-vault manifest (default `PUBLISH.md`).
+- `manifestFile` — name of the optional in-vault manifest (default `PUBLISH.md`).
 
-The actual list of what to publish lives in the vault.
+The primary list of what to publish lives in note frontmatter.
 
-### Block a specific note from a published folder
+### Block a specific note from a legacy published folder
 ```yaml
 ---
 publish: false

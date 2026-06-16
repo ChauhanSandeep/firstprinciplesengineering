@@ -2,10 +2,15 @@
 /**
  * scripts/build/inject-status-badges.mjs
  *
- * Phase 11 — Surface "New" and "Updated" badges near each article's
- * H1 based on real vault git history.
+ * Phase 11 — Surface "New" and "Updated" badges near each article's H1.
  *
- * Why git history (not content/ mtimes): the `content/` tree is
+ * Prefer explicit vault frontmatter so publishing state is managed next
+ * to the note:
+ *   - `status: new|updated|evergreen` controls the badge.
+ *   - `published_at:` supplies the created date.
+ *   - `updated_at:` supplies the modified date.
+ *
+ * Git history remains the fallback. Why git history (not content/ mtimes): the `content/` tree is
  * regenerated on every `npm run sync`, so file mtimes there are all
  * "now". The vault repo at ~/Idea/ObisdianNotes has the real
  * authoring + edit history per source file.
@@ -13,9 +18,7 @@
  * Rules (configurable below):
  *   - `created < 30 days ago`  → "New"
  *   - else `modified < 14 days && created >= 30 days` → "Updated"
- *   - frontmatter `status:` in the vault note overrides the rule.
- *     Values: "new", "updated", "evergreen". "evergreen" suppresses
- *     any badge regardless of dates.
+ *   - frontmatter `status: evergreen` suppresses any badge regardless of dates.
  *
  * Idempotent via `class="fpe-status-badge"`. Skips index pages,
  * /tags, /03-roadmaps landings, /about, /404.
@@ -72,6 +75,14 @@ function daysSince(iso) {
   return (Date.now() - then) / (1000 * 60 * 60 * 24)
 }
 
+function frontmatterDate(value) {
+  if (!value) return null
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+  return String(value)
+}
+
 async function vaultDates(relInVault) {
   try {
     const created = (
@@ -117,13 +128,28 @@ async function vaultFrontmatterStatus(relInVault) {
     const abs = path.join(VAULT_ROOT, relInVault)
     const raw = await fs.readFile(abs, "utf8")
     const { data } = matter(raw)
-    return data && data.status ? String(data.status).toLowerCase() : null
+    if (!data) return { status: null, publishedAt: null, updatedAt: null }
+    return {
+      status: data.status ? String(data.status).toLowerCase() : null,
+      publishedAt: frontmatterDate(data.published_at),
+      updatedAt: frontmatterDate(data.updated_at),
+    }
   } catch {
-    return null
+    return { status: null, publishedAt: null, updatedAt: null }
   }
 }
 
-function decideStatus(override, created, modified) {
+function decideStatus(override, created, modified, relInVault) {
+  if (
+    override &&
+    override !== "new" &&
+    override !== "updated" &&
+    override !== "evergreen"
+  ) {
+    throw new Error(
+      `${relInVault}: frontmatter status must be one of: new, updated, evergreen`,
+    )
+  }
   if (override === "evergreen") return null
   if (override === "new") return "new"
   if (override === "updated") return "updated"
@@ -199,9 +225,12 @@ async function main() {
       continue
     }
 
-    const { created, modified } = await vaultDates(entry.filePath)
-    const override = await vaultFrontmatterStatus(entry.filePath)
-    const status = decideStatus(override, created, modified)
+    const frontmatter = await vaultFrontmatterStatus(entry.filePath)
+    const gitDates = await vaultDates(entry.filePath)
+    const created = frontmatter.publishedAt || gitDates.created
+    const modified = frontmatter.updatedAt || gitDates.modified
+    const override = frontmatter.status
+    const status = decideStatus(override, created, modified, entry.filePath)
 
     if (status) {
       statusIndex[slug] = { status, created, modified }

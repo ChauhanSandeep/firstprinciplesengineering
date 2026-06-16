@@ -858,52 +858,11 @@ a.internal.tag-link {
     font-size: 1.05rem;
   }
 
-  .fpe-hero-cta {
-    margin-top: 1.5rem;
-    font-size: 1rem;
-  }
-
-  .fpe-hero-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.75rem 1.6rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
-    border: none;
-    color: var(--light) !important;
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none !important;
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--secondary) 28%, transparent);
-    transition:
-      transform 180ms ease,
-      box-shadow 180ms ease,
-      filter 180ms ease;
-
-    &::after { display: none !important; }
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px color-mix(in srgb, var(--secondary) 38%, transparent);
-      filter: brightness(1.05);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--secondary) 30%, transparent),
-        0 6px 18px color-mix(in srgb, var(--secondary) 28%, transparent);
-    }
-  }
 }
 
 // ---- Signature hero diagram (homepage above the fold) -------------------
-// Renders a clickable figure showing off the site's hand-drawn diagrams as
-// the first visual artifact a visitor sees. The Excalidraw SVGs ship with a
-// dark Catppuccin background built in, so we deliberately do NOT wrap them
-// in another colored card — the SVG provides its own framing and we just
-// add a thin border + rounded corners to anchor it on the page.
+// Renders an Excalidraw-style figure with separate light/dark exports so it
+// follows the active Quartz theme.
 .fpe-hero-figure {
   display: block;
   margin: 1.5rem 0 2.75rem;
@@ -936,12 +895,7 @@ a.internal.tag-link {
     border: 1px solid var(--lightgray);
     box-shadow: 0 4px 18px color-mix(in srgb, var(--dark) 8%, transparent);
     transition: box-shadow 180ms ease;
-    // Excalidraw exports ship with a hardcoded dark rect as their internal
-    // background, but the title/header text sits ABOVE that rect on a
-    // transparent canvas. On a cream page this makes the title invisible.
-    // Painting the same dark color on the img element fills the transparent
-    // region so the title reads cleanly.
-    background: #1e1e2e;
+    background: var(--light);
   }
 
   .fpe-hero-figure-caption {
@@ -967,6 +921,25 @@ a.internal.tag-link {
     color: var(--darkgray);
     line-height: 1.55;
     margin-top: 0.15rem;
+  }
+}
+
+.fpe-hero .fpe-hero-figure {
+  max-width: 980px;
+  margin: 1.75rem auto 0;
+}
+
+.fpe-hero-figure .fpe-hero-image--dark {
+  display: none;
+}
+
+:root[saved-theme="dark"] {
+  .fpe-hero-figure .fpe-hero-image--light {
+    display: none;
+  }
+
+  .fpe-hero-figure .fpe-hero-image--dark {
+    display: block;
   }
 }
 
@@ -2765,10 +2738,9 @@ body .backlinks > ul.overflow {
 // =========================================================================
 // Status badges — Phase-11
 // -------------------------------------------------------------------------
-// Inline pill next to the article H1: "New" for notes created in the
-// last 30 days, "Updated" for notes touched in the last 14 days that
-// were created earlier. Frontmatter `status:` overrides the rule;
-// `status: evergreen` suppresses the badge entirely.
+// Inline pill next to the article H1. Frontmatter `status:` is preferred:
+// `new`, `updated`, or `evergreen` (suppresses the badge). When status is
+// absent, the injector falls back to published_at/updated_at or git history.
 // =========================================================================
 
 .fpe-status-badge-wrap {

@@ -15,7 +15,7 @@
  *     candidates: [{
  *       vaultPath, vaultAbs, contentPath, contentAbs, slug,
  *       frontmatter, status: 'new'|'changed'|'unchanged',
- *       publishSource: 'flag'|'folder',
+ *       publishSource: 'flag'|'manifest',
  *       featured: bool,
  *       card: { eyebrow, title, description, order } | null,
  *     }],
@@ -129,7 +129,7 @@ function shouldPublish(rel, fm, manifestPatterns) {
   if (fm?.publish === false) return { publish: false, source: null }
   if (fm?.publish === true) return { publish: true, source: "flag" }
   const matched = manifestPatterns.some((p) => minimatch(rel, p, { dot: false }))
-  if (matched) return { publish: true, source: "folder" }
+  if (matched) return { publish: true, source: "manifest" }
   return { publish: false, source: null }
 }
 
