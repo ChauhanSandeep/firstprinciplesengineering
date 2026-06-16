@@ -140,7 +140,7 @@
   }
 
   // Prev/next is rendered at build time by scripts/build/inject-prev-next-related.mjs,
-  // which has full series + breadcrumb + related-articles support. The old runtime
+  // which has breadcrumb + related-articles support. The old runtime
   // ensurePrevNext() implementation was removed to avoid duplicate nav blocks.
 
   function wrapInScrollable(el, className) {
