@@ -1,14 +1,15 @@
 """Generate Excalidraw hero diagrams for each roadmap.
 
-Produces 3 GitHub-dark-themed Excalidraw hero diagrams:
+Produces 3 Excalidraw hero diagrams:
   - Foundations Roadmap
   - System Design Interviews Roadmap
   - AI Systems Roadmap
 
-For each roadmap it writes a `.excalidraw.md` source file and a rendered
-`.excalidraw.dark.svg` companion in the vault's `Excalidraw/` folder.
-The site-side fix-excalidraw-paths step will then surface the dark SVG
-in both light and dark site themes (until a light companion is added).
+For each roadmap it writes a `.excalidraw.md` source file plus rendered
+`.excalidraw.dark.svg` and `.excalidraw.light.svg` companions in the vault's
+`Excalidraw/` folder. The site-side fix-excalidraw-paths step then emits the
+matching `<img class="excalidraw-light">` / `<img class="excalidraw-dark">`
+pair so the website switches variants with the Quartz theme.
 
 Usage:
     /Users/sandeep/.local/bin/uv run --no-sync --project \
@@ -37,6 +38,34 @@ VAULT_EX_DIR = Path(
     os.environ.get("ROADMAP_HERO_VAULT_EX_DIR", "/Users/sandeep/Idea/ObisdianNotes/Excalidraw")
 )
 TEMPLATE = SKILL_DIR / "render_template.html"
+
+LIGHT_COLOR_MAP = {
+    # canvas / cards / strokes
+    "#0d1117": "#ffffff",
+    "#161b22": "#f6f8fa",
+    "#30363d": "#d0d7de",
+    # text
+    "#ff8c42": "#bc4c00",
+    "#e6edf3": "#24292f",
+    "#c9d1d9": "#3b434b",
+    "#8b949e": "#57606a",
+    "#f0b070": "#9a6700",
+    "#ffffff": "#24292f",
+    # role fills/strokes
+    "#1f4d2b": "#dafbe1",
+    "#3fb950": "#1a7f37",
+    "#3a1d6e": "#fbefff",
+    "#a371f7": "#8250df",
+    "#0d2c5a": "#ddf4ff",
+    "#58a6ff": "#0969da",
+    "#5c3a10": "#fff8c5",
+    "#f0883e": "#9a6700",
+    "#4a1219": "#ffebe9",
+    "#f85149": "#cf222e",
+    "#3a5d1d": "#eaf8d7",
+    "#6dbf3a": "#2da44e",
+    "#21262d": "#f6f8fa",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -252,18 +281,31 @@ def write_excalidraw_md(path: Path, elements: list, *, width: int, height: int) 
 # Playwright -> SVG renderer (saves SVG outerHTML, not PNG)
 # ---------------------------------------------------------------------------
 
-def render_to_svg(excalidraw_md: Path, svg_out: Path) -> None:
-    """Render a .excalidraw.md to a .svg file via the bundled render template.
+def _map_color(value: str) -> str:
+    if not isinstance(value, str):
+        return value
+    return LIGHT_COLOR_MAP.get(value.lower(), value)
 
-    Mirrors render_excalidraw.py's render() except we capture the SVG's
-    outerHTML and write it to disk (instead of element.screenshot to PNG).
-    """
+
+def light_variant(data: dict) -> dict:
+    """Return a light-theme copy of a GitHub-dark Excalidraw scene."""
+    out = json.loads(json.dumps(data))
+    app = out.setdefault("appState", {})
+    app["viewBackgroundColor"] = _map_color(app.get("viewBackgroundColor", PALETTE["bg"]))
+    app["theme"] = "light"
+
+    for element in out.get("elements", []):
+        for key in ("strokeColor", "backgroundColor"):
+            if key in element:
+                element[key] = _map_color(element[key])
+    return out
+
+
+def render_data_to_svg(data: dict, svg_out: Path) -> None:
+    """Render Excalidraw JSON data to a .svg file via the bundled render template."""
     from playwright.sync_api import sync_playwright
-    from render_excalidraw import (
-        extract_json_from_excalidraw_md, validate_excalidraw, compute_bounding_box,
-    )
+    from render_excalidraw import validate_excalidraw, compute_bounding_box
 
-    data = extract_json_from_excalidraw_md(excalidraw_md)
     errs = validate_excalidraw(data)
     if errs:
         raise RuntimeError(f"Invalid excalidraw: {errs}")
@@ -296,10 +338,25 @@ def render_to_svg(excalidraw_md: Path, svg_out: Path) -> None:
             raise RuntimeError("No SVG in #root after render")
         browser.close()
 
-    # Drop xmlns:xlink etc. unchanged; just ensure we have an <?xml ...?> header.
     if not svg_html.lstrip().startswith("<?xml"):
         svg_html = '<?xml version="1.0" encoding="UTF-8"?>\n' + svg_html
     svg_out.write_text(svg_html, encoding="utf-8")
+
+
+def render_to_svg(excalidraw_md: Path, svg_out: Path, *, variant: str = "dark") -> None:
+    """Render a .excalidraw.md to a dark or light .svg file.
+
+    Mirrors render_excalidraw.py's render() except we capture the SVG's
+    outerHTML and write it to disk (instead of element.screenshot to PNG).
+    """
+    from render_excalidraw import extract_json_from_excalidraw_md
+
+    data = extract_json_from_excalidraw_md(excalidraw_md)
+    if variant == "light":
+        data = light_variant(data)
+    elif variant != "dark":
+        raise ValueError(f"unknown variant: {variant}")
+    render_data_to_svg(data, svg_out)
 
 
 # ---------------------------------------------------------------------------
@@ -321,10 +378,11 @@ def main() -> None:
         md_path = VAULT_EX_DIR / f"{stem}.excalidraw.md"
         write_excalidraw_md(md_path, elements, width=w, height=h)
         print(f"wrote {md_path}")
-        svg_path = VAULT_EX_DIR / f"{stem}.excalidraw.dark.svg"
-        render_to_svg(md_path, svg_path)
-        size = svg_path.stat().st_size
-        print(f"wrote {svg_path} ({size} bytes)")
+        for variant in ("dark", "light"):
+            svg_path = VAULT_EX_DIR / f"{stem}.excalidraw.{variant}.svg"
+            render_to_svg(md_path, svg_path, variant=variant)
+            size = svg_path.stat().st_size
+            print(f"wrote {svg_path} ({size} bytes)")
 
 
 if __name__ == "__main__":
