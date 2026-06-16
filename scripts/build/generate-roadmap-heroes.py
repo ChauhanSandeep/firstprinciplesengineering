@@ -1,10 +1,9 @@
 """Generate Excalidraw hero diagrams for each roadmap.
 
-Produces 4 GitHub-dark-themed Excalidraw hero diagrams:
-  - Distributed Systems Roadmap
-  - System Design Roadmap
+Produces 3 GitHub-dark-themed Excalidraw hero diagrams:
+  - Foundations Roadmap
+  - System Design Interviews Roadmap
   - AI Systems Roadmap
-  - Staff Engineer Roadmap
 
 For each roadmap it writes a `.excalidraw.md` source file and a rendered
 `.excalidraw.dark.svg` companion in the vault's `Excalidraw/` folder.
@@ -20,6 +19,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -30,11 +30,12 @@ SKILL_DIR = Path(
 sys.path.insert(0, str(SKILL_DIR))
 
 from note_diagram_lib import (  # noqa: E402
-    PALETTE, rect, text, line, arrow, bound_text, role_rect, write_diagram,
-    ellipse, diamond,
+    PALETTE, rect, text, line, arrow, write_diagram, ellipse,
 )
 
-VAULT_EX_DIR = Path("/Users/sandeep/Idea/ObisdianNotes/Excalidraw")
+VAULT_EX_DIR = Path(
+    os.environ.get("ROADMAP_HERO_VAULT_EX_DIR", "/Users/sandeep/Idea/ObisdianNotes/Excalidraw")
+)
 TEMPLATE = SKILL_DIR / "render_template.html"
 
 
@@ -65,59 +66,57 @@ def _title_block(title: str, taglines: list) -> list:
     return out
 
 
-# ---------- Distributed Systems: a mesh of nodes across an unreliable network ----------
+# ---------- Foundations: stack + network mesh ----------
 
-def build_distributed_systems_hero() -> list:
-    """Abstract: many nodes coordinating across a network, with one broken link."""
+def build_foundations_hero() -> list:
+    """Abstract: foundational layers supporting a small distributed mesh."""
     elements: list = []
     elements += _title_block(
-        "Distributed Systems",
+        "Foundations",
         [
-            "Coordination, consistency, and the cost of `now`",
-            "across machines that fail independently.",
+            "The fundamentals that keep showing up:",
+            "networking, data, caching, failure, operations.",
         ],
     )
 
-    # Right-side mesh: ~6 nodes arranged loosely; connected by arrows, one dashed.
-    cx0 = 1100  # right region origin
-    cy0 = 80
-    region_w = 440
-    region_h = 380
+    # Right-side foundation blocks.
+    base_cx = 1320
+    base_y = 440
+    widths = [520, 430, 340]
+    roles = ["infra", "replica", "client"]
+    for i, (w, role) in enumerate(zip(widths, roles)):
+        y = base_y - i * 54
+        elements.append(rect(base_cx - w / 2, y, w, 42,
+                             fill=PALETTE[f"{role}_fill"],
+                             stroke=PALETTE[f"{role}_stroke"],
+                             stroke_width=2))
 
-    # Node positions (relative to region origin), as a loose constellation.
+    # A small mesh sits above the foundation to show the blocks support systems.
+    cx0 = 1130
+    cy0 = 100
     positions = [
-        (90,  60),   # 0 top-left
-        (300, 30),   # 1 top-right
-        (60,  220),  # 2 mid-left
-        (220, 170),  # 3 center
-        (380, 200),  # 4 mid-right
-        (160, 340),  # 5 bottom-left
-        (340, 340),  # 6 bottom-right
+        (80, 60),
+        (250, 30),
+        (50, 190),
+        (210, 180),
+        (360, 150),
     ]
-    roles = ["replica", "primary", "replica", "primary",
-             "replica", "infra", "infra"]
+    mesh_roles = ["replica", "primary", "client", "highlight", "infra"]
     nodes = []
     node_d = 64
-    for (px, py), role in zip(positions, roles):
+    for (px, py), role in zip(positions, mesh_roles):
         fill = PALETTE[f"{role}_fill"]
         stroke = PALETTE[f"{role}_stroke"]
         nodes.append((cx0 + px, cy0 + py))
         elements.append(ellipse(cx0 + px - node_d / 2, cy0 + py - node_d / 2,
                                  node_d, node_d, fill=fill, stroke=stroke))
 
-    # Connections: form a connected mesh. One link is dashed (network partition).
     links = [
         (0, 1, "solid"),
         (0, 3, "solid"),
-        (1, 3, "solid"),
         (1, 4, "solid"),
         (2, 3, "solid"),
-        (3, 4, "dashed"),  # partition
-        (2, 5, "solid"),
-        (3, 5, "solid"),
-        (3, 6, "solid"),
-        (4, 6, "solid"),
-        (5, 6, "solid"),
+        (3, 4, "dashed"),
     ]
     for a, b, style in links:
         x1, y1 = nodes[a]
@@ -129,42 +128,57 @@ def build_distributed_systems_hero() -> list:
     return elements
 
 
-# ---------- System Design: an iceberg / layered stack with growth arrow ----------
+# ---------- System Design Interviews: whiteboard system sketch + scale arrow ----------
 
-def build_system_design_hero() -> list:
-    """Abstract: layered system stack with an upward growth/scale arrow."""
+def build_system_design_interviews_hero() -> list:
+    """Abstract: interview whiteboard sketch with a scale arrow."""
     elements: list = []
     elements += _title_block(
-        "System Design",
+        "System Design Interviews",
         [
-            "From first principles to billions of requests.",
-            "Every component, in the order that makes the why obvious.",
+            "Turn ambiguous requirements into a clear design:",
+            "API, data, scale, failure, trade-offs.",
         ],
     )
 
-    # Right-side: a stack of 5 nested rectangles getting progressively wider,
-    # implying layers of abstraction. Above the top layer, a growth arrow.
-    base_cx = 1320
-    base_y = 460
-    layer_h = 40
-    gap = 4
-    widths = [560, 480, 400, 320, 240]
-    role_keys = ["infra", "primary", "highlight", "replica", "client"]
-    y = base_y
-    for w, role in zip(widths, role_keys):
-        fill = PALETTE[f"{role}_fill"]
-        stroke = PALETTE[f"{role}_stroke"]
-        elements.append(rect(base_cx - w / 2, y - layer_h, w, layer_h,
-                              fill=fill, stroke=stroke, stroke_width=2))
-        y -= layer_h + gap
+    # Whiteboard card.
+    board_x = 1060
+    board_y = 110
+    board_w = 470
+    board_h = 310
+    elements.append(rect(board_x, board_y, board_w, board_h,
+                         fill=PALETTE["section_bg"],
+                         stroke=PALETTE["section_stroke"],
+                         stroke_width=2))
 
-    # Upward growth arrow on the right side of the stack
-    arr_x = base_cx + 320
-    elements.append(arrow(arr_x, base_y, arr_x, base_y - (layer_h + gap) * 5 - 30,
-                           color=PALETTE["title"], stroke_width=3))
-    elements.append(text(arr_x + 16, base_y - (layer_h + gap) * 5 - 10,
-                         "scale", size=20, color=PALETTE["title"],
-                         align="left", width=120))
+    # Abstract boxes and arrows: intentionally unlabeled so the cover doesn't
+    # pin specific problems or components.
+    boxes = [
+        (board_x + 50, board_y + 70, 90, 60, "client"),
+        (board_x + 195, board_y + 55, 95, 70, "primary"),
+        (board_x + 340, board_y + 75, 85, 55, "replica"),
+        (board_x + 175, board_y + 190, 130, 70, "infra"),
+    ]
+    centers = []
+    for x, y, w, h, role in boxes:
+        elements.append(rect(x, y, w, h,
+                             fill=PALETTE[f"{role}_fill"],
+                             stroke=PALETTE[f"{role}_stroke"],
+                             stroke_width=2))
+        centers.append((x + w / 2, y + h / 2))
+    elements.append(arrow(centers[0][0] + 45, centers[0][1], centers[1][0] - 48, centers[1][1],
+                          color=PALETTE["arr_neutral"], stroke_width=2))
+    elements.append(arrow(centers[1][0] + 48, centers[1][1], centers[2][0] - 42, centers[2][1],
+                          color=PALETTE["arr_neutral"], stroke_width=2))
+    elements.append(arrow(centers[1][0], centers[1][1] + 38, centers[3][0], centers[3][1] - 40,
+                          color=PALETTE["title"], stroke_width=2))
+
+    # Small check marks on the board edge: requirements clarified.
+    for i, role in enumerate(["highlight", "replica", "infra"]):
+        y = board_y + 230 + i * 28
+        elements.append(ellipse(board_x + 36, y, 16, 16,
+                                fill=PALETTE[f"{role}_fill"],
+                                stroke=PALETTE[f"{role}_stroke"]))
 
     return elements
 
@@ -214,74 +228,6 @@ def build_ai_systems_hero() -> list:
         elements.append(ellipse(sx - sat_d / 2, sy - sat_d / 2, sat_d, sat_d,
                                  fill=PALETTE[f"{role}_fill"],
                                  stroke=PALETTE[f"{role}_stroke"]))
-
-    return elements
-
-
-# ---------- Staff Engineer: a balance scale (trade-offs) on a horizon ----------
-
-def build_staff_engineer_hero() -> list:
-    """Abstract: a balance/scale icon — trade-offs are the staff role's daily work."""
-    elements: list = []
-    elements += _title_block(
-        "Staff Engineer",
-        [
-            "Trade-offs, leverage, and the long view.",
-            "Breadth across systems, depth where it matters.",
-        ],
-    )
-
-    # Right region: a stylized balance scale.
-    cx = 1320         # fulcrum x
-    fulcrum_y = 280
-    beam_half = 200
-    arm_tilt = 20     # left tray higher, right tray lower (or vice versa)
-
-    # Base pedestal
-    elements.append(rect(cx - 80, fulcrum_y + 140, 160, 24,
-                          fill=PALETTE["neutral_fill"],
-                          stroke=PALETTE["neutral_stroke"], stroke_width=2))
-    # Pillar
-    elements.append(rect(cx - 8, fulcrum_y, 16, 140,
-                          fill=PALETTE["neutral_fill"],
-                          stroke=PALETTE["neutral_stroke"], stroke_width=2))
-    # Fulcrum (small triangle approximated as diamond)
-    elements.append(diamond(cx - 20, fulcrum_y - 20, 40, 40,
-                              fill=PALETTE["title"],
-                              stroke=PALETTE["title"]))
-
-    # Beam — slightly tilted
-    left_x = cx - beam_half
-    right_x = cx + beam_half
-    left_y = fulcrum_y - arm_tilt
-    right_y = fulcrum_y + arm_tilt
-    elements.append(line(left_x, left_y, right_x, right_y,
-                          color=PALETTE["neutral_stroke"], stroke_width=4))
-
-    # Suspending lines + trays
-    tray_w = 110
-    tray_h = 14
-    tray_drop = 70
-    # Left tray (higher)
-    elements.append(line(left_x, left_y, left_x, left_y + tray_drop,
-                          color=PALETTE["neutral_stroke"], stroke_width=2))
-    elements.append(rect(left_x - tray_w / 2, left_y + tray_drop, tray_w, tray_h,
-                          fill=PALETTE["replica_fill"],
-                          stroke=PALETTE["replica_stroke"], stroke_width=2))
-    # Right tray (lower)
-    elements.append(line(right_x, right_y, right_x, right_y + tray_drop,
-                          color=PALETTE["neutral_stroke"], stroke_width=2))
-    elements.append(rect(right_x - tray_w / 2, right_y + tray_drop, tray_w, tray_h,
-                          fill=PALETTE["infra_fill"],
-                          stroke=PALETTE["infra_stroke"], stroke_width=2))
-
-    # A small "weight" (cube) on each tray to imply trade-offs
-    elements.append(rect(left_x - 22, left_y + tray_drop - 36, 44, 36,
-                          fill=PALETTE["replica_fill"],
-                          stroke=PALETTE["replica_stroke"], stroke_width=2))
-    elements.append(rect(right_x - 28, right_y + tray_drop - 44, 56, 44,
-                          fill=PALETTE["infra_fill"],
-                          stroke=PALETTE["infra_stroke"], stroke_width=2))
 
     return elements
 
@@ -361,10 +307,9 @@ def render_to_svg(excalidraw_md: Path, svg_out: Path) -> None:
 # ---------------------------------------------------------------------------
 
 HEROES = [
-    ("Roadmap-Distributed-Systems-Hero",  build_distributed_systems_hero,  CANVAS_W, CANVAS_H),
-    ("Roadmap-System-Design-Hero",        build_system_design_hero,        CANVAS_W, CANVAS_H),
-    ("Roadmap-AI-Systems-Hero",           build_ai_systems_hero,           CANVAS_W, CANVAS_H),
-    ("Roadmap-Staff-Engineer-Hero",       build_staff_engineer_hero,       CANVAS_W, CANVAS_H),
+    ("Roadmap-Foundations-Hero",                 build_foundations_hero,                 CANVAS_W, CANVAS_H),
+    ("Roadmap-System-Design-Interviews-Hero",    build_system_design_interviews_hero,    CANVAS_W, CANVAS_H),
+    ("Roadmap-AI-Systems-Hero",                  build_ai_systems_hero,                  CANVAS_W, CANVAS_H),
 ]
 
 

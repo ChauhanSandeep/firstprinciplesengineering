@@ -13,9 +13,11 @@ description: >-
 
 <p class="fpe-hero-byline"><strong><a href="about">Sandeep Chauhan</a></strong><span class="fpe-hero-bullet"> · </span><span class="fpe-hero-role">Senior Software Engineer @ LinkedIn</span></p>
 
-<p>Writing about Distributed Systems, System Design, Staff Engineering, Algorithms and AI — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
+<p>Writing about software engineering foundations, system design interviews, and AI systems — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
 
-<p class="fpe-hero-cta"><a class="fpe-hero-link" href="#start-with-a-roadmap">Start with a roadmap<span aria-hidden="true"> →</span></a></p>
+<figure class="fpe-hero-figure">
+  <img src="_static/home-hero.svg" alt="Excalidraw-style system sketch for First Principles Engineering with a central why node, foundation layers, connected system shapes, and a trade-offs arrow.">
+</figure>
 
 </div>
 
@@ -23,24 +25,24 @@ description: >-
 
 <div class="fpe-roadmap-grid">
 
-<a class="fpe-roadmap-card" href="03-roadmaps/distributed-systems-roadmap">
+<a class="fpe-roadmap-card" href="03-roadmaps/foundations-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
-  <span class="roadmap-title">Distributed Systems Roadmap</span>
-  <span class="roadmap-desc">Build the mental model for coordination, consistency, partial failure, and the operational cost of making machines agree.</span>
-  <span class="roadmap-status">Foundational path</span>
+  <span class="roadmap-title">Foundations Roadmap</span>
+  <span class="roadmap-desc">For newer engineers and gap-filling: networking, APIs, databases, caching, distributed systems, and production basics.</span>
+  <span class="roadmap-status">Start here</span>
 </a>
 
-<a class="fpe-roadmap-card" href="03-roadmaps/system-design-roadmap">
+<a class="fpe-roadmap-card" href="03-roadmaps/system-design-interviews-roadmap">
   <span class="roadmap-eyebrow">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
     Roadmap
   </span>
-  <span class="roadmap-title">System Design Roadmap</span>
-  <span class="roadmap-desc">Learn how product requirements turn into APIs, storage, caching, messaging, reliability, and trade-offs that survive production.</span>
-  <span class="roadmap-status">Interview + production path</span>
+  <span class="roadmap-title">System Design Interviews Roadmap</span>
+  <span class="roadmap-desc">For interview prep: turn requirements into APIs, storage, caches, queues, scale, reliability, and trade-off narratives.</span>
+  <span class="roadmap-status">Interview prep</span>
 </a>
 
 <a class="fpe-roadmap-card" href="03-roadmaps/ai-systems-roadmap">
@@ -51,16 +53,6 @@ description: >-
   <span class="roadmap-title">AI Systems Roadmap</span>
   <span class="roadmap-desc">Understand the engineering around the model: data quality, retrieval, serving, evaluation, cost, latency, and observability.</span>
   <span class="roadmap-status">Growing roadmap</span>
-</a>
-
-<a class="fpe-roadmap-card" href="03-roadmaps/staff-engineer-roadmap">
-  <span class="roadmap-eyebrow">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Roadmap
-  </span>
-  <span class="roadmap-title">Staff Engineer Roadmap</span>
-  <span class="roadmap-desc">A breadth map for technical leadership: durable systems vocabulary, trade-off framing, migration judgment, and operational taste.</span>
-  <span class="roadmap-status">Breadth map</span>
 </a>
 
 </div>
@@ -128,7 +120,7 @@ description: >-
     <span class="about-strip-role">Curated notes from a larger private notebook</span>
   </div>
   <div class="about-strip-right">
-    <p>Start with a roadmap when you want structure. Use search when you already know the concept. The exact reading series live inside roadmaps and article pages so the homepage stays focused.</p>
+    <p>Start with a roadmap when you want structure. Use search when you already know the concept. The site intentionally keeps learning paths few and clear so the homepage does not become another notes folder.</p>
     <p><a class="about-strip-link" href="about">About this site →</a> · <a class="about-strip-link" href="index.xml">RSS feed →</a></p>
   </div>
 </div>
