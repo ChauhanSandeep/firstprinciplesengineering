@@ -106,7 +106,7 @@ function renderRail(items) {
     <span class="fpe-rail-title">Newly Released</span>
   </div>
   <div class="fpe-rail-list">${items.map(renderItem).join("")}</div>
-  <a class="fpe-rail-footer" href="${BASE_PATH}/#recent">View all →</a>
+  <a class="fpe-rail-footer" href="${BASE_PATH}/#recommended-reads">Explore recommended reads →</a>
 </aside>`
 }
 

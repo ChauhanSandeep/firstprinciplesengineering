@@ -5,7 +5,7 @@ description: >-
     vault at ~/Idea/ObisdianNotes to the live Quartz site at
     https://chauhansandeep.github.io/firstprinciplesengineering. Discovers
     notes flagged `publish: true`, validates Excalidraw dark/light pairs and
-    wikilinks, updates Featured / Reading Series cards on the home page,
+    wikilinks, updates the home Recommended Reads cards and series landing pages,
     builds, validates with Playwright (light/dark/mobile), deploys to
     gh-pages, and emits a structured report. Stops only on critical issues.
     Invoke when the user says things like "publish my new notes",
@@ -52,9 +52,10 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 - Site is published at https://chauhansandeep.github.io/firstprinciplesengineering
 - Build pipeline: `npm run sync` (vault → content/) → `npx quartz build` (content → public/) → `npm run fix-paths` (rewrite Excalidraw URLs + apply dark/light pair). `npm run build` runs all three. `npm run deploy` runs build + gh-pages push.
 - Existing safety net: `scripts/pre-commit-guard.sh` rejects commits to `content/*` other than `index.md`, `about.md`, `_static/**`.
-- The home page (`content/index.md`) has two card sections:
-  - `## Featured` — `<a class="fpe-article-card">` blocks with `.article-eyebrow`, `.article-title`, `.article-desc`
-  - `## Reading Series` — `<a class="fpe-path-card">` blocks with `.path-title`, `.path-desc`, `.path-count`
+- The home page (`content/index.md`) has one primary article-card section:
+  - `## Recommended Reads` — `<a class="fpe-article-card">` blocks with `.article-eyebrow`, `.article-title`, `.article-desc`
+- Reading Series do **not** appear as a homepage section anymore. Series live
+  in `02-Series/<slug>.md`, roadmap pages, and article-level series strips.
 
 ## Frontmatter convention (vault notes)
 
@@ -98,9 +99,9 @@ Collect their JSON output into one batch report.
 
 Materialize the full diff:
 
-- Featured-grid changes to `content/index.md` (insert/remove/reorder cards).
-- Reading-Series changes to `content/index.md` (path cards) AND new
-  `02-Series/<slug>.md` files in the vault.
+- Recommended Reads changes to `content/index.md` (insert/remove/reorder cards).
+- Reading-Series landing-page changes in the vault under `02-Series/<slug>.md`.
+  Do not add Reading Series cards back to the homepage.
 - Card metadata to fill in for notes that omitted `card_description` etc.
   Draft these now using the site's existing voice as the in-context example:
   - One sentence, opinionated, often ends with a concrete claim or named

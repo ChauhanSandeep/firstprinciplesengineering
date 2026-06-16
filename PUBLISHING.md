@@ -142,11 +142,11 @@ arguments needed.
 | Key                  | Type     | Default                     | Effect                                                                                  |
 | -------------------- | -------- | --------------------------- | --------------------------------------------------------------------------------------- |
 | `publish`            | `bool`   | manifest decides            | `true` ships the note. `false` always blocks (escape hatch).                            |
-| `featured`           | `bool`   | `false`                     | Add a card to the **Featured** grid on the home page.                                   |
+| `featured`           | `bool`   | `false`                     | Add a card to the home **Recommended Reads** grid.                                      |
 | `card_eyebrow`       | `string` | derived from first folder   | Eyebrow label on the featured card.                                                     |
 | `card_title`         | `string` | derived from H1             | Short title on the featured card (often pithier than the note H1).                      |
 | `card_description`   | `string` | drafted by skill from intro | One-sentence pitch in the site's voice. Prompts when drafting confidence is low.        |
-| `card_order`         | `int`    | recency order               | Explicit position in the Featured grid (lower = earlier).                               |
+| `card_order`         | `int`    | recency order               | Explicit position in the Recommended Reads grid (lower = earlier).                      |
 | `series`             | `string` | none                        | Series slug. Matches `02-Series/<slug>.md` if it exists, else triggers landing-page draft.|
 | `series_order`       | `int`    | append                      | Position in the series' "Read in order" list.                                           |
 | `socialDescription`  | `string` | first paragraph             | Standard Quartz field; skill ensures it is set for OG preview quality.                  |
@@ -163,7 +163,7 @@ It will pause and prompt only when one of these is true:
 1. An Excalidraw embed has no `.svg` sidecars at all (build would fail).
 2. A wikilink points into a note that is not published and not in this batch.
 3. A new series is being introduced with fewer than 3 notes (likely a typo).
-4. The Featured grid would exceed 12 cards (visual cap).
+4. The Recommended Reads grid would exceed 12 cards (visual cap).
 5. More than 5 notes are being added in a single run (sanity gate).
 6. Build, local Playwright smoke, or live Playwright smoke fails.
 

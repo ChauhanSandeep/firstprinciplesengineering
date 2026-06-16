@@ -15,16 +15,62 @@ description: >-
 
 <p>Writing about Distributed Systems, System Design, Staff Engineering, Algorithms and AI — built from the ground up, not from buzzwords. Curated notes I'm willing to be wrong about in public.</p>
 
-<p class="fpe-hero-cta"><a class="fpe-hero-link" href="about">About this site<span aria-hidden="true"> →</span></a></p>
+<p class="fpe-hero-cta"><a class="fpe-hero-link" href="#start-with-a-roadmap">Start with a roadmap<span aria-hidden="true"> →</span></a></p>
 
 </div>
 
-## Featured
+## Start with a roadmap
+
+<div class="fpe-roadmap-grid">
+
+<a class="fpe-roadmap-card" href="03-roadmaps/distributed-systems-roadmap">
+  <span class="roadmap-eyebrow">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+    Roadmap
+  </span>
+  <span class="roadmap-title">Distributed Systems Roadmap</span>
+  <span class="roadmap-desc">Build the mental model for coordination, consistency, partial failure, and the operational cost of making machines agree.</span>
+  <span class="roadmap-status">Foundational path</span>
+</a>
+
+<a class="fpe-roadmap-card" href="03-roadmaps/system-design-roadmap">
+  <span class="roadmap-eyebrow">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+    Roadmap
+  </span>
+  <span class="roadmap-title">System Design Roadmap</span>
+  <span class="roadmap-desc">Learn how product requirements turn into APIs, storage, caching, messaging, reliability, and trade-offs that survive production.</span>
+  <span class="roadmap-status">Interview + production path</span>
+</a>
+
+<a class="fpe-roadmap-card" href="03-roadmaps/ai-systems-roadmap">
+  <span class="roadmap-eyebrow">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+    Roadmap
+  </span>
+  <span class="roadmap-title">AI Systems Roadmap</span>
+  <span class="roadmap-desc">Understand the engineering around the model: data quality, retrieval, serving, evaluation, cost, latency, and observability.</span>
+  <span class="roadmap-status">Growing roadmap</span>
+</a>
+
+<a class="fpe-roadmap-card" href="03-roadmaps/staff-engineer-roadmap">
+  <span class="roadmap-eyebrow">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+    Roadmap
+  </span>
+  <span class="roadmap-title">Staff Engineer Roadmap</span>
+  <span class="roadmap-desc">A breadth map for technical leadership: durable systems vocabulary, trade-off framing, migration judgment, and operational taste.</span>
+  <span class="roadmap-status">Breadth map</span>
+</a>
+
+</div>
+
+## Recommended Reads
 
 <div class="fpe-featured-grid">
 
 <a class="fpe-article-card" href="01-fundamentals/05-ai-ml/04-rag-architecture">
-  <span class="article-eyebrow">AI</span>
+  <span class="article-eyebrow">AI Systems</span>
   <span class="article-title">RAG Architecture</span>
   <span class="article-desc">The most-deployed LLM pattern in production is mostly a retrieval system with a model bolted on — not the other way around.</span>
 </a>
@@ -59,12 +105,6 @@ description: >-
   <span class="article-desc">Two-phase commit, Jim Gray's disappearance, and the cruel irony of a community that couldn't coordinate finding its own founder.</span>
 </a>
 
-<a class="fpe-article-card" href="01-fundamentals/01-concepts/02-architecture/02-event-sourcing-cqrs">
-  <span class="article-eyebrow">Architecture</span>
-  <span class="article-title">Event Sourcing & CQRS</span>
-  <span class="article-desc">Double-entry bookkeeping from 1494, now sold back as blockchain. The pattern is older than computers.</span>
-</a>
-
 <a class="fpe-article-card" href="01-fundamentals/01-concepts/03-data/02-change-data-capture">
   <span class="article-eyebrow">Data</span>
   <span class="article-title">Change Data Capture</span>
@@ -72,188 +112,23 @@ description: >-
 </a>
 
 <a class="fpe-article-card" href="01-fundamentals/01-concepts/05-api/04-grpc-rpc">
-  <span class="article-eyebrow">API</span>
+  <span class="article-eyebrow">APIs</span>
   <span class="article-title">gRPC vs REST</span>
   <span class="article-desc">REST works until JSON parse cost dominates your CPU bill and bolted-on WebSockets become load-bearing. Then it doesn't.</span>
 </a>
 
 </div>
 
-## Popular
-
-<div class="fpe-popular-list">
-
-<a class="fpe-popular-item" href="01-fundamentals/01-concepts/04-caching/02-consistent-hashing">
-  <span class="popular-title">Consistent Hashing</span>
-  <span class="popular-desc">Virtual nodes are what make the textbook ring usable in production.</span>
-</a>
-
-<a class="fpe-popular-item" href="01-fundamentals/02-databases/01-fundamentals/06-mvcc">
-  <span class="popular-title">MVCC</span>
-  <span class="popular-desc">Why update-as-delete-and-insert is the price of snapshot reads.</span>
-</a>
-
-<a class="fpe-popular-item" href="01-fundamentals/05-ai-ml/04-rag-architecture">
-  <span class="popular-title">RAG Architecture</span>
-  <span class="popular-desc">The pattern most LLM apps actually ship — retrieval first, model second.</span>
-</a>
-
-<a class="fpe-popular-item" href="01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm">
-  <span class="popular-title">Consensus Algorithms</span>
-  <span class="popular-desc">Paxos vs Raft, leader election, and why the proof is the hard part.</span>
-</a>
-
-<a class="fpe-popular-item" href="01-fundamentals/01-concepts/03-data/02-change-data-capture">
-  <span class="popular-title">Change Data Capture</span>
-  <span class="popular-desc">The write-ahead log as the source of truth, not an implementation detail.</span>
-</a>
-
-<a class="fpe-popular-item" href="01-fundamentals/02-databases/01-fundamentals/02-cap-and-pacelc">
-  <span class="popular-title">CAP & PACELC</span>
-  <span class="popular-desc">The trade-off CAP misses: what does the system do when there's *no* partition?</span>
-</a>
-
-</div>
-
-## Roadmaps
-
-<div class="fpe-roadmap-grid">
-
-<a class="fpe-roadmap-card" href="03-roadmaps/distributed-systems-roadmap">
-  <span class="roadmap-eyebrow">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Roadmap
-  </span>
-  <span class="roadmap-title">Distributed Systems Roadmap</span>
-  <span class="roadmap-desc">Primitives → logical clocks → consensus → transactions → microservices, with branch-offs into sharding, replication, and CAP/PACELC.</span>
-  <span class="roadmap-status">10 articles · curated order</span>
-</a>
-
-<a class="fpe-roadmap-card" href="03-roadmaps/system-design-roadmap">
-  <span class="roadmap-eyebrow">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Roadmap
-  </span>
-  <span class="roadmap-title">System Design Roadmap</span>
-  <span class="roadmap-desc">Caching → APIs → messaging → databases → architecture patterns → production reliability. A full reading order for system design.</span>
-  <span class="roadmap-status">20 articles · 6 layers</span>
-</a>
-
-<a class="fpe-roadmap-card" href="03-roadmaps/ai-systems-roadmap">
-  <span class="roadmap-eyebrow">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Roadmap
-  </span>
-  <span class="roadmap-title">AI Systems Roadmap</span>
-  <span class="roadmap-desc">Embeddings → chunking → vector stores → RAG → model serving → observability. The production view of ML, not the model view.</span>
-  <span class="roadmap-status">3 articles · growing</span>
-</a>
-
-<a class="fpe-roadmap-card" href="03-roadmaps/staff-engineer-roadmap">
-  <span class="roadmap-eyebrow">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Roadmap
-  </span>
-  <span class="roadmap-title">Staff Engineer Roadmap</span>
-  <span class="roadmap-desc">A breadth map for staff scope — distributed-systems vocabulary, database internals, messaging, APIs, architecture patterns, security, operability, and AI systems.</span>
-  <span class="roadmap-status">9 areas · breadth map</span>
-</a>
-
-</div>
-
-## Recent
-
-<div id="fpe-recent-auto-slot">
-<p class="fpe-section-empty">Recent articles will appear here after the next build.</p>
-</div>
-
-## Reading Series
-
-<div class="fpe-learning-paths">
-
-<a class="fpe-path-card" href="01-fundamentals/01-concepts/01-distributed-systems/">
-  <span class="path-title">Distributed Systems from First Principles</span>
-  <span class="path-desc">Primitives → logical clocks → consensus → distributed locks → transactions → gossip → microservices. Read in dependency order.</span>
-  <span class="path-count">7 articles</span>
-</a>
-
-<a class="fpe-path-card" href="01-fundamentals/01-concepts/02-architecture/">
-  <span class="path-title">Architecture & Patterns</span>
-  <span class="path-desc">Choreography vs orchestration, event sourcing, fan-out, locking, strangler fig, BFF, multi-tenancy — and the failure modes each pattern exists to solve.</span>
-  <span class="path-count">7 articles</span>
-</a>
-
-<a class="fpe-path-card" href="02-series/production-systems-deep-dives">
-  <span class="path-title">Production Systems Deep Dives</span>
-  <span class="path-desc">Kafka, Redis, DynamoDB, Spanner, Zanzibar, Lakehouse — the design decisions that defined each system, not the marketing pages.</span>
-  <span class="path-count">6 articles</span>
-</a>
-
-<a class="fpe-path-card" href="01-fundamentals/02-databases/01-fundamentals/">
-  <span class="path-title">Database Internals</span>
-  <span class="path-desc">ACID foundations, CAP & PACELC, isolation levels, MVCC. The minimum mental model before debugging any data layer at 2 AM.</span>
-  <span class="path-count">4 articles</span>
-</a>
-
-<a class="fpe-path-card" href="02-series/apis-and-networking">
-  <span class="path-title">APIs & Networking</span>
-  <span class="path-desc">TCP/UDP/QUIC up through API design, gateways, GraphQL, gRPC. The stack read bottom-up so trade-offs compose instead of fighting.</span>
-  <span class="path-count">5 articles</span>
-</a>
-
-<a class="fpe-path-card" href="01-fundamentals/05-ai-ml/">
-  <span class="path-title">AI Systems in Production</span>
-  <span class="path-desc">RAG architecture, ML system design, model serving. The production view, not the model view — where the latency, cost, and quality actually live.</span>
-  <span class="path-count">3 articles</span>
-</a>
-
-</div>
-
-## YouTube
-
-<div class="fpe-placeholder-card">
-  <span class="placeholder-icon" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><polygon points="10 9 16 12 10 15 10 9" fill="currentColor" stroke="none"/></svg>
-  </span>
-  <div class="placeholder-body">
-    <span class="placeholder-eyebrow">YouTube</span>
-    <span class="placeholder-title">Whiteboard videos — coming soon</span>
-    <span class="placeholder-desc">Short, focused walkthroughs of the diagrams in these notes — the same hand-drawn whiteboard explanations, in video form. Watch this space.</span>
-  </div>
-</div>
-
-## Newsletter
-
-<div class="fpe-placeholder-card">
-  <span class="placeholder-icon" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-  </span>
-  <div class="placeholder-body">
-    <span class="placeholder-eyebrow">Newsletter</span>
-    <span class="placeholder-title">A short monthly note — coming soon</span>
-    <span class="placeholder-desc">When the sign-up form is live, you'll be able to subscribe here. For now, the <a href="index.xml">RSS feed</a> ships every new note as soon as it goes public.</span>
-  </div>
-</div>
-
-## About
+## About this project
 
 <div class="fpe-about-strip">
   <div class="about-strip-left">
-    <span class="about-strip-eyebrow">About</span>
-    <span class="about-strip-name">Sandeep Chauhan</span>
-    <span class="about-strip-role">Senior Software Engineer @ LinkedIn</span>
+    <span class="about-strip-eyebrow">Learning in public</span>
+    <span class="about-strip-name">First Principles Engineering</span>
+    <span class="about-strip-role">Curated notes from a larger private notebook</span>
   </div>
   <div class="about-strip-right">
-    <p>This is a curated slice of a much larger private notebook. I'd rather publish twenty notes I'm willing to defend than two hundred I'm not. If a published note is wrong or unclear, I'd genuinely like to hear about it.</p>
-    <p><a class="about-strip-link" href="about">More about this site →</a></p>
+    <p>Start with a roadmap when you want structure. Use search when you already know the concept. The exact reading series live inside roadmaps and article pages so the homepage stays focused.</p>
+    <p><a class="about-strip-link" href="about">About this site →</a> · <a class="about-strip-link" href="index.xml">RSS feed →</a></p>
   </div>
 </div>
-
-## How to browse
-
-- **Reading Series** above — each is curated in dependency order. Start with whichever pulls you in.
-- **Search** in the toolbar (⌘K / Ctrl+K) — fastest way to a specific concept.
-- **Explorer** on the left — the full tree if you want to browse loose.
-
-> [!note]
-> This is a **curated slice** of my private notebook. Many drafts and half-formed ideas stay unpublished by design. If a published note is wrong or unclear, [open an issue](https://github.com/chauhansandeep/firstprinciplesengineering).

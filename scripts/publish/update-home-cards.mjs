@@ -2,7 +2,7 @@
 /**
  * scripts/publish/update-home-cards.mjs
  *
- * Idempotent mutator for the Featured grid in content/index.md.
+ * Idempotent mutator for the homepage recommended article grid in content/index.md.
  *
  * Reads a JSON "plan" from stdin (or --plan <path>) with shape:
  *   {
@@ -170,18 +170,18 @@ function spliceFeatured(source, newSection) {
     return before + newSection + after
   }
   // First-time migration: replace the raw `<div class="fpe-featured-grid">…</div>`
-  // block under the `## Featured` heading. We anchor on the heading + open tag
-  // to avoid clobbering any other div on the page.
-  const headingRe = /(## Featured\s*\n+)/
+  // block. Historically this lived under `## Featured`; after the homepage
+  // simplification it lives under `## Recommended Reads`, but the card markup
+  // remains the same.
   const openRe = new RegExp(
     "<div class=\"fpe-featured-grid\">[\\s\\S]*?</div>",
     "m",
   )
-  if (headingRe.test(source) && openRe.test(source)) {
+  if (openRe.test(source)) {
     return source.replace(openRe, newSection)
   }
   throw new Error(
-    "could not locate Featured grid in content/index.md (no markers and no `<div class=\"fpe-featured-grid\">` block under `## Featured`).",
+    "could not locate homepage article grid in content/index.md (no markers and no `<div class=\"fpe-featured-grid\">` block).",
   )
 }
 

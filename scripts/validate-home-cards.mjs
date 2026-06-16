@@ -3,7 +3,7 @@
  * validate-home-cards.mjs
  *
  * Guard against the most common way to silently ship a broken front page:
- * homepage Featured / Reading Series cards in `content/index.md` pointing
+ * homepage Recommended Reads / legacy Reading Series cards in `content/index.md` pointing
  * at notes that don't exist (because the target was renamed, unpublished,
  * or never synced from the vault).
  *
@@ -21,7 +21,8 @@
  * -----------------
  *   <a class="fpe-article-card" href="…">  →  must resolve to a note
  *   <a class="fpe-path-card"    href="…">  →  must resolve to a note or
- *                                              a folder (index.md)
+ *                                              a folder (index.md), if a legacy
+ *                                              path-card section is present
  *
  * Resolution is filesystem-only against `content/`:
  *   `foo/bar`   → `content/foo/bar.md` OR `content/foo/bar/index.md`

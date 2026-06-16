@@ -176,8 +176,8 @@ async function main() {
     return
   }
   if (!SLOT_RE.test(homeHtml)) {
-    console.error(
-      `inject-recent: slot <div id="${SLOT_ID}"> missing from public/index.html; skipping.`,
+    console.log(
+      `inject-recent: slot <div id="${SLOT_ID}"> not present; homepage uses the right-rail Newly Released list instead.`,
     )
     return
   }

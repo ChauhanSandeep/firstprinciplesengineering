@@ -2,14 +2,16 @@
 /**
  * scripts/publish/manage-series.mjs
  *
- * Two responsibilities, mirroring the Featured-grid mutator:
+ * Two responsibilities:
  *
- *  1. Idempotent mutator for the Reading Series grid in content/index.md
- *     (`.fpe-learning-paths` block with `.fpe-path-card` entries).
- *  2. Creator / updater for series LANDING PAGES that live in the vault at
+ *  1. Creator / updater for series LANDING PAGES that live in the vault at
  *     `02-Series/<slug>.md`. New series get a publishable landing page with
  *     `publish: true`, a title, a description, and a "Read in order" list
  *     ordered by each note's `series_order` frontmatter.
+ *  2. Backward-compatible mutator for legacy home pages that still include a
+ *     Reading Series grid (`.fpe-learning-paths`). The current FPE homepage
+ *     intentionally omits that grid: roadmaps are the homepage entry point,
+ *     and reading series live on roadmap/article pages.
  *
  * Plan JSON (stdin or --plan <path>):
  *   {
@@ -233,27 +235,35 @@ async function main() {
   const seriesDir = getFlag("--series-dir", SERIES_DIR_DEFAULT)
   const plan = await readPlan()
 
-  // 1. Mutate the home page grid.
+  // 1. Mutate the legacy home page grid if it still exists. The simplified
+  // FPE homepage intentionally has no Reading Series grid, so this path is
+  // skipped while landing-page creation below remains active.
   const source = await fs.readFile(indexPath, "utf8")
   let currentSection
+  let hasHomeSeriesGrid = false
   if (source.includes(BEGIN_MARK) && source.includes(END_MARK)) {
+    hasHomeSeriesGrid = true
     currentSection = source.slice(
       source.indexOf(BEGIN_MARK),
       source.indexOf(END_MARK) + END_MARK.length,
     )
   } else {
     const m = source.match(/<div class="fpe-learning-paths">[\s\S]*?<\/div>/m)
+    hasHomeSeriesGrid = Boolean(m)
     currentSection = m ? m[0] : ""
   }
-  const existing = parseExisting(currentSection)
-  const merged = applySeriesPlan(existing, plan)
-  const newSection = buildSection(merged)
-  const next = spliceSeries(source, newSection)
 
   let homeChanged = false
-  if (next !== source) {
-    homeChanged = true
-    if (!dryRun) await fs.writeFile(indexPath, next, "utf8")
+  let merged = []
+  if (hasHomeSeriesGrid) {
+    const existing = parseExisting(currentSection)
+    merged = applySeriesPlan(existing, plan)
+    const newSection = buildSection(merged)
+    const next = spliceSeries(source, newSection)
+    if (next !== source) {
+      homeChanged = true
+      if (!dryRun) await fs.writeFile(indexPath, next, "utf8")
+    }
   }
 
   // 2. Write landing pages.

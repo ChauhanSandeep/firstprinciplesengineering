@@ -175,6 +175,7 @@ plugins:
     layout:
       position: afterBody
       priority: 100
+      condition: not-index
   - source: github:quartz-community/article-title
     enabled: true
     layout:

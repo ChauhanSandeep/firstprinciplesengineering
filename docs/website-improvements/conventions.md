@@ -16,13 +16,13 @@ documented; missing values fall back gracefully.
 | `description`       | recommended       | first paragraph                                  | Page description + OG fallback. Phase 6 prefers 130–160 chars.                      |
 | `socialDescription` | optional          | `description`                                    | OG image text override.                                                             |
 | `tags`              | optional          | path-based auto-tag                              | User tags are merged with auto-tags (Phase 8); never overwritten.                   |
-| `featured`          | optional          | `false`                                          | Promote to home `## Featured` grid.                                                 |
+| `featured`          | optional          | `false`                                          | Promote to home `## Recommended Reads` grid.                                        |
 | `card_eyebrow`      | optional          | first folder segment, stripped of `NN-`          | Eyebrow on the home card.                                                           |
 | `card_title`        | optional          | H1                                               | Short title on the home card.                                                       |
 | `card_description`  | optional          | drafted by the publish skill                     | One-sentence pitch in the site's voice.                                             |
-| `card_order`        | optional          | recency                                          | Stable position in the Featured grid (lower = earlier).                             |
+| `card_order`        | optional          | recency                                          | Stable position in the Recommended Reads grid (lower = earlier).                    |
 | `status`            | optional          | computed from vault git history                  | `new`, `updated`, `evergreen` (Phase 11). `evergreen` suppresses the badge.         |
-| `popular`           | optional          | `false`                                          | Promote to home `## Popular` list until analytics is live.                          |
+| `popular`           | optional          | `false`                                          | Legacy flag; homepage now uses one curated Recommended Reads grid.                  |
 
 Series membership is **not** declared per-note. It lives in the
 `02-Series/<slug>.md` landing page under a `## Read in order` list
@@ -35,7 +35,7 @@ All are idempotent via a marker class or id.
 
 | Script                            | Purpose                                                    | Marker                                  |
 | --------------------------------- | ---------------------------------------------------------- | --------------------------------------- |
-| `inject-recent.mjs`               | Replaces `<!-- recent:auto -->` on home with 5 newest notes | comment marker                          |
+| `inject-recent.mjs`               | Legacy Recent injector; skips when the home Recent slot is absent | `id="fpe-recent-auto-slot"` if present |
 | `inject-topic-nav.mjs`            | Adds `<TopicNav>` strip to landing pages                    | `class="fpe-topic-nav"`                 |
 | `inject-prev-next-related.mjs`    | Footer prev/next + Related block                            | `class="fpe-prev-next-related"`         |
 | `inject-series-header.mjs`        | Top-of-article series wayfinding banner                     | `id="fpe-series-header"`                |
@@ -60,7 +60,7 @@ a `--plan` argument.
 | `validate-series.mjs`        | Phase 9: ensure series order is contiguous + members resolve   |
 | `seo-audit.mjs`              | Phase 6: title/desc length, OG, canonical, JSON-LD             |
 | `suggest-crosslinks.mjs`     | Phase 8: candidate wikilink insertions per note                |
-| `update-home-cards.mjs`      | Mutate `content/index.md` Featured grid                        |
+| `update-home-cards.mjs`      | Mutate `content/index.md` Recommended Reads grid               |
 | `manage-series.mjs`          | Create/update `02-Series/*.md` landing pages                   |
 | `playwright-smoke.mjs`       | Light/dark/mobile smoke pass against local or live URL          |
 | `render-report.mjs`          | Markdown report of a publish run                                |
