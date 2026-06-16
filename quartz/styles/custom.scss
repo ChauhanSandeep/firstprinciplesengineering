@@ -3240,7 +3240,7 @@ body .backlinks > ul.overflow {
     max-width: 56ch;
   }
   & > #cusdis_thread {
-    min-height: 4rem;
+    min-height: 360px;
     // Cusdis embeds a singleton iframe and resizes it via postMessage
     // (event: "resize", data: pixel height). Before the resize message
     // fires (and as a floor for the empty-form layout), give the iframe

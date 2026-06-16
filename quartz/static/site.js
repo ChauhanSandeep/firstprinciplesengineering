@@ -367,6 +367,78 @@
     left.appendChild(social)
   }
 
+  function currentSiteTheme() {
+    const t = document.documentElement.getAttribute("saved-theme")
+    if (t === "dark" || t === "light") return t
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+  }
+
+  function renderCusdis(mount) {
+    if (!mount) return
+    if (window.CUSDIS && typeof window.CUSDIS.renderTo === "function") {
+      window.CUSDIS.renderTo(mount)
+    }
+  }
+
+  function ensureCusdis() {
+    const mount = document.getElementById("cusdis_thread")
+    if (!mount) return
+
+    const theme = currentSiteTheme()
+    if (mount.dataset.theme !== theme) {
+      mount.dataset.theme = theme
+    }
+
+    const host = mount.dataset.host || "https://cusdis.com"
+    const existingScript = document.querySelector("script[data-fpe-cusdis]")
+
+    if (window.CUSDIS && typeof window.CUSDIS.renderTo === "function") {
+      if (!mount.querySelector("iframe") || mount.dataset.fpeCusdisTheme !== theme) {
+        mount.dataset.fpeCusdisTheme = theme
+        renderCusdis(mount)
+      }
+      return
+    }
+
+    if (existingScript) return
+
+    const script = document.createElement("script")
+    script.src = host.replace(/\/$/, "") + "/js/cusdis.es.js"
+    script.async = true
+    script.defer = true
+    script.dataset.fpeCusdis = "1"
+    script.onload = function () {
+      const currentMount = document.getElementById("cusdis_thread")
+      if (!currentMount) return
+      currentMount.dataset.theme = currentSiteTheme()
+      currentMount.dataset.fpeCusdisTheme = currentMount.dataset.theme
+      renderCusdis(currentMount)
+    }
+    document.head.appendChild(script)
+  }
+
+  let cusdisThemeObserverInstalled = false
+
+  function ensureCusdisThemeObserver() {
+    if (cusdisThemeObserverInstalled) return
+    cusdisThemeObserverInstalled = true
+    new MutationObserver(function () {
+      const mount = document.getElementById("cusdis_thread")
+      if (!mount) return
+      const theme = currentSiteTheme()
+      if (mount.dataset.theme === theme && mount.dataset.fpeCusdisTheme === theme) return
+      mount.dataset.theme = theme
+      mount.dataset.fpeCusdisTheme = theme
+      renderCusdis(mount)
+    }).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["saved-theme"],
+    })
+  }
+
   function init() {
     hydrateCodeBlocks(document)
     ensureProgressBar()
@@ -378,6 +450,8 @@
     ensureRichFooter()
     polishToc(document)
     ensureSidebarSocial()
+    ensureCusdisThemeObserver()
+    ensureCusdis()
   }
 
   if (document.readyState === "loading") {
