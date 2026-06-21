@@ -359,12 +359,32 @@ article {
   }
 }
 
+.fpe-sidebar-reading-controls {
+  width: 100%;
+  margin-top: -0.45rem;
+  padding: 0.55rem 0.5rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--light) 88%, var(--lightgray));
+  box-sizing: border-box;
+}
+
+.fpe-sidebar-section-label {
+  margin: 0 0 0.45rem;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .fpe-sidebar-tool-row {
   display: flex;
   align-items: center;
   gap: 0.55rem;
   width: 100%;
-  margin-top: -0.55rem;
 
   & > div {
     display: inline-flex;
@@ -373,6 +393,7 @@ article {
 
   & .fpe-font-size-control {
     flex: 1 1 auto;
+    min-width: 0;
   }
 
   & .readermode,
@@ -1393,9 +1414,16 @@ ul.toc-content.overflow {
   & .sidebar.left .darkmode,
   & .sidebar.left .explorer,
   & .sidebar.left .fpe-font-size-control,
+  & .sidebar.left .fpe-sidebar-section-label,
   & .sidebar.left .page-title,
   & .sidebar.left h2.page-title-text {
     display: none !important;
+  }
+  & .sidebar.left .fpe-sidebar-reading-controls {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
   }
   & .sidebar.right {
     display: none !important;
@@ -2325,6 +2353,22 @@ body .backlinks > ul.overflow {
   .explorer .mobile-explorer .lucide-menu {
     width: 28px;
     height: 28px;
+  }
+
+  // The explorer plugin stores the closed mobile state in data/ARIA attrs
+  // after hydration, while its stylesheet only targets a `.collapsed` class.
+  // Keep the hidden panel from covering the search + reading controls.
+  body .page > #quartz-body .sidebar.left .explorer[data-collapsed="collapsed"] > .explorer-content,
+  body .page > #quartz-body .sidebar.left .explorer > .explorer-content[aria-expanded="false"] {
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translate(-100vw) !important;
+  }
+
+  body .page > #quartz-body .sidebar.left .explorer > .explorer-content[aria-expanded="true"] {
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translate(0) !important;
   }
 }
 
