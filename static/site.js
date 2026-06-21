@@ -403,25 +403,50 @@
     applyArticleFontSize(readArticleFontSize())
 
     const left = document.querySelector(".sidebar.left")
-    if (!left || left.querySelector(".fpe-font-size-control")) return
+    if (!left) return
 
-    const control = document.createElement("div")
-    control.className = "fpe-font-size-control"
-    control.setAttribute("aria-label", "Article font size")
-    control.innerHTML =
-      '<button type="button" data-fpe-font-inc aria-label="Increase article font size" title="Increase font size">+</button>' +
-      '<span class="fpe-font-size-value" aria-live="polite"></span>' +
-      '<button type="button" data-fpe-font-dec aria-label="Decrease article font size" title="Decrease font size">−</button>'
+    let control = left.querySelector(".fpe-font-size-control")
+    if (!control) {
+      control = document.createElement("div")
+      control.className = "fpe-font-size-control"
+      control.setAttribute("aria-label", "Article font size")
+      control.innerHTML =
+        '<button type="button" data-fpe-font-inc aria-label="Increase article font size" title="Increase font size">+</button>' +
+        '<span class="fpe-font-size-value" aria-live="polite"></span>' +
+        '<button type="button" data-fpe-font-dec aria-label="Decrease article font size" title="Decrease font size">−</button>'
 
-    control.querySelector("[data-fpe-font-dec]").addEventListener("click", () => {
-      applyArticleFontSize(readArticleFontSize() - ARTICLE_FONT_STEP)
-    })
-    control.querySelector("[data-fpe-font-inc]").addEventListener("click", () => {
-      applyArticleFontSize(readArticleFontSize() + ARTICLE_FONT_STEP)
-    })
+      control.querySelector("[data-fpe-font-dec]").addEventListener("click", () => {
+        applyArticleFontSize(readArticleFontSize() - ARTICLE_FONT_STEP)
+      })
+      control.querySelector("[data-fpe-font-inc]").addEventListener("click", () => {
+        applyArticleFontSize(readArticleFontSize() + ARTICLE_FONT_STEP)
+      })
+    }
 
+    const toolbar = Array.from(left.querySelectorAll(".flex-component")).find((el) =>
+      el.querySelector(".search"),
+    )
     const explorer = left.querySelector(".explorer")
-    left.insertBefore(control, explorer || left.firstChild)
+    if (toolbar) {
+      let controlsRow = left.querySelector(".fpe-sidebar-tool-row")
+      if (!controlsRow) {
+        controlsRow = document.createElement("div")
+        controlsRow.className = "fpe-sidebar-tool-row"
+      }
+      if (controlsRow.parentElement !== left) {
+        left.insertBefore(controlsRow, toolbar.nextSibling)
+      }
+
+      const readerSlot = left.querySelector(".readermode")?.parentElement
+      const darkSlot = left.querySelector(".darkmode")?.parentElement
+      controlsRow.appendChild(control)
+      if (readerSlot) controlsRow.appendChild(readerSlot)
+      if (darkSlot) controlsRow.appendChild(darkSlot)
+
+      left.querySelectorAll(".fpe-font-size-toolbar-slot").forEach((slot) => slot.remove())
+    } else if (control.parentElement !== left) {
+      left.insertBefore(control, explorer || left.firstChild)
+    }
     applyArticleFontSize(readArticleFontSize())
   }
 
