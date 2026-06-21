@@ -1,244 +1,244 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/01-distributed-systems-primitives</loc>
-    <lastmod>2026-06-21T17:15:23.455Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/01-distributed-systems-primitives</loc>
+    <lastmod>2026-06-21T17:28:36.879Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/02-logical-clocks</loc>
-    <lastmod>2026-06-21T17:15:23.456Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/02-logical-clocks</loc>
+    <lastmod>2026-06-21T17:28:36.881Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm</loc>
-    <lastmod>2026-06-21T17:15:23.459Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm</loc>
+    <lastmod>2026-06-21T17:28:36.884Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock</loc>
-    <lastmod>2026-06-21T17:15:23.461Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock</loc>
+    <lastmod>2026-06-21T17:28:36.886Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions</loc>
-    <lastmod>2026-06-21T17:15:23.464Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions</loc>
+    <lastmod>2026-06-21T17:28:36.889Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol</loc>
-    <lastmod>2026-06-21T17:15:23.465Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol</loc>
+    <lastmod>2026-06-21T17:28:36.890Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/07-microservices</loc>
-    <lastmod>2026-06-21T17:15:23.469Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/07-microservices</loc>
+    <lastmod>2026-06-21T17:28:36.893Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration</loc>
-    <lastmod>2026-06-21T17:15:23.471Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration</loc>
+    <lastmod>2026-06-21T17:28:36.894Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/02-event-sourcing-cqrs</loc>
-    <lastmod>2026-06-21T17:15:23.471Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/02-event-sourcing-cqrs</loc>
+    <lastmod>2026-06-21T17:28:36.895Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies</loc>
-    <lastmod>2026-06-21T17:15:23.472Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies</loc>
+    <lastmod>2026-06-21T17:28:36.896Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking</loc>
-    <lastmod>2026-06-21T17:15:23.474Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking</loc>
+    <lastmod>2026-06-21T17:28:36.897Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/05-strangler-fig</loc>
-    <lastmod>2026-06-21T17:15:23.475Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/05-strangler-fig</loc>
+    <lastmod>2026-06-21T17:28:36.898Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/06-backend-for-frontend</loc>
-    <lastmod>2026-06-21T17:15:23.477Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/06-backend-for-frontend</loc>
+    <lastmod>2026-06-21T17:28:36.900Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/07-multi-tenancy</loc>
-    <lastmod>2026-06-21T17:15:23.478Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/07-multi-tenancy</loc>
+    <lastmod>2026-06-21T17:28:36.902Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/01-big-data-stream-processing</loc>
-    <lastmod>2026-06-21T17:15:23.480Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/03-data/01-big-data-stream-processing</loc>
+    <lastmod>2026-06-21T17:28:36.904Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/02-change-data-capture</loc>
-    <lastmod>2026-06-21T17:15:23.481Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/03-data/02-change-data-capture</loc>
+    <lastmod>2026-06-21T17:28:36.906Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/03-data-pipeline</loc>
-    <lastmod>2026-06-21T17:15:23.483Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/03-data/03-data-pipeline</loc>
+    <lastmod>2026-06-21T17:28:36.908Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/01-caching-techniques</loc>
-    <lastmod>2026-06-21T17:15:23.486Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/04-caching/01-caching-techniques</loc>
+    <lastmod>2026-06-21T17:28:36.914Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/02-consistent-hashing</loc>
-    <lastmod>2026-06-21T17:15:23.487Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/04-caching/02-consistent-hashing</loc>
+    <lastmod>2026-06-21T17:28:36.916Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/01-api-design</loc>
-    <lastmod>2026-06-21T17:15:23.488Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/05-api/01-api-design</loc>
+    <lastmod>2026-06-21T17:28:36.917Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/02-api-gateway</loc>
-    <lastmod>2026-06-21T17:15:23.489Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/05-api/02-api-gateway</loc>
+    <lastmod>2026-06-21T17:28:36.918Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/03-graphql</loc>
-    <lastmod>2026-06-21T17:15:23.493Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/05-api/03-graphql</loc>
+    <lastmod>2026-06-21T17:28:36.921Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/04-grpc-rpc</loc>
-    <lastmod>2026-06-21T17:15:23.496Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/05-api/04-grpc-rpc</loc>
+    <lastmod>2026-06-21T17:28:36.924Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/01-cryptographic-primitives</loc>
-    <lastmod>2026-06-21T17:15:23.498Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/01-cryptographic-primitives</loc>
+    <lastmod>2026-06-21T17:28:36.926Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/02-cryptography-authentication</loc>
-    <lastmod>2026-06-21T17:15:23.500Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/02-cryptography-authentication</loc>
+    <lastmod>2026-06-21T17:28:36.929Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/03-authorization-concepts</loc>
-    <lastmod>2026-06-21T17:15:23.504Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/03-authorization-concepts</loc>
+    <lastmod>2026-06-21T17:28:36.932Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/01-observability</loc>
-    <lastmod>2026-06-21T17:15:23.508Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/07-operations/01-observability</loc>
+    <lastmod>2026-06-21T17:28:36.935Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/02-testing-strategies</loc>
-    <lastmod>2026-06-21T17:15:23.511Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/07-operations/02-testing-strategies</loc>
+    <lastmod>2026-06-21T17:28:36.938Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/03-container-and-image-internals</loc>
-    <lastmod>2026-06-21T17:15:23.514Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/07-operations/03-container-and-image-internals</loc>
+    <lastmod>2026-06-21T17:28:36.941Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/01-database-concepts</loc>
-    <lastmod>2026-06-21T17:15:23.517Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/01-database-concepts</loc>
+    <lastmod>2026-06-21T17:28:36.944Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/02-cap-and-pacelc</loc>
-    <lastmod>2026-06-21T17:15:23.518Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/02-cap-and-pacelc</loc>
+    <lastmod>2026-06-21T17:28:36.945Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels</loc>
-    <lastmod>2026-06-21T17:15:23.520Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels</loc>
+    <lastmod>2026-06-21T17:28:36.947Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/06-mvcc</loc>
-    <lastmod>2026-06-21T17:15:23.521Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/06-mvcc</loc>
+    <lastmod>2026-06-21T17:28:36.949Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/01-01-redis</loc>
-    <lastmod>2026-06-21T17:15:23.526Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/02-nosql/01-01-redis</loc>
+    <lastmod>2026-06-21T17:28:36.955Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/03-dynamodb</loc>
-    <lastmod>2026-06-21T17:15:23.527Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/02-nosql/03-dynamodb</loc>
+    <lastmod>2026-06-21T17:28:36.957Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/01-kafka</loc>
-    <lastmod>2026-06-21T17:15:23.530Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/01-kafka</loc>
+    <lastmod>2026-06-21T17:28:36.960Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/07-spanner</loc>
-    <lastmod>2026-06-21T17:15:23.533Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/07-spanner</loc>
+    <lastmod>2026-06-21T17:28:36.963Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/01-tcp-udp-quic</loc>
-    <lastmod>2026-06-21T17:15:23.536Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/01-tcp-udp-quic</loc>
+    <lastmod>2026-06-21T17:28:36.965Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/02-http-1-2-3</loc>
-    <lastmod>2026-06-21T17:15:23.537Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/02-http-1-2-3</loc>
+    <lastmod>2026-06-21T17:28:36.967Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/03-tls-and-mtls</loc>
-    <lastmod>2026-06-21T17:15:23.538Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/03-tls-and-mtls</loc>
+    <lastmod>2026-06-21T17:28:36.968Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/04-api-protocols-compared</loc>
-    <lastmod>2026-06-21T17:15:23.539Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/04-api-protocols-compared</loc>
+    <lastmod>2026-06-21T17:28:36.969Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/05-load-balancers</loc>
-    <lastmod>2026-06-21T17:15:23.540Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/05-load-balancers</loc>
+    <lastmod>2026-06-21T17:28:36.970Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/06-dns-geodns-anycast</loc>
-    <lastmod>2026-06-21T17:15:23.541Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/06-dns-geodns-anycast</loc>
+    <lastmod>2026-06-21T17:28:36.971Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/01-ml-system-design-fundamentals</loc>
-    <lastmod>2026-06-21T17:15:23.542Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/05-ai-ml/01-ml-system-design-fundamentals</loc>
+    <lastmod>2026-06-21T17:28:36.972Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/04-rag-architecture</loc>
-    <lastmod>2026-06-21T17:15:23.543Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/05-ai-ml/04-rag-architecture</loc>
+    <lastmod>2026-06-21T17:28:36.974Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/05-model-serving</loc>
-    <lastmod>2026-06-21T17:15:23.545Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/05-ai-ml/05-model-serving</loc>
+    <lastmod>2026-06-21T17:28:36.975Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/03-roadmaps/ai-systems-roadmap</loc>
-    <lastmod>2026-06-21T17:15:23.550Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/03-roadmaps/ai-systems-roadmap</loc>
+    <lastmod>2026-06-21T17:28:36.980Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/03-roadmaps/foundations-roadmap</loc>
-    <lastmod>2026-06-21T17:15:23.551Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/03-roadmaps/foundations-roadmap</loc>
+    <lastmod>2026-06-21T17:28:36.981Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/03-roadmaps/</loc>
-    <lastmod>2026-06-21T17:15:23.551Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/03-roadmaps/</loc>
+    <lastmod>2026-06-21T17:28:36.981Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/03-roadmaps/system-design-interviews-roadmap</loc>
-    <lastmod>2026-06-21T17:15:23.552Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/03-roadmaps/system-design-interviews-roadmap</loc>
+    <lastmod>2026-06-21T17:28:36.982Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/about</loc>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/about</loc>
     <lastmod>2026-06-15T19:15:48.000Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/</loc>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/</loc>
     <lastmod>2026-06-21T16:43:54.000Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/01-distributed-systems/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/02-architecture/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/03-data/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/04-caching/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/05-api/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/06-security/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/01-concepts/07-operations/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/01-fundamentals/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/02-databases/02-nosql/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/03-technologies/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/04-networking/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/01-fundamentals/05-ai-ml/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/distributed-systems</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/distributed-systems</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/architecture</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/architecture</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/data</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/data</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/caching</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/caching</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/apis</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/apis</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/security</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/security</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/operations</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/operations</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/databases</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/databases</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/nosql</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/nosql</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/systems</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/systems</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/networking</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/networking</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/ai-systems</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/ai-systems</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/roadmap</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/roadmap</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url><url>
-    <loc>https://firstprinciplesengineering.tech/tags/</loc>
-    <lastmod>2026-06-21T17:15:27.371Z</lastmod>
+    <loc>https://chauhansandeep.github.io/firstprinciplesengineering/tags/</loc>
+    <lastmod>2026-06-21T17:28:40.475Z</lastmod>
   </url></urlset>
