@@ -13,6 +13,7 @@
 :root {
   --accent-success: #5c8f4e;
   --accent-danger: #b5341a;
+  --fpe-article-font-size: 16px;
 }
 :root[saved-theme="dark"] {
   --accent-success: #7fb868;
@@ -51,6 +52,7 @@ body {
 
 // ---- Body typography -----------------------------------------------------
 article {
+  font-size: var(--fpe-article-font-size);
   line-height: 1.75;
 
   // Inter has excellent stylistic alternates; opt in to "cv11" (single-storey a)
@@ -60,6 +62,7 @@ article {
     font-weight: 600;
     font-feature-settings: "ss01", "cv11";
   }
+
   h1 { letter-spacing: -0.02em; }
 
   // ---- Heading hierarchy (W2-P4) ---------------------------------------
@@ -269,6 +272,123 @@ article {
   // Excalidraw + image breathing room (existing img:auto rules set margin
   // too; this is the consistent baseline for any block image).
   figure { margin: 2rem auto; }
+}
+
+// ---- Article font-size control -------------------------------------------
+// Injected into the left sidebar by quartz/static/site.js. The control adjusts
+// article prose only, leaving global navigation chrome stable.
+.fpe-font-size-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: fit-content;
+  min-width: 106px;
+  padding: 0.2rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--light) 92%, var(--lightgray));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  & button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 7px;
+    padding: 0;
+    background: transparent;
+    color: var(--darkgray);
+    font: 600 1rem/1 var(--headerFont);
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 120ms ease,
+      opacity 150ms ease;
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--secondary) 12%, transparent);
+      color: var(--secondary);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 22%, transparent);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.35;
+      transform: none;
+    }
+  }
+}
+
+.fpe-font-size-value {
+  min-width: 38px;
+  text-align: center;
+  color: var(--darkgray);
+  font: 500 0.75rem/1 var(--headerFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.page > #quartz-body > .sidebar.left .flex-component:has(.search) {
+  width: 100%;
+
+  & > div:has(.search) {
+    flex: 1 1 100% !important;
+    min-width: 0;
+  }
+
+  & .search {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
+
+  & .search > .search-button {
+    width: 100%;
+  }
+}
+
+.fpe-sidebar-tool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  margin-top: -0.55rem;
+
+  & > div {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  & .fpe-font-size-control {
+    flex: 1 1 auto;
+  }
+
+  & .readermode,
+  & .darkmode {
+    flex: 0 0 auto;
+  }
+}
+
+.page > #quartz-body > .sidebar.left .fpe-sidebar-tool-row {
+  & .readermode {
+    order: 2;
+  }
+
+  & .darkmode {
+    order: 3;
+  }
 }
 
 // ---- Article page title (h1.article-title) is outside <article> ----------
@@ -1272,6 +1392,7 @@ ul.toc-content.overflow {
   & .sidebar.left .search,
   & .sidebar.left .darkmode,
   & .sidebar.left .explorer,
+  & .sidebar.left .fpe-font-size-control,
   & .sidebar.left .page-title,
   & .sidebar.left h2.page-title-text {
     display: none !important;
