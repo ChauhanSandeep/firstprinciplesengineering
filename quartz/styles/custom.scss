@@ -2142,20 +2142,24 @@ body[data-slug="about"] {
   .note-properties { display: none !important; }
 }
 
-// ---- Backlinks: cap height + enable scroll ------------------------------
-// The upstream @quartz-community/backlinks plugin sets
-// `max-height: calc(100% - 2rem)` on the `<ul>` and never sets `overflow-y`.
-// Because backlinks are placed at `afterBody` (in the main column, not a
-// fixed-height sidebar), the percentage cap resolves against an unbounded
-// parent → effectively `none` → the list grows arbitrarily tall and never
-// scrolls. Cap it explicitly so heavily-linked notes don't push half the
-// page off-screen.
+// ---- Backlinks: rely on page scroll --------------------------------------
+// The upstream @quartz-community/backlinks plugin renders its list as an
+// inner scroll container with `overscroll-behavior: contain`. Since backlinks
+// live at `afterBody` in the main reading column, that traps wheel/touch scroll
+// at the bottom of the page. Let the list expand naturally and rely on the
+// document's normal scrolling instead.
 //
-// Selector is body-prefixed because Quartz loads custom.scss BEFORE the
+// Selectors are body-prefixed because Quartz loads custom.scss BEFORE the
 // component CSS; same-specificity rules would lose the cascade.
+body .backlinks {
+  max-height: none;
+  overflow-y: visible;
+}
+
 body .backlinks > ul.overflow {
-  max-height: min(40vh, 280px);
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
+  overscroll-behavior: auto;
 }
 
 // ---- Explorer polish ----------------------------------------------------

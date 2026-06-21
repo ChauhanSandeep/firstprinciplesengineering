@@ -16,7 +16,7 @@
  * Status — placeholder. To enable:
  *
  *   1. Sign up at https://plausible.io and add this domain:
- *      chauhansandeep.github.io/firstprinciplesengineering
+ *      firstprinciplesengineering.tech
  *      (or set up self-hosted Plausible if you want $0).
  *   2. Set `enabled: true` below.
  *   3. (Optional) toggle the addOnVariants — outbound-links and
@@ -33,7 +33,7 @@ export default {
 
   // The site domain registered in Plausible. For self-hosted,
   // change `scriptHost` too.
-  domain: "chauhansandeep.github.io/firstprinciplesengineering",
+  domain: "firstprinciplesengineering.tech",
 
   // Plausible script host. Use "https://plausible.io" for hosted,
   // your own URL for self-hosted.

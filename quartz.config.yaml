@@ -5,7 +5,7 @@ configuration:
   enableSPA: true
   enablePopovers: true
   locale: en-US
-  baseUrl: chauhansandeep.github.io/firstprinciplesengineering
+  baseUrl: firstprinciplesengineering.tech
   ignorePatterns:
     - private
     - templates
@@ -38,24 +38,24 @@ configuration:
       # orange / clay. Same warm structure as the fly hybrid, but pivoted
       # to Anthropic's signature warm-clay accent palette.
       lightMode:
-        light: "#f5f1e6"          # Anthropic "Oat" — warm beige page background
-        lightgray: "#e6e0cf"      # warm beige surfaces / borders / card bg
-        gray: "#8c7e6a"           # warm muted — secondary text / icons
-        darkgray: "#5a4f40"       # warm subtext
-        dark: "#1f1b16"           # near-black, warm — primary text
-        secondary: "#cc785c"      # Anthropic "Book Cloth" — muted terracotta accent / links
-        tertiary: "#a05a3f"       # deeper clay — second accent
+        light: "#f5f1e6" # Anthropic "Oat" — warm beige page background
+        lightgray: "#e6e0cf" # warm beige surfaces / borders / card bg
+        gray: "#8c7e6a" # warm muted — secondary text / icons
+        darkgray: "#5a4f40" # warm subtext
+        dark: "#1f1b16" # near-black, warm — primary text
+        secondary: "#cc785c" # Anthropic "Book Cloth" — muted terracotta accent / links
+        tertiary: "#a05a3f" # deeper clay — second accent
         highlight: rgba(204, 120, 92, 0.08)
         textHighlight: rgba(204, 120, 92, 0.28)
       # Warm-dark companion — terracotta/clay lifted for dark-mode contrast
       darkMode:
-        light: "#1a1714"          # warm near-black — page background
-        lightgray: "#2c2823"      # lifted surfaces / borders / card bg
-        gray: "#8b8273"           # warm muted
-        darkgray: "#b8afa0"       # warm subtext
-        dark: "#ede6d6"           # warm off-white — primary text
-        secondary: "#d99077"      # terracotta, lifted for dark
-        tertiary: "#bb7159"       # clay, lifted for dark
+        light: "#1a1714" # warm near-black — page background
+        lightgray: "#2c2823" # lifted surfaces / borders / card bg
+        gray: "#8b8273" # warm muted
+        darkgray: "#b8afa0" # warm subtext
+        dark: "#ede6d6" # warm off-white — primary text
+        secondary: "#d99077" # terracotta, lifted for dark
+        tertiary: "#bb7159" # clay, lifted for dark
         highlight: rgba(217, 144, 119, 0.12)
         textHighlight: rgba(217, 144, 119, 0.32)
 plugins:
@@ -216,7 +216,7 @@ plugins:
     options:
       links:
         Source (Quartz): https://github.com/jackyzha0/quartz
-        RSS: /firstprinciplesengineering/index.xml
+        RSS: /index.xml
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer

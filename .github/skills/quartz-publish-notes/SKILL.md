@@ -1,16 +1,16 @@
 ---
 name: quartz-publish-notes
 description: >-
-    End-to-end publishing of new and changed notes from the private Obsidian
-    vault at ~/Idea/ObisdianNotes to the live Quartz site at
-    https://chauhansandeep.github.io/firstprinciplesengineering. Discovers
-    notes flagged `publish: true`, validates Excalidraw dark/light pairs and
-    wikilinks, updates the home Recommended Reads cards,
-    builds, validates with Playwright (light/dark/mobile), deploys to
-    gh-pages, and emits a structured report. Stops only on critical issues.
-    Invoke when the user says things like "publish my new notes",
-    "ship the latest from the vault", "update the site with my latest notes",
-    or "quartz-publish-notes".
+  End-to-end publishing of new and changed notes from the private Obsidian
+  vault at ~/Idea/ObisdianNotes to the live Quartz site at
+  https://firstprinciplesengineering.tech. Discovers
+  notes flagged `publish: true`, validates Excalidraw dark/light pairs and
+  wikilinks, updates the home Recommended Reads cards,
+  builds, validates with Playwright (light/dark/mobile), deploys to
+  gh-pages, and emits a structured report. Stops only on critical issues.
+  Invoke when the user says things like "publish my new notes",
+  "ship the latest from the vault", "update the site with my latest notes",
+  or "quartz-publish-notes".
 user-invocable: true
 ---
 
@@ -49,7 +49,7 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 - Site repo: `/Users/sandeep/Idea/FirstPrinciplesEngineering` (Quartz v5)
 - Vault repo: `/Users/sandeep/Idea/ObisdianNotes` (private, separate git root)
 - Vault path is configured in `publish.config.mjs` → `vaultRoot`
-- Site is published at https://chauhansandeep.github.io/firstprinciplesengineering
+- Site is published at https://firstprinciplesengineering.tech
 - Build pipeline: `npm run sync` (vault → content/) → `npx quartz build` (content → public/) → `npm run fix-paths` (rewrite Excalidraw URLs + apply dark/light pair). `npm run build` runs all three. `npm run deploy` runs build + gh-pages push.
 - Existing safety net: `scripts/pre-commit-guard.sh` rejects commits to `content/*` other than `index.md`, `about.md`, `_static/**`.
 - The home page (`content/index.md`) has one primary article-card section:
@@ -60,21 +60,21 @@ from elsewhere, but `npm run …` does not — so always anchor first.
 
 ## Frontmatter convention (vault notes)
 
-| Key                 | Required          | Default                                   | Effect                                                                              |
-| ------------------- | ----------------- | ----------------------------------------- | ----------------------------------------------------------------------------------- |
-| `publish`           | yes (for publish) | —                                         | `true` = publish; `false` = always skip.                                            |
-| `published_at`      | recommended       | git created date                          | First public publication date, `YYYY-MM-DD`; used by status badges and home rail.   |
-| `updated_at`        | recommended       | git modified date                         | Last meaningful public update date, `YYYY-MM-DD`; used by status badges and home rail. |
-| `status`            | recommended       | date-derived                              | Public badge: `new`, `updated`, or `evergreen` to suppress the badge.               |
-| `title`             | yes               | —                                         | Page title.                                                                         |
-| `description`       | recommended       | first paragraph                           | Page description and (fallback) social description.                                 |
-| `socialDescription` | optional          | `description`                             | OG-image text override.                                                             |
-| `tags`              | optional          | —                                         | Tag list.                                                                           |
-| `featured`          | optional          | `false`                                   | Promote to home `## Recommended Reads` grid.                                        |
-| `card_eyebrow`      | optional          | first folder segment, stripped of `NN-`   | Eyebrow label on the card.                                                          |
-| `card_title`        | optional          | H1                                        | Short title on the card.                                                            |
-| `card_description`  | optional          | drafted by skill                          | One-sentence pitch in the site's voice.                                             |
-| `card_order`        | optional          | recency                                   | Stable position in the Recommended Reads grid (lower = earlier).                    |
+| Key                 | Required          | Default                                 | Effect                                                                                 |
+| ------------------- | ----------------- | --------------------------------------- | -------------------------------------------------------------------------------------- |
+| `publish`           | yes (for publish) | —                                       | `true` = publish; `false` = always skip.                                               |
+| `published_at`      | recommended       | git created date                        | First public publication date, `YYYY-MM-DD`; used by status badges and home rail.      |
+| `updated_at`        | recommended       | git modified date                       | Last meaningful public update date, `YYYY-MM-DD`; used by status badges and home rail. |
+| `status`            | recommended       | date-derived                            | Public badge: `new`, `updated`, or `evergreen` to suppress the badge.                  |
+| `title`             | yes               | —                                       | Page title.                                                                            |
+| `description`       | recommended       | first paragraph                         | Page description and (fallback) social description.                                    |
+| `socialDescription` | optional          | `description`                           | OG-image text override.                                                                |
+| `tags`              | optional          | —                                       | Tag list.                                                                              |
+| `featured`          | optional          | `false`                                 | Promote to home `## Recommended Reads` grid.                                           |
+| `card_eyebrow`      | optional          | first folder segment, stripped of `NN-` | Eyebrow label on the card.                                                             |
+| `card_title`        | optional          | H1                                      | Short title on the card.                                                               |
+| `card_description`  | optional          | drafted by skill                        | One-sentence pitch in the site's voice.                                                |
+| `card_order`        | optional          | recency                                 | Stable position in the Recommended Reads grid (lower = earlier).                       |
 
 ## Phases — run in order
 
@@ -141,6 +141,7 @@ are collected for the report and **do not stop the run**.
 ### 6. Validate live (local)
 
 Run `node scripts/publish/playwright-smoke.mjs --local --slugs <slugs.txt>` which:
+
 - Boots a `python3 -m http.server` on a free port serving `public/`.
 - Asserts every new/changed page + home in light, dark, mobile.
 - Asserts HTTP 200, no console errors, H1 present, Excalidraw pair images
@@ -160,6 +161,7 @@ Failure → critical, dump screenshot, stop.
   final smoke pass against the live URL.
 
 Always include this trailer on commits the skill makes:
+
 ```
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ```
@@ -189,7 +191,7 @@ Save the report to
   rejects a commit, treat it as a critical bug in the skill (not a thing
   to override).
 - **Never commit anything under `content/*` other than `index.md`,
-  `about.md`, `_static/**`.** The sync script wipes `content/` on every
+  `about.md`, `\_static/**`.** The sync script wipes `content/` on every
   build; only those three are persistent.
 - **Vault edits go in the vault repo. Site edits go in the site repo.**
   These are independent git roots and must be committed separately.
@@ -202,19 +204,19 @@ Save the report to
 
 ## When to ask vs decide
 
-| Situation                                          | Behavior            |
-| -------------------------------------------------- | ------------------- |
-| Card description missing, intro is clear           | Auto-draft, log to Follow-ups |
-| Card description missing, intro is unclear         | Stop, prompt        |
-| Series doesn't exist yet, 3+ notes share the slug  | Auto-create page, log to Follow-ups |
-| Series doesn't exist yet, 1-2 notes share the slug | Stop, prompt        |
+| Situation                                          | Behavior                                                  |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| Card description missing, intro is clear           | Auto-draft, log to Follow-ups                             |
+| Card description missing, intro is unclear         | Stop, prompt                                              |
+| Series doesn't exist yet, 3+ notes share the slug  | Auto-create page, log to Follow-ups                       |
+| Series doesn't exist yet, 1-2 notes share the slug | Stop, prompt                                              |
 | Excalidraw dark variant missing                    | Warn, continue (pipeline duplicates light into dark slot) |
-| Excalidraw light AND dark both missing             | Stop, prompt        |
-| Wikilink to unpublished note                       | Stop, prompt        |
-| Featured grid > 12 cards after additions           | Stop, prompt        |
-| Adding 1–5 notes                                   | Auto-proceed        |
-| Adding > 5 notes                                   | Stop, confirm scope |
-| Build / Playwright failure                         | Stop, surface error |
+| Excalidraw light AND dark both missing             | Stop, prompt                                              |
+| Wikilink to unpublished note                       | Stop, prompt                                              |
+| Featured grid > 12 cards after additions           | Stop, prompt                                              |
+| Adding 1–5 notes                                   | Auto-proceed                                              |
+| Adding > 5 notes                                   | Stop, confirm scope                                       |
+| Build / Playwright failure                         | Stop, surface error                                       |
 
 ## Final reminder
 

@@ -31,13 +31,13 @@
 import fs from "node:fs/promises"
 import path from "node:path"
 import url from "node:url"
+import { hrefForSlug, readSiteUrlConfig } from "./site-url.mjs"
 
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const SITE_ROOT = path.resolve(__dirname, "..", "..")
 const PUBLIC_DIR = path.join(SITE_ROOT, "public")
 const INDEX_PATH = path.join(PUBLIC_DIR, "static", "contentIndex.json")
-const BASE_PATH = "/firstprinciplesengineering"
 const MAX_RELATED = 5
 const MARKER = `id="fpe-prev-next-related"`
 
@@ -119,17 +119,17 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;")
 }
 
-function slugToHref(slug) {
-  return `${BASE_PATH}/${slug}`
+function slugToHref(slug, basePath) {
+  return hrefForSlug(basePath, slug)
 }
 
-function renderSiblings(prevSlug, nextSlug, contentIndex) {
+function renderSiblings(prevSlug, nextSlug, contentIndex, basePath) {
   if (!prevSlug && !nextSlug) return ""
   const pieces = []
   pieces.push(`<div class="fpe-sibling-row">`)
   if (prevSlug) {
     pieces.push(
-      `  <a class="fpe-pn-card fpe-pn-prev" href="${escapeHtml(slugToHref(prevSlug))}">`,
+      `  <a class="fpe-pn-card fpe-pn-prev" href="${escapeHtml(slugToHref(prevSlug, basePath))}">`,
       `    <span class="fpe-pn-eyebrow">← Previous</span>`,
       `    <span class="fpe-pn-title">${escapeHtml(contentIndex[prevSlug].title)}</span>`,
       `  </a>`,
@@ -139,7 +139,7 @@ function renderSiblings(prevSlug, nextSlug, contentIndex) {
   }
   if (nextSlug) {
     pieces.push(
-      `  <a class="fpe-pn-card fpe-pn-next" href="${escapeHtml(slugToHref(nextSlug))}">`,
+      `  <a class="fpe-pn-card fpe-pn-next" href="${escapeHtml(slugToHref(nextSlug, basePath))}">`,
       `    <span class="fpe-pn-eyebrow">Next →</span>`,
       `    <span class="fpe-pn-title">${escapeHtml(contentIndex[nextSlug].title)}</span>`,
       `  </a>`,
@@ -151,7 +151,7 @@ function renderSiblings(prevSlug, nextSlug, contentIndex) {
   return pieces.join("\n")
 }
 
-function renderRelated(related) {
+function renderRelated(related, basePath) {
   if (related.length === 0) return ""
   return [
     `<div class="fpe-related">`,
@@ -159,19 +159,19 @@ function renderRelated(related) {
     `  <ul class="fpe-related-list">`,
     ...related.map(
       (r) =>
-        `    <li><a class="fpe-related-link" href="${escapeHtml(slugToHref(r.slug))}">${escapeHtml(r.title)}</a></li>`,
+        `    <li><a class="fpe-related-link" href="${escapeHtml(slugToHref(r.slug, basePath))}">${escapeHtml(r.title)}</a></li>`,
     ),
     `  </ul>`,
     `</div>`,
   ].join("\n")
 }
 
-function renderFooter(siblingPrev, siblingNext, related, contentIndex) {
+function renderFooter(siblingPrev, siblingNext, related, contentIndex, basePath) {
   const inner = []
   if (siblingPrev || siblingNext) {
-    inner.push(renderSiblings(siblingPrev, siblingNext, contentIndex))
+    inner.push(renderSiblings(siblingPrev, siblingNext, contentIndex, basePath))
   }
-  inner.push(renderRelated(related))
+  inner.push(renderRelated(related, basePath))
   if (inner.length === 0) return null
   return [
     `<aside ${MARKER} class="fpe-prev-next-related" aria-label="Continue reading">`,
@@ -200,12 +200,16 @@ async function walkArticles(dir) {
 
 function slugFromHtml(abs) {
   const rel = path.relative(PUBLIC_DIR, abs)
-  return rel.replace(/\.html$/, "").split(path.sep).join("/").toLowerCase()
+  return rel
+    .replace(/\.html$/, "")
+    .split(path.sep)
+    .join("/")
+    .toLowerCase()
 }
 
 const ARTICLE_END_RE = /(<\/article>)/i
 
-async function inject(abs, slug, contentIndex) {
+async function inject(abs, slug, contentIndex, basePath) {
   if (SKIP_SLUG_RE.some((re) => re.test(slug))) return { skipped: "filter" }
   const html = await fs.readFile(abs, "utf8")
   if (html.includes(MARKER)) return { skipped: "already" }
@@ -220,12 +224,7 @@ async function inject(abs, slug, contentIndex) {
 
   const related = pickRelated(slug, contentIndex, exclude)
 
-  const footer = renderFooter(
-    sibPrev,
-    sibNext,
-    related,
-    contentIndex,
-  )
+  const footer = renderFooter(sibPrev, sibNext, related, contentIndex, basePath)
   if (!footer) return { skipped: "empty-footer" }
 
   const next = html.replace(ARTICLE_END_RE, `$1\n${footer}`)
@@ -235,22 +234,21 @@ async function inject(abs, slug, contentIndex) {
 }
 
 async function main() {
+  const { basePath } = await readSiteUrlConfig()
   const contentIndex = await loadContentIndex()
   const pages = await walkArticles(PUBLIC_DIR)
   let injected = 0
   let skipped = 0
   for (const abs of pages) {
     const slug = slugFromHtml(abs)
-    const r = await inject(abs, slug, contentIndex)
+    const r = await inject(abs, slug, contentIndex, basePath)
     if (r.injected) {
       injected++
     } else {
       skipped++
     }
   }
-  console.log(
-    `inject-prev-next-related: injected into ${injected} article(s); skipped ${skipped}.`,
-  )
+  console.log(`inject-prev-next-related: injected into ${injected} article(s); skipped ${skipped}.`)
 }
 
 main().catch((e) => {

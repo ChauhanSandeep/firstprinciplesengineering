@@ -1,7 +1,7 @@
 # First Principles Engineering — Quartz publishing pipeline
 
 This directory turns notes from a separate Obsidian vault into a public website
-at **https://chauhansandeep.github.io/firstprinciplesengineering**.
+at **https://firstprinciplesengineering.tech**.
 
 It is its own git repository, kept **outside** the (private) vault so the two
 can be pushed independently. Only notes you explicitly opt in are exposed.
@@ -34,6 +34,7 @@ The vault path is set via `vaultRoot` in `publish.config.mjs` (relative to this
 folder, or absolute). Override per‑run with `QUARTZ_VAULT_ROOT=/path/to/vault`.
 
 **Two repos, two branches**:
+
 - `main` of `chauhansandeep/firstprinciplesengineering`: source only (config,
   sync script, landing page). The vault content lives only on your machine.
 - `gh-pages` branch: rendered `public/` directory, pushed by `npm run deploy`.
@@ -43,6 +44,7 @@ folder, or absolute). Override per‑run with `QUARTZ_VAULT_ROOT=/path/to/vault`
 ## Publish rules
 
 A note from the vault is published if **all** of these are true:
+
 1. It does **not** have `publish: false` in frontmatter (escape hatch).
 2. AND **either** of:
    - It has `publish: true` in frontmatter, **or**
@@ -59,8 +61,8 @@ The preferred workflow is to decide publishing inside the note itself:
 ```yaml
 ---
 publish: true
-published_at: '2026-06-16'
-updated_at: '2026-06-16'
+published_at: "2026-06-16"
+updated_at: "2026-06-16"
 status: new # new | updated | evergreen
 ---
 ```
@@ -90,6 +92,7 @@ publish: []
 ### Per-note overrides (no manifest edit needed)
 
 In Obsidian, add to a note's frontmatter:
+
 ```yaml
 ---
 title: "My Note"
@@ -98,18 +101,21 @@ publish: true        # force-publish
 publish: false       # hard veto
 ---
 ```
+
 `publish: false` always wins. Otherwise `publish: true` wins. Otherwise the
 optional manifest globs decide.
 
 ### Where is the manifest filename configured?
 
 `publish.config.mjs` (in this repo) only sets two things:
-- `vaultRoot`    — where the vault lives.
+
+- `vaultRoot` — where the vault lives.
 - `manifestFile` — name of the optional in-vault manifest (default `PUBLISH.md`).
 
 The primary list of what to publish lives in note frontmatter.
 
 ### Block a specific note from a legacy published folder
+
 ```yaml
 ---
 publish: false
@@ -150,15 +156,15 @@ arguments needed.
 
 ### Frontmatter keys the skill understands
 
-| Key                  | Type     | Default                     | Effect                                                                                  |
-| -------------------- | -------- | --------------------------- | --------------------------------------------------------------------------------------- |
-| `publish`            | `bool`   | manifest decides            | `true` ships the note. `false` always blocks (escape hatch).                            |
-| `featured`           | `bool`   | `false`                     | Add a card to the home **Recommended Reads** grid.                                      |
-| `card_eyebrow`       | `string` | derived from first folder   | Eyebrow label on the featured card.                                                     |
-| `card_title`         | `string` | derived from H1             | Short title on the featured card (often pithier than the note H1).                      |
-| `card_description`   | `string` | drafted by skill from intro | One-sentence pitch in the site's voice. Prompts when drafting confidence is low.        |
-| `card_order`         | `int`    | recency order               | Explicit position in the Recommended Reads grid (lower = earlier).                      |
-| `socialDescription`  | `string` | first paragraph             | Standard Quartz field; skill ensures it is set for OG preview quality.                  |
+| Key                 | Type     | Default                     | Effect                                                                           |
+| ------------------- | -------- | --------------------------- | -------------------------------------------------------------------------------- |
+| `publish`           | `bool`   | manifest decides            | `true` ships the note. `false` always blocks (escape hatch).                     |
+| `featured`          | `bool`   | `false`                     | Add a card to the home **Recommended Reads** grid.                               |
+| `card_eyebrow`      | `string` | derived from first folder   | Eyebrow label on the featured card.                                              |
+| `card_title`        | `string` | derived from H1             | Short title on the featured card (often pithier than the note H1).               |
+| `card_description`  | `string` | drafted by skill from intro | One-sentence pitch in the site's voice. Prompts when drafting confidence is low. |
+| `card_order`        | `int`    | recency order               | Explicit position in the Recommended Reads grid (lower = earlier).               |
+| `socialDescription` | `string` | first paragraph             | Standard Quartz field; skill ensures it is set for OG preview quality.           |
 
 All keys are **additive and optional** except `publish`, which already
 exists. Notes without any of the others continue to publish exactly as
@@ -208,8 +214,10 @@ directly, so the sync script auto-renders each one to SVG on demand using
 You do **not** need to enable any Obsidian setting or run any export command.
 
 ### How it works
+
 For each `![[Foo.excalidraw]]` (or `![[Foo.excalidraw.md]]`) in a published
 note, the sync script:
+
 1. Decompresses the lz-string `compressed-json` block from the source.
 2. Renders it to SVG (cached by sha1 of source — unchanged files are skipped).
 3. Writes `Foo.excalidraw.svg` next to the source in the vault.
@@ -224,6 +232,7 @@ The raw `.excalidraw.md` (full JSON scene, including any erased text) is
 **never** copied to `content/`.
 
 ### Native dependency
+
 `node-canvas` (a transitive dep of `excalidraw-to-svg`) needs cairo + pango.
 On macOS:
 
@@ -237,6 +246,7 @@ workflow only publishes the pre-built `public/` artifact on the `gh-pages`
 branch, so CI does **not** need cairo / pango / canvas installed.
 
 ### When auto-rendering fails
+
 If a single drawing fails to render (corrupt source, unsupported feature),
 the sync prints which file failed and continues. The build fails by default;
 use `npm run sync:soft` to swap the failing embed for a placeholder and keep
@@ -321,8 +331,9 @@ Then on GitHub: repo → **Settings** → **Pages** → Source: **GitHub Actions
   default needs a small head-script tweak.
 - **Light Excalidraw theme only**: the renderer emits a single SVG; dark-theme
   variants are not produced.
-- **Custom domain**: when ready, set `baseUrl` in `quartz.config.yaml`,
-  add a `CNAME` under `content/`, and configure DNS.
+- **Custom domain**: the canonical domain is `firstprinciplesengineering.tech`;
+  `quartz.config.yaml` sets this as `baseUrl`, the CNAME plugin emits
+  `public/CNAME`, and DNS is configured at Namecheap.
 - **Cross-folder wikilinks**: links from a published note to an
   unpublished note are reported as "unresolved" warnings and render as plain
   text.

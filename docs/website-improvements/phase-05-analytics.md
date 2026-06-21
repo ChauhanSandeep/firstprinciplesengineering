@@ -14,13 +14,13 @@ want to own the data and don't mind running another container.
 
 ## Why Plausible (vs the alternatives)
 
-| Option | Cost | Cookies | Bundle | Verdict |
-| --- | --- | --- | --- | --- |
-| **Plausible Cloud** | $9 / mo | No | ~1 KB | **Recommended.** |
-| Self-hosted Plausible | $0 | No | ~1 KB | Same data, own server. |
-| GoatCounter | $0 / cheap | No | ~3 KB | Simpler UI; viable fallback. |
-| Umami | $0 (self-host) | Optional | ~2 KB | Heavier UI; more setup. |
-| Google Analytics 4 | $0 | **Yes** | ~35 KB | **Rejected.** GDPR consent banner debt + bloated client + privacy concerns conflict with the "minimal, premium" feel. |
+| Option                | Cost           | Cookies  | Bundle | Verdict                                                                                                               |
+| --------------------- | -------------- | -------- | ------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Plausible Cloud**   | $9 / mo        | No       | ~1 KB  | **Recommended.**                                                                                                      |
+| Self-hosted Plausible | $0             | No       | ~1 KB  | Same data, own server.                                                                                                |
+| GoatCounter           | $0 / cheap     | No       | ~3 KB  | Simpler UI; viable fallback.                                                                                          |
+| Umami                 | $0 (self-host) | Optional | ~2 KB  | Heavier UI; more setup.                                                                                               |
+| Google Analytics 4    | $0             | **Yes**  | ~35 KB | **Rejected.** GDPR consent banner debt + bloated client + privacy concerns conflict with the "minimal, premium" feel. |
 
 ## What shipped
 
@@ -31,7 +31,7 @@ Single-file Plausible configuration. Ships with:
 ```js
 {
   enabled: false,
-  domain: "chauhansandeep.github.io/firstprinciplesengineering",
+  domain: "firstprinciplesengineering.tech",
   scriptHost: "https://plausible.io",
   scriptName: "script.outbound-links.tagged-events.js",
 }
@@ -53,13 +53,18 @@ Post-build step. Walks every HTML file under `public/`, inserts a
 two-line block before `</head>`:
 
 ```html
-<script data-fpe-analytics="true" defer
-        data-domain="…"
-        src="https://plausible.io/js/script.outbound-links.tagged-events.js"></script>
+<script
+  data-fpe-analytics="true"
+  defer
+  data-domain="…"
+  src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+></script>
 <script data-fpe-analytics="true">
-window.plausible = window.plausible || function() {
-  (window.plausible.q = window.plausible.q || []).push(arguments)
-}
+  window.plausible =
+    window.plausible ||
+    function () {
+      ;(window.plausible.q = window.plausible.q || []).push(arguments)
+    }
 </script>
 ```
 
@@ -115,7 +120,7 @@ enable):
 ## Validation
 
 - Build passes with `enabled: false`: `inject-analytics: analytics
-  disabled in analytics.config.mjs; skipping`.
+disabled in analytics.config.mjs; skipping`.
 - Enabled-path will be verifiable after PR merge by opening the
   live site in DevTools' Network tab — expect one
   `script.outbound-links.tagged-events.js` request (~1 KB) per page

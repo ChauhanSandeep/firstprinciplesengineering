@@ -34,13 +34,14 @@
     "inject-404-suggestions": "node scripts/build/inject-404-suggestions.mjs",
     "remove-series-pages": "node scripts/build/remove-series-pages.mjs",
     "optimize-svgs": "node scripts/build/optimize-svgs.mjs",
+    "validate:deploy-domain": "node scripts/build/validate-deploy-domain.mjs",
     "seo:audit": "node scripts/publish/seo-audit.mjs",
     "crosslinks:suggest": "node scripts/publish/suggest-crosslinks.mjs",
     "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-comments && npm run inject-analytics && npm run inject-seo && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs",
     "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-comments && npm run inject-analytics && npm run inject-seo && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs",
     "serve": "npm run sync && npm run validate:home && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npm run validate:home && npx quartz build --serve",
-    "deploy": "npm run build && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""
+    "deploy": "npm run build && npm run validate:deploy-domain && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""
   },
   "engines": {
     "npm": ">=10.9.2",

@@ -20,6 +20,7 @@
 import fs from "node:fs/promises"
 import path from "node:path"
 import url from "node:url"
+import { hrefForRootAnchor, hrefForSlug, readSiteUrlConfig } from "./site-url.mjs"
 
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -31,7 +32,6 @@ const CONTENT_INDEX = path.join(PUBLIC_DIR, "static", "contentIndex.json")
 
 const MAX_ITEMS = 4
 const MARKER_ID = "fpe-home-rail"
-const BASE_PATH = "/firstprinciplesengineering"
 const RIGHT_SIDEBAR_RE = /(<div class="right sidebar"[^>]*>)([\s\S]*?)(<\/div>)/i
 
 function esc(s) {
@@ -80,8 +80,8 @@ function formatDate(iso) {
   })
 }
 
-function renderItem(entry) {
-  const href = `${BASE_PATH}/${entry.slug}`
+function renderItem(entry, basePath) {
+  const href = hrefForSlug(basePath, entry.slug)
   const eyebrow = eyebrowFor(entry.slug)
   const date = formatDate(entry.modified || entry.created)
   const kind = entry.status === "new" ? "new" : "updated"
@@ -97,14 +97,14 @@ function renderItem(entry) {
   </a>`
 }
 
-function renderRail(items) {
+function renderRail(items, basePath) {
   return `<aside id="${MARKER_ID}" class="fpe-home-rail" aria-label="Newly released content">
   <div class="fpe-rail-header">
     <svg class="fpe-rail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h7z"/></svg>
     <span class="fpe-rail-title">Newly Released</span>
   </div>
-  <div class="fpe-rail-list">${items.map(renderItem).join("")}</div>
-  <a class="fpe-rail-footer" href="${BASE_PATH}/#recommended-reads">Explore recommended reads →</a>
+  <div class="fpe-rail-list">${items.map((item) => renderItem(item, basePath)).join("")}</div>
+  <a class="fpe-rail-footer" href="${hrefForRootAnchor(basePath, "recommended-reads")}">Explore recommended reads →</a>
 </aside>`
 }
 
@@ -117,6 +117,7 @@ async function readJsonOr(file, fallback) {
 }
 
 async function main() {
+  const { basePath } = await readSiteUrlConfig()
   const statusIndex = await readJsonOr(STATUS_INDEX, {})
   const contentIndex = await readJsonOr(CONTENT_INDEX, {})
 
@@ -131,8 +132,7 @@ async function main() {
     }))
     .sort(
       (a, b) =>
-        new Date(b.modified || b.created).getTime() -
-        new Date(a.modified || a.created).getTime(),
+        new Date(b.modified || b.created).getTime() - new Date(a.modified || a.created).getTime(),
     )
     .slice(0, MAX_ITEMS)
 
@@ -155,22 +155,18 @@ async function main() {
   }
 
   if (!RIGHT_SIDEBAR_RE.test(html)) {
-    console.warn(
-      `inject-home-rail: right sidebar marker not found in ${HOME_HTML}`,
-    )
+    console.warn(`inject-home-rail: right sidebar marker not found in ${HOME_HTML}`)
     return
   }
 
-  const rail = renderRail(entries)
+  const rail = renderRail(entries, basePath)
   const next = html.replace(
     RIGHT_SIDEBAR_RE,
     (_m, open, inner, close) => `${open}${inner}${rail}${close}`,
   )
 
   await fs.writeFile(HOME_HTML, next, "utf8")
-  console.log(
-    `inject-home-rail: injected ${entries.length} item(s) into the home right rail.`,
-  )
+  console.log(`inject-home-rail: injected ${entries.length} item(s) into the home right rail.`)
 }
 
 main().catch((e) => {

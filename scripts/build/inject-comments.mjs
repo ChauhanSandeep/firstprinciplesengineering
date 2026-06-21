@@ -39,6 +39,7 @@ import fs from "node:fs/promises"
 import path from "node:path"
 import url from "node:url"
 import config from "../../comments.config.mjs"
+import { readSiteUrlConfig, siteUrlForSlug } from "./site-url.mjs"
 
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -46,16 +47,9 @@ const SITE_ROOT = path.resolve(__dirname, "..", "..")
 const PUBLIC_DIR = path.join(SITE_ROOT, "public")
 const MARKER = `id="fpe-comments"`
 
-const SKIP_SLUG_RE = [
-  /^index$/,
-  /^about$/,
-  /^404$/,
-  /\/index$/,
-  /^tags(\/|$)/,
-]
+const SKIP_SLUG_RE = [/^index$/, /^about$/, /^404$/, /\/index$/, /^tags(\/|$)/]
 
-const PREV_NEXT_END_RE =
-  /(<\/aside>\s*)(?=(?:<[^>]+>\s*)*<\/article>|<\/article>)/i
+const PREV_NEXT_END_RE = /(<\/aside>\s*)(?=(?:<[^>]+>\s*)*<\/article>|<\/article>)/i
 const ARTICLE_END_RE = /(<\/article>)/i
 
 function escapeHtml(s) {
@@ -73,20 +67,20 @@ function renderDiscussCtaBlock() {
     buttons.push(
       `    <a class="fpe-discuss-link fpe-discuss-linkedin" href="${escapeHtml(d.linkedinUrl)}" target="_blank" rel="noopener">` +
         `<span class="fpe-discuss-icon" aria-hidden="true">` +
-          `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5V9h3v10zM6.5 7.7A1.7 1.7 0 1 1 6.5 4.3a1.7 1.7 0 0 1 0 3.4zM19 19h-3v-5c0-1.2-.5-2-1.6-2-1.2 0-1.9.8-1.9 2v5h-3V9h2.9v1.3A3.4 3.4 0 0 1 15.6 9c2.1 0 3.4 1.4 3.4 4v6z"/></svg>` +
+        `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2zM8 19H5V9h3v10zM6.5 7.7A1.7 1.7 0 1 1 6.5 4.3a1.7 1.7 0 0 1 0 3.4zM19 19h-3v-5c0-1.2-.5-2-1.6-2-1.2 0-1.9.8-1.9 2v5h-3V9h2.9v1.3A3.4 3.4 0 0 1 15.6 9c2.1 0 3.4 1.4 3.4 4v6z"/></svg>` +
         `</span>` +
         `<span class="fpe-discuss-label">Message on LinkedIn</span>` +
-      `</a>`,
+        `</a>`,
     )
   }
   if (d.email) {
     buttons.push(
       `    <a class="fpe-discuss-link fpe-discuss-email" href="mailto:${escapeHtml(d.email)}">` +
         `<span class="fpe-discuss-icon" aria-hidden="true">` +
-          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>` +
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>` +
         `</span>` +
         `<span class="fpe-discuss-label">Send an email</span>` +
-      `</a>`,
+        `</a>`,
     )
   }
   if (d.githubRepo) {
@@ -94,10 +88,10 @@ function renderDiscussCtaBlock() {
     buttons.push(
       `    <a class="fpe-discuss-link fpe-discuss-github" href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener">` +
         `<span class="fpe-discuss-icon" aria-hidden="true">` +
-          `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 1a11 11 0 0 0-3.5 21.4c.55.1.75-.24.75-.53v-1.8c-3.06.67-3.7-1.48-3.7-1.48-.5-1.27-1.22-1.6-1.22-1.6-1-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.69 2.58 1.2 3.21.92.1-.72.39-1.21.7-1.49-2.45-.28-5.02-1.22-5.02-5.43 0-1.2.43-2.18 1.13-2.95-.11-.28-.49-1.4.11-2.92 0 0 .92-.3 3.02 1.13a10.4 10.4 0 0 1 5.5 0c2.1-1.43 3.02-1.13 3.02-1.13.6 1.51.22 2.64.11 2.92.7.77 1.13 1.75 1.13 2.95 0 4.22-2.58 5.14-5.04 5.42.4.34.75 1.02.75 2.06v3.05c0 .3.2.64.76.53A11 11 0 0 0 12 1z"/></svg>` +
+        `<svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 1a11 11 0 0 0-3.5 21.4c.55.1.75-.24.75-.53v-1.8c-3.06.67-3.7-1.48-3.7-1.48-.5-1.27-1.22-1.6-1.22-1.6-1-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.69 2.58 1.2 3.21.92.1-.72.39-1.21.7-1.49-2.45-.28-5.02-1.22-5.02-5.43 0-1.2.43-2.18 1.13-2.95-.11-.28-.49-1.4.11-2.92 0 0 .92-.3 3.02 1.13a10.4 10.4 0 0 1 5.5 0c2.1-1.43 3.02-1.13 3.02-1.13.6 1.51.22 2.64.11 2.92.7.77 1.13 1.75 1.13 2.95 0 4.22-2.58 5.14-5.04 5.42.4.34.75 1.02.75 2.06v3.05c0 .3.2.64.76.53A11 11 0 0 0 12 1z"/></svg>` +
         `</span>` +
         `<span class="fpe-discuss-label">Open an issue on GitHub</span>` +
-      `</a>`,
+        `</a>`,
     )
   }
   return [
@@ -208,14 +202,18 @@ async function walkHtml(dir) {
 
 function slugFromHtml(abs) {
   const rel = path.relative(PUBLIC_DIR, abs)
-  return rel.replace(/\.html$/, "").split(path.sep).join("/").toLowerCase()
+  return rel
+    .replace(/\.html$/, "")
+    .split(path.sep)
+    .join("/")
+    .toLowerCase()
 }
 
-function renderCusdisBlock({ slug, title }) {
+function renderCusdisBlock({ slug, title, baseUrl }) {
   const appId = escapeHtml(config.cusdisAppId)
   const host = escapeHtml(config.cusdisHost || "https://cusdis.com")
   const pageId = escapeHtml(slug)
-  const pageUrl = `https://chauhansandeep.github.io/firstprinciplesengineering/${slug}`
+  const pageUrl = siteUrlForSlug(baseUrl, slug)
   const pageTitle = escapeHtml(title || slug)
   return [
     `<section ${MARKER} class="fpe-cusdis" aria-label="Discussion">`,
@@ -235,16 +233,21 @@ function renderCusdisBlock({ slug, title }) {
 function readTitleFromHtml(html) {
   const m = html.match(/<h1[^>]*class="[^"]*article-title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i)
   if (!m) return null
-  return m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() || null
+  return (
+    m[1]
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim() || null
+  )
 }
 
-async function inject(abs, slug, blockOrBuilder) {
+async function inject(abs, slug, blockOrBuilder, siteUrlConfig) {
   if (SKIP_SLUG_RE.some((re) => re.test(slug))) return { skipped: "filter" }
   const html = await fs.readFile(abs, "utf8")
   if (html.includes(MARKER)) return { skipped: "already" }
   const block =
     typeof blockOrBuilder === "function"
-      ? blockOrBuilder({ slug, title: readTitleFromHtml(html) })
+      ? blockOrBuilder({ slug, title: readTitleFromHtml(html), ...siteUrlConfig })
       : blockOrBuilder
   // Prefer to land after the Phase-3 prev/next aside; fall back to
   // before </article>.
@@ -263,9 +266,7 @@ async function inject(abs, slug, blockOrBuilder) {
 
 async function main() {
   if (!config.enabled) {
-    console.log(
-      "inject-comments: comments disabled in comments.config.mjs; skipping.",
-    )
+    console.log("inject-comments: comments disabled in comments.config.mjs; skipping.")
     return
   }
   const mode = config.mode || "giscus"
@@ -297,10 +298,7 @@ async function main() {
     }
     block = renderCusdisBlock
   } else if (mode === "giscus") {
-    if (
-      config.repoId === "REPLACE_ME" ||
-      config.categoryId === "REPLACE_ME"
-    ) {
+    if (config.repoId === "REPLACE_ME" || config.categoryId === "REPLACE_ME") {
       console.log(
         "inject-comments: placeholder IDs in comments.config.mjs; skipping " +
           "(see file's header for setup steps).",
@@ -316,12 +314,13 @@ async function main() {
     return
   }
 
+  const siteUrlConfig = await readSiteUrlConfig()
   const pages = await walkHtml(PUBLIC_DIR)
   let injected = 0
   let skipped = 0
   for (const abs of pages) {
     const slug = slugFromHtml(abs)
-    const r = await inject(abs, slug, block)
+    const r = await inject(abs, slug, block, siteUrlConfig)
     if (r.injected) injected++
     else skipped++
   }
