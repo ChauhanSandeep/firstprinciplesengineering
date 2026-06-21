@@ -110,6 +110,18 @@ description: >-
   <span class="article-desc">REST works until JSON parse cost dominates your CPU bill and bolted-on WebSockets become load-bearing. Then it doesn't.</span>
 </a>
 
+<a class="fpe-article-card" href="01-fundamentals/04-networking/05-load-balancers">
+  <span class="article-eyebrow">Networking</span>
+  <span class="article-title">Load Balancers</span>
+  <span class="article-desc">Round robin is the easy part; the production lesson is that health checks, connection stickiness, and L4/L7 choices decide the outage.</span>
+</a>
+
+<a class="fpe-article-card" href="01-fundamentals/04-networking/02-http-1-2-3">
+  <span class="article-eyebrow">Networking</span>
+  <span class="article-title">HTTP/1.1, HTTP/2, and HTTP/3</span>
+  <span class="article-desc">The API looks the same until TCP head-of-line blocking, multiplexing, and QUIC explain where the latency really went.</span>
+</a>
+
 </div>
 
 ## About this project
