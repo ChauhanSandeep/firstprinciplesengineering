@@ -367,6 +367,64 @@
     left.appendChild(social)
   }
 
+  const ARTICLE_FONT_KEY = "fpe-article-font-size"
+  const ARTICLE_FONT_DEFAULT = 16
+  const ARTICLE_FONT_MIN = 14
+  const ARTICLE_FONT_MAX = 22
+  const ARTICLE_FONT_STEP = 1
+
+  function readArticleFontSize() {
+    try {
+      const raw = localStorage.getItem(ARTICLE_FONT_KEY)
+      if (raw !== null) {
+        const saved = Number(raw)
+        if (!Number.isFinite(saved)) return ARTICLE_FONT_DEFAULT
+        return Math.min(ARTICLE_FONT_MAX, Math.max(ARTICLE_FONT_MIN, saved))
+      }
+    } catch (e) {}
+    return ARTICLE_FONT_DEFAULT
+  }
+
+  function applyArticleFontSize(size) {
+    const next = Math.min(ARTICLE_FONT_MAX, Math.max(ARTICLE_FONT_MIN, size))
+    document.documentElement.style.setProperty("--fpe-article-font-size", next + "px")
+    try { localStorage.setItem(ARTICLE_FONT_KEY, String(next)) } catch (e) {}
+
+    const value = document.querySelector(".fpe-font-size-value")
+    if (value) value.textContent = next + "px"
+    const dec = document.querySelector(".fpe-font-size-control [data-fpe-font-dec]")
+    const inc = document.querySelector(".fpe-font-size-control [data-fpe-font-inc]")
+    if (dec) dec.disabled = next <= ARTICLE_FONT_MIN
+    if (inc) inc.disabled = next >= ARTICLE_FONT_MAX
+    return next
+  }
+
+  function ensureArticleFontControl() {
+    applyArticleFontSize(readArticleFontSize())
+
+    const left = document.querySelector(".sidebar.left")
+    if (!left || left.querySelector(".fpe-font-size-control")) return
+
+    const control = document.createElement("div")
+    control.className = "fpe-font-size-control"
+    control.setAttribute("aria-label", "Article font size")
+    control.innerHTML =
+      '<button type="button" data-fpe-font-inc aria-label="Increase article font size" title="Increase font size">+</button>' +
+      '<span class="fpe-font-size-value" aria-live="polite"></span>' +
+      '<button type="button" data-fpe-font-dec aria-label="Decrease article font size" title="Decrease font size">−</button>'
+
+    control.querySelector("[data-fpe-font-dec]").addEventListener("click", () => {
+      applyArticleFontSize(readArticleFontSize() - ARTICLE_FONT_STEP)
+    })
+    control.querySelector("[data-fpe-font-inc]").addEventListener("click", () => {
+      applyArticleFontSize(readArticleFontSize() + ARTICLE_FONT_STEP)
+    })
+
+    const explorer = left.querySelector(".explorer")
+    left.insertBefore(control, explorer || left.firstChild)
+    applyArticleFontSize(readArticleFontSize())
+  }
+
   function currentSiteTheme() {
     const t = document.documentElement.getAttribute("saved-theme")
     if (t === "dark" || t === "light") return t
@@ -449,6 +507,7 @@
     ensureBackToTop()
     ensureRichFooter()
     polishToc(document)
+    ensureArticleFontControl()
     ensureSidebarSocial()
     ensureCusdisThemeObserver()
     ensureCusdis()
