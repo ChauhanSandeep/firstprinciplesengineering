@@ -159,6 +159,10 @@ Failure → critical, dump screenshot, stop.
 - `npm run deploy` from the site repo.
 - Wait ~60s, then `node scripts/publish/playwright-smoke.mjs --live --slugs <slugs.txt>` for a
   final smoke pass against the live URL.
+- On the live home page, audit left-side Explorer links after hydration:
+  assert there are no stale `/firstprinciplesengineering/` prefixes on
+  `https://firstprinciplesengineering.tech` and every `.explorer a[href]`
+  returns HTTP < 400. Treat failures as a critical deploy/baseUrl bug.
 
 Always include this trailer on commits the skill makes:
 
