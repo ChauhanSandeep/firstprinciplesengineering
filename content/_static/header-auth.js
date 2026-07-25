@@ -26,11 +26,8 @@
   var mount = document.querySelector("[data-fpe-authchip]")
   if (!mount) return
 
-  var PROVIDERS = CFG.oauthProviders || []
-  var MAGIC = !!CFG.emailMagicLink
-  var PASSWORD = !!CFG.emailPassword
   var ACCOUNT_HREF = CFG.accountHref || "/account"
-  var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
+  var SIGNIN_HREF = CFG.signinHref || "/signin"
 
   // ---- tiny DOM helpers (mirrors engagement.js) ---------------------------
   function el(tag, attrs, children) {
@@ -127,169 +124,19 @@
   }
 
   // ---- signed out ---------------------------------------------------------
+  function signinLink() {
+    var here = window.location.pathname + window.location.search
+    return SIGNIN_HREF + "?redirect=" + encodeURIComponent(here)
+  }
+
   function renderSignedOut() {
-    var btn = el("button", {
-      class: "fpe-authchip-trigger",
-      type: "button",
-      "aria-haspopup": "true",
-      "aria-expanded": "false",
-      onclick: function (e) {
-        e.stopPropagation()
-        togglePanel(buildSignInPanel)
-        btn.setAttribute("aria-expanded", openPanel ? "true" : "false")
-      },
+    var link = el("a", {
+      class: "fpe-authchip-trigger fpe-authchip-signin-link",
+      href: signinLink(),
     })
-    btn.appendChild(el("span", { class: "fpe-authchip-icon", html: USER_ICON }))
-    btn.appendChild(el("span", { class: "fpe-authchip-label", text: "Sign in" }))
-    mount.appendChild(btn)
-  }
-
-  function buildSignInPanel() {
-    var panel = el("div", { class: "fpe-authchip-panel", role: "menu" })
-    panel.appendChild(
-      el("p", {
-        class: "fpe-authchip-lede",
-        text: "Sign in to like, comment, and track what you've read.",
-      }),
-    )
-    PROVIDERS.forEach(function (p) {
-      panel.appendChild(
-        el("button", {
-          class: "fpe-authchip-oauth fpe-authchip-oauth-" + p,
-          type: "button",
-          text: OAUTH_LABELS[p] || "Continue with " + p,
-          onclick: function () {
-            signInOAuth(p)
-          },
-        }),
-      )
-    })
-    if (PASSWORD) {
-      panel.appendChild(buildPasswordForm())
-    }
-    if (MAGIC) {
-      var input = el("input", {
-        class: "fpe-authchip-email",
-        type: "email",
-        placeholder: "you@example.com",
-        autocomplete: "email",
-        "aria-label": "Email for a sign-in link",
-      })
-      var form = el("form", { class: "fpe-authchip-magic" }, [
-        input,
-        el("button", { class: "fpe-authchip-magic-btn", type: "submit", text: "Email me a link" }),
-      ])
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault()
-        var email = (input.value || "").trim()
-        if (!email) return
-        var res = await sb.auth.signInWithOtp({
-          email: email,
-          options: { emailRedirectTo: window.location.href },
-        })
-        var note = el("p", {
-          class: "fpe-authchip-note" + (res.error ? " is-error" : ""),
-          text: res.error ? res.error.message : "Check your inbox for a sign-in link.",
-        })
-        form.appendChild(note)
-      })
-      panel.appendChild(form)
-    }
-    return panel
-  }
-
-  async function signInOAuth(provider) {
-    await sb.auth.signInWithOAuth({
-      provider: provider,
-      options: { redirectTo: window.location.href },
-    })
-  }
-
-  function buildPasswordForm() {
-    var email = el("input", {
-      class: "fpe-authchip-email",
-      type: "email",
-      placeholder: "you@example.com",
-      autocomplete: "email",
-      "aria-label": "Email",
-    })
-    var pass = el("input", {
-      class: "fpe-authchip-password",
-      type: "password",
-      placeholder: "Password",
-      autocomplete: "current-password",
-      "aria-label": "Password",
-    })
-    var signInBtn = el("button", {
-      class: "fpe-authchip-pw-btn",
-      type: "submit",
-      text: "Sign in",
-    })
-    var signUpBtn = el("button", {
-      class: "fpe-authchip-pw-btn fpe-authchip-pw-secondary",
-      type: "button",
-      text: "Create account",
-      onclick: function () {
-        submit("signup")
-      },
-    })
-    var forgot = el("button", {
-      class: "fpe-authchip-pw-forgot",
-      type: "button",
-      text: "Forgot password?",
-      onclick: function () {
-        submit("reset")
-      },
-    })
-    var form = el("form", { class: "fpe-authchip-pwform" }, [
-      email,
-      pass,
-      el("div", { class: "fpe-authchip-pw-actions" }, [signInBtn, signUpBtn]),
-      forgot,
-    ])
-    form.addEventListener("submit", function (e) {
-      e.preventDefault()
-      submit("signin")
-    })
-    function note(text, isError) {
-      var existing = form.querySelector(".fpe-authchip-note")
-      if (existing) existing.parentNode.removeChild(existing)
-      form.appendChild(
-        el("p", { class: "fpe-authchip-note" + (isError ? " is-error" : ""), text: text }),
-      )
-    }
-    async function submit(mode) {
-      var e = (email.value || "").trim()
-      var p = pass.value || ""
-      if (!e) return note("Enter your email address.", true)
-      if (mode === "reset") {
-        var rr = await sb.auth.resetPasswordForEmail(e, {
-          redirectTo: window.location.origin + ACCOUNT_HREF,
-        })
-        return note(
-          rr.error ? rr.error.message : "Check your inbox to reset your password.",
-          !!rr.error,
-        )
-      }
-      if (!p) return note("Enter your password.", true)
-      if (mode === "signup") {
-        var sr = await sb.auth.signUp({
-          email: e,
-          password: p,
-          options: { emailRedirectTo: window.location.href },
-        })
-        if (sr.error) return note(sr.error.message, true)
-        return note(
-          sr.data && sr.data.session
-            ? "Account created — you're signed in."
-            : "Account created. Check your inbox to confirm, then sign in.",
-          false,
-        )
-      }
-      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
-      if (ir.error) note(ir.error.message, true)
-    }
-    return form
+    link.appendChild(el("span", { class: "fpe-authchip-icon", html: USER_ICON }))
+    link.appendChild(el("span", { class: "fpe-authchip-label", text: "Sign in" }))
+    mount.appendChild(link)
   }
 
   // ---- signed in ----------------------------------------------------------

@@ -27,6 +27,7 @@
     "inject-engagement": "node scripts/build/inject-engagement.mjs",
     "inject-header-auth": "node scripts/build/inject-header-auth.mjs",
     "inject-account": "node scripts/build/inject-account.mjs",
+    "inject-signin": "node scripts/build/inject-signin.mjs",
     "inject-analytics": "node scripts/build/inject-analytics.mjs",
     "inject-seo": "node scripts/build/inject-seo.mjs",
     "inject-security": "node scripts/build/inject-security.mjs",
@@ -45,8 +46,8 @@
     "validate:deploy-domain": "node scripts/build/validate-deploy-domain.mjs",
     "seo:audit": "node scripts/publish/seo-audit.mjs",
     "crosslinks:suggest": "node scripts/publish/suggest-crosslinks.mjs",
-    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-engagement && npm run inject-header-auth && npm run inject-account && npm run inject-analytics && npm run inject-seo && npm run inject-security && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-home-personalize && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs && npm run emit-robots && npm run trim-search-index && npm run check-index-size && npm run check-internal-links",
-    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-engagement && npm run inject-header-auth && npm run inject-account && npm run inject-analytics && npm run inject-seo && npm run inject-security && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-home-personalize && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs && npm run emit-robots && npm run trim-search-index && npm run check-index-size && npm run check-internal-links",
+    "build": "npm run sync && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-engagement && npm run inject-header-auth && npm run inject-account && npm run inject-signin && npm run inject-analytics && npm run inject-seo && npm run inject-security && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-home-personalize && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs && npm run emit-robots && npm run trim-search-index && npm run check-index-size && npm run check-internal-links",
+    "build:soft": "npm run sync:soft && npm run validate:home && npx quartz build && npm run fix-paths && npm run inject-prev-next-related && npm run inject-engagement && npm run inject-header-auth && npm run inject-account && npm run inject-signin && npm run inject-analytics && npm run inject-seo && npm run inject-security && npm run inject-search-hint && npm run inject-status-badges && npm run inject-home-rail && npm run inject-home-personalize && npm run inject-folder-pages && npm run inject-404-suggestions && npm run remove-series-pages && npm run optimize-svgs && npm run emit-robots && npm run trim-search-index && npm run check-index-size && npm run check-internal-links",
     "serve": "npm run sync && npm run validate:home && npx quartz build --serve",
     "serve:soft": "npm run sync:soft && npm run validate:home && npx quartz build --serve",
     "deploy": "npm run build && npm run validate:deploy-domain && gh-pages -d public -b gh-pages -m \"deploy: $(date -u +%FT%TZ)\" --nojekyll --dotfiles --remove \"**/*\""

@@ -33,10 +33,10 @@
   var AUTH = CFG.auth || {}
   var COMMENTS_CFG = CFG.comments || {}
   var ACCOUNT_HREF = CFG.accountHref || "/account"
+  var SIGNIN_HREF = CFG.signinHref || "/signin"
   var LS_READ_KEY = "fpe:read:" + SLUG
   var LS_LAST_KEY = "fpe:last:" + SLUG
 
-  var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
 
   // Record this visit so the homepage can offer a "Continue reading" nudge.
   // Purely local (no network, no auth); independent of read-state.
@@ -243,144 +243,19 @@
           text: "Sign in to like, comment, and track what you've read.",
         }),
       )
-      var buttons = el("div", { class: "fpe-engage-signin-buttons" })
-      ;(AUTH.oauthProviders || []).forEach(function (p) {
-        buttons.appendChild(
-          el("button", {
-            class: "fpe-engage-oauth fpe-engage-oauth-" + p,
-            type: "button",
-            text: OAUTH_LABELS[p] || "Continue with " + p,
-            onclick: function () {
-              signInOAuth(p)
-            },
-          }),
-        )
-      })
-      els.authbar.appendChild(buttons)
-      if (AUTH.emailPassword) els.authbar.appendChild(renderPasswordForm())
-      if (AUTH.emailMagicLink) els.authbar.appendChild(renderMagicLinkForm())
-    }
-  }
-
-  function renderPasswordForm() {
-    var email = el("input", {
-      class: "fpe-engage-email",
-      type: "email",
-      placeholder: "you@example.com",
-      autocomplete: "email",
-      "aria-label": "Email",
-    })
-    var pass = el("input", {
-      class: "fpe-engage-password",
-      type: "password",
-      placeholder: "Password",
-      autocomplete: "current-password",
-      "aria-label": "Password",
-    })
-    var signInBtn = el("button", {
-      class: "fpe-engage-pw-btn",
-      type: "submit",
-      text: "Sign in",
-    })
-    var signUpBtn = el("button", {
-      class: "fpe-engage-pw-btn fpe-engage-pw-secondary",
-      type: "button",
-      text: "Create account",
-      onclick: function () {
-        submit("signup")
-      },
-    })
-    var forgot = el("button", {
-      class: "fpe-engage-pw-forgot",
-      type: "button",
-      text: "Forgot password?",
-      onclick: function () {
-        submit("reset")
-      },
-    })
-    var form = el("form", { class: "fpe-engage-pwform" }, [
-      email,
-      pass,
-      el("div", { class: "fpe-engage-pw-actions" }, [signInBtn, signUpBtn]),
-      forgot,
-    ])
-    form.addEventListener("submit", function (e) {
-      e.preventDefault()
-      submit("signin")
-    })
-    async function submit(mode) {
-      var e = (email.value || "").trim()
-      var p = pass.value || ""
-      if (!e) return flash("Enter your email address.", "error")
-      if (mode === "reset") {
-        var rr = await sb.auth.resetPasswordForEmail(e, {
-          redirectTo: window.location.origin + ACCOUNT_HREF,
-        })
-        return flash(
-          rr.error ? rr.error.message : "Check your inbox to reset your password.",
-          rr.error ? "error" : "ok",
-        )
-      }
-      if (!p) return flash("Enter your password.", "error")
-      if (mode === "signup") {
-        var sr = await sb.auth.signUp({
-          email: e,
-          password: p,
-          options: { emailRedirectTo: window.location.href },
-        })
-        if (sr.error) return flash(sr.error.message, "error")
-        return flash(
-          sr.data && sr.data.session
-            ? "Account created — you're signed in."
-            : "Account created. Check your inbox to confirm, then sign in.",
-          "ok",
-        )
-      }
-      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
-      if (ir.error) flash(ir.error.message, "error")
-    }
-    return form
-  }
-
-  function renderMagicLinkForm() {
-    var input = el("input", {
-      class: "fpe-engage-email",
-      type: "email",
-      placeholder: "you@example.com",
-      autocomplete: "email",
-      "aria-label": "Email for a sign-in link",
-    })
-    var form = el("form", { class: "fpe-engage-magic" }, [
-      input,
-      el("button", { class: "fpe-engage-magic-btn", type: "submit", text: "Email me a link" }),
-    ])
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault()
-      var email = (input.value || "").trim()
-      if (!email) return
-      var res = await sb.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: window.location.href },
-      })
-      flash(
-        res.error ? res.error.message : "Check your inbox for a sign-in link.",
-        res.error ? "error" : "ok",
+      els.authbar.appendChild(
+        el("a", { class: "fpe-engage-signin-link", href: signinLink() }, ["Sign in"]),
       )
-    })
-    return form
+    }
   }
 
-  async function signInOAuth(provider) {
-    var res = await sb.auth.signInWithOAuth({
-      provider: provider,
-      options: { redirectTo: window.location.href },
-    })
-    if (res.error) flash(res.error.message, "error")
+  function signinLink() {
+    var here = window.location.pathname + window.location.search
+    return SIGNIN_HREF + "?redirect=" + encodeURIComponent(here)
   }
 
   function requireAuth() {
-    flash("Please sign in first — it takes one click.", "error")
-    if (els.authbar) els.authbar.scrollIntoView({ behavior: "smooth", block: "center" })
+    window.location.assign(signinLink())
   }
 
   // ---- likes --------------------------------------------------------------

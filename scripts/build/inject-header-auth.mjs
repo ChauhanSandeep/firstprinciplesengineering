@@ -106,6 +106,7 @@ async function main() {
     emailMagicLink: !!auth.emailMagicLink,
     emailPassword: !!auth.emailPassword,
     accountHref: hrefForSlug(basePath, "account"),
+    signinHref: hrefForSlug(basePath, "signin"),
     moduleSrc: `${basePath}/_static/header-auth.js`,
   }
 

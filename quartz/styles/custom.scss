@@ -3155,6 +3155,7 @@ body .backlinks > ul.overflow {
   .fpe-engage-oauth,
   .fpe-engage-magic-btn,
   .fpe-engage-pw-btn,
+  .fpe-engage-signin-link,
   .fpe-engage-signout,
   .fpe-engage-like,
   .fpe-engage-read,
@@ -3196,6 +3197,7 @@ body .backlinks > ul.overflow {
   // Primary tone for the OAuth + comment-submit call to action.
   .fpe-engage-oauth,
   .fpe-engage-pw-btn:not(.fpe-engage-pw-secondary),
+  .fpe-engage-signin-link,
   .fpe-engage-comment-submit {
     background: var(--secondary);
     color: var(--light);
@@ -3205,6 +3207,10 @@ body .backlinks > ul.overflow {
       border-color: var(--tertiary);
       color: var(--light);
     }
+  }
+  .fpe-engage-signin-link {
+    text-decoration: none;
+    align-self: flex-start;
   }
   .fpe-engage-signout {
     font-size: 0.8rem;
@@ -3819,6 +3825,13 @@ body .backlinks > ul.overflow {
       border-color: color-mix(in srgb, var(--secondary) 48%, transparent);
     }
   }
+  a.fpe-authchip-signin-link {
+    text-decoration: none;
+    color: var(--dark);
+    &:hover {
+      color: var(--dark);
+    }
+  }
 
   .fpe-authchip-icon {
     display: inline-flex;
@@ -3999,6 +4012,18 @@ body .backlinks > ul.overflow {
   flex-direction: column;
   gap: 1.25rem;
   margin: 1.5rem 0;
+
+  // Dedicated /signin page: center the single auth card on the page.
+  &.fpe-signin {
+    max-width: 30rem;
+    margin: 2rem auto;
+  }
+
+  // Anchors that are styled as buttons (link to the /signin page).
+  .fpe-account-signin-link {
+    text-decoration: none;
+    text-align: center;
+  }
 
   .fpe-account-loading,
   .fpe-account-msg {

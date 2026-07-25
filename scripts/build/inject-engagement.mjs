@@ -40,7 +40,7 @@ const SITE_ROOT = path.resolve(__dirname, "..", "..")
 const PUBLIC_DIR = path.join(SITE_ROOT, "public")
 const MARKER = `id="fpe-engage"`
 
-const SKIP_SLUG_RE = [/^index$/, /^about$/, /^account$/, /^404$/, /\/index$/, /^tags(\/|$)/]
+const SKIP_SLUG_RE = [/^index$/, /^about$/, /^account$/, /^signin$/, /^404$/, /\/index$/, /^tags(\/|$)/]
 
 const PREV_NEXT_END_RE = /(<\/aside>\s*)(?=(?:<[^>]+>\s*)*<\/article>|<\/article>)/i
 const ARTICLE_END_RE = /(<\/article>)/i
@@ -77,6 +77,7 @@ function renderBlock({ slug, title, basePath }) {
     auth: config.auth || {},
     comments: config.comments || {},
     accountHref: `${basePath || ""}/account`,
+    signinHref: `${basePath || ""}/signin`,
   }
   const moduleSrc = `${basePath || ""}/_static/engagement.js`
   return [

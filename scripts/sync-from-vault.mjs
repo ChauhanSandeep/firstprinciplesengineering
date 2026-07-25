@@ -71,7 +71,7 @@ const VAULT_IGNORE = new Set([
   "private",
 ])
 
-const CONTENT_PRESERVE = new Set(["index.md", "about.md", "account.md", "_static"])
+const CONTENT_PRESERVE = new Set(["index.md", "about.md", "account.md", "signin.md", "_static"])
 
 const HARD_BLOCK = (rel) =>
   rel.endsWith(".excalidraw.md") || rel.endsWith(".excalidraw") || rel === MANIFEST_FILE

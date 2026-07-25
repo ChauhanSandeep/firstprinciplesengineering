@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /**
- * scripts/build/inject-account.mjs
+ * scripts/build/inject-signin.mjs
  *
- * Post-build step: wires the account-page hydration module
- * (content/_static/account.js) into the generated account page. The page
- * body is authored in content/account.md (a `[data-fpe-account]` mount);
- * this script only appends the inline config + module <script> tags, so the
- * anon key and derived hrefs stay out of version control's markdown.
+ * Post-build step: wires the dedicated sign-in page hydration module
+ * (content/_static/signin.js) into the generated /signin page. The page
+ * body is authored in content/signin.md (a `[data-fpe-signin]` mount); this
+ * script only appends the inline config + module <script> tags, so the anon
+ * key and derived hrefs stay out of version-controlled markdown.
  *
  * Configuration is shared with the article widget via engagement.config.mjs.
  * While its `enabled` flag is false or the keys are placeholders, this
  * script logs "disabled" and exits without touching any file — identical
- * contract to inject-engagement.
+ * contract to inject-account.
  *
  * Idempotent: re-runs detect the injected marker and skip.
  */
@@ -25,8 +25,8 @@ const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const SITE_ROOT = path.resolve(__dirname, "..", "..")
 const PUBLIC_DIR = path.join(SITE_ROOT, "public")
-const ACCOUNT_HTML = path.join(PUBLIC_DIR, "account.html")
-const MARKER = `id="fpe-account-boot"`
+const SIGNIN_HTML = path.join(PUBLIC_DIR, "signin.html")
+const MARKER = `id="fpe-signin-boot"`
 
 function safeJson(obj) {
   return JSON.stringify(obj)
@@ -39,7 +39,7 @@ function safeJson(obj) {
 
 async function main() {
   if (!config.enabled) {
-    console.log("inject-account: disabled in engagement.config.mjs; skipping.")
+    console.log("inject-signin: disabled in engagement.config.mjs; skipping.")
     return
   }
   if (
@@ -48,25 +48,25 @@ async function main() {
     !config.supabaseAnonKey ||
     config.supabaseAnonKey === "REPLACE_ME"
   ) {
-    console.log("inject-account: supabaseUrl/supabaseAnonKey unset or REPLACE_ME; skipping.")
+    console.log("inject-signin: supabaseUrl/supabaseAnonKey unset or REPLACE_ME; skipping.")
     return
   }
 
   let html
   try {
-    html = await fs.readFile(ACCOUNT_HTML, "utf8")
+    html = await fs.readFile(SIGNIN_HTML, "utf8")
   } catch (e) {
     console.warn(
-      `inject-account: ${ACCOUNT_HTML} not found; skipping (is content/account.md published?).`,
+      `inject-signin: ${SIGNIN_HTML} not found; skipping (is content/signin.md published?).`,
     )
     return
   }
   if (html.includes(MARKER)) {
-    console.log("inject-account: already injected; skipping.")
+    console.log("inject-signin: already injected; skipping.")
     return
   }
-  if (!html.includes("data-fpe-account")) {
-    console.warn("inject-account: [data-fpe-account] mount not found in account.html; skipping.")
+  if (!html.includes("data-fpe-signin")) {
+    console.warn("inject-signin: [data-fpe-signin] mount not found in signin.html; skipping.")
     return
   }
 
@@ -79,14 +79,12 @@ async function main() {
     oauthProviders: auth.oauthProviders || [],
     emailMagicLink: !!auth.emailMagicLink,
     emailPassword: !!auth.emailPassword,
-    articleBase: base,
-    signinHref: hrefForSlug(base, "signin"),
-    contentIndexUrl: `${base}/static/contentIndex.json`,
+    accountHref: hrefForSlug(base, "account"),
   }
 
   const block = [
-    `<script ${MARKER}>window.__FPE_ACCOUNT__=${safeJson(cfg)};</script>`,
-    `<script type="module" src="${base}/_static/account.js" defer></script>`,
+    `<script ${MARKER}>window.__FPE_SIGNIN__=${safeJson(cfg)};</script>`,
+    `<script type="module" src="${base}/_static/signin.js" defer></script>`,
   ].join("\n")
 
   let next
@@ -95,15 +93,15 @@ async function main() {
   } else if (/<\/body>/i.test(html)) {
     next = html.replace(/(<\/body>)/i, `${block}\n$1`)
   } else {
-    console.warn("inject-account: no </article> or </body> anchor; skipping.")
+    console.warn("inject-signin: no </article> or </body> anchor; skipping.")
     return
   }
 
-  await fs.writeFile(ACCOUNT_HTML, next, "utf8")
-  console.log("inject-account: injected account hydration script.")
+  await fs.writeFile(SIGNIN_HTML, next, "utf8")
+  console.log("inject-signin: injected sign-in hydration script.")
 }
 
 main().catch((e) => {
-  console.error("inject-account failed:", e)
+  console.error("inject-signin failed:", e)
   process.exit(1)
 })

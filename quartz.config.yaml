@@ -158,11 +158,11 @@ plugins:
           if (cleaned) node.displayName = cleaned;
         }
       # Keep utility pages out of the content navigation tree: `tags` (Quartz
-      # default) plus the `account` page (reached via the top-bar account chip,
-      # not a study note). Without this, "Your account" shows in the left
-      # explorer on every page, even for signed-out readers.
+      # default) plus the `account` and `signin` pages (reached via the top-bar
+      # auth chip, not study notes). Without this, "Your account" / "Sign in"
+      # show in the left explorer on every page, even for signed-out readers.
       filterFn: |
-        (node) => node.slugSegment !== "tags" && node.slugSegment !== "account"
+        (node) => node.slugSegment !== "tags" && node.slugSegment !== "account" && node.slugSegment !== "signin"
     layout:
       position: left
       priority: 50
