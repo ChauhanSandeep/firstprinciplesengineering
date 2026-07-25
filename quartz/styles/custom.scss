@@ -1545,10 +1545,10 @@ li.section-li {
 // Hover/focus tooltip for the +/- reading-size buttons so their purpose is
 // clear without clicking. Anchored to the button's right edge so it opens
 // leftward and never overflows the viewport (the control lives top-right).
-.fpe-topbar-actions [data-fpe-tip] {
+.fpe-topbar [data-fpe-tip] {
   position: relative;
 }
-.fpe-topbar-actions [data-fpe-tip]::after {
+.fpe-topbar [data-fpe-tip]::after {
   content: attr(data-fpe-tip);
   position: absolute;
   top: calc(100% + 8px);
@@ -1569,8 +1569,8 @@ li.section-li {
     opacity 130ms ease,
     transform 130ms ease;
 }
-.fpe-topbar-actions [data-fpe-tip]:hover::after,
-.fpe-topbar-actions [data-fpe-tip]:focus-visible::after {
+.fpe-topbar [data-fpe-tip]:hover::after,
+.fpe-topbar [data-fpe-tip]:focus-visible::after {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1749,11 +1749,20 @@ ul.toc-content.overflow {
   & .sidebar.left {
     width: 0 !important;
     min-width: 0 !important;
+    // Collapse height too and park the sidebar in an existing grid row.
+    // The reader-mode grid-template-areas only defines topbar/header/center/
+    // footer, so keeping grid-area: grid-sidebar-left would auto-place this
+    // (still full-height) sidebar into an implicit trailing row — a big empty
+    // gap after the footer. Overlapping the zero-height topbar row removes it.
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
     background: none !important;
     overflow: visible !important;
-    grid-area: grid-sidebar-left;
+    grid-area: grid-topbar;
+    align-self: start;
     // CRITICAL: the upstream plugin sets opacity:0 on this sidebar, which
     // creates a stacking context and propagates invisibility to ALL
     // descendants — including our floating readermode button. We must
@@ -3201,6 +3210,17 @@ body .backlinks > ul.overflow {
     border-radius: 999px;
     object-fit: cover;
     display: block;
+    flex: 0 0 auto;
+  }
+  .fpe-engage-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+    color: var(--light);
+    font: 600 0.8rem/1 var(--headerFont);
+    text-transform: uppercase;
+    user-select: none;
   }
 
   // ---- buttons (shared pill styling) -------------------------------------
@@ -3440,7 +3460,7 @@ body .backlinks > ul.overflow {
   }
   .fpe-engage-compose-row {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
   .fpe-engage-comment-empty {
     color: var(--darkgray);

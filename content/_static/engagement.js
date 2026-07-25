@@ -77,6 +77,22 @@
   function clear(node) {
     while (node.firstChild) node.removeChild(node.firstChild)
   }
+  function initialOf(name) {
+    var s = (name || "").trim()
+    return s ? s.charAt(0).toUpperCase() : "?"
+  }
+  // Always render an avatar: the user's picture when set, otherwise a
+  // placeholder circle showing the first initial (Facebook/Instagram style).
+  function avatarEl(url, name) {
+    if (url) {
+      return el("img", { class: "fpe-engage-avatar", src: url, alt: "", loading: "lazy" })
+    }
+    return el("span", {
+      class: "fpe-engage-avatar fpe-engage-avatar-fallback",
+      "aria-hidden": "true",
+      text: initialOf(name),
+    })
+  }
   function timeAgo(iso) {
     var s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000)
     var u = [
@@ -221,9 +237,7 @@
       var avatar = meta.avatar_url
       var nameEl = el("span", { class: "fpe-engage-name", text: name })
       var who = el("span", { class: "fpe-engage-who" }, [
-        avatar
-          ? el("img", { class: "fpe-engage-avatar", src: avatar, alt: "", loading: "lazy" })
-          : null,
+        avatarEl(avatar, name),
         nameEl,
       ])
       els.authbar.appendChild(who)
@@ -240,16 +254,6 @@
           })
           .catch(function () {})
       }
-      els.authbar.appendChild(
-        el("button", {
-          class: "fpe-engage-signout",
-          type: "button",
-          text: "Sign out",
-          onclick: async function () {
-            await sb.auth.signOut()
-          },
-        }),
-      )
     } else {
       els.authbar.appendChild(
         el("span", {
@@ -501,9 +505,7 @@
     var prof = (profilesMap && profilesMap[row.user_id]) || {}
     var name = prof.display_name || "Reader"
     var head = el("div", { class: "fpe-engage-comment-head" }, [
-      prof.avatar_url
-        ? el("img", { class: "fpe-engage-avatar", src: prof.avatar_url, alt: "", loading: "lazy" })
-        : null,
+      avatarEl(prof.avatar_url, name),
       el("span", { class: "fpe-engage-comment-author", text: name }),
       el("span", { class: "fpe-engage-comment-time", text: timeAgo(row.created_at) }),
     ])

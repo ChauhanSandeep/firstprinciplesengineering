@@ -478,6 +478,22 @@
     applyArticleFontSize(readArticleFontSize())
   }
 
+  // The reader-mode and light/dark toggles are rendered by community plugins
+  // (as <button class="readermode"> / <button class="darkmode">) and carry no
+  // visible tooltip. Attach the same data-fpe-tip hover label used by the
+  // font-size buttons so their purpose is clear without clicking.
+  function ensureToolbarTooltips() {
+    var tips = [
+      [".readermode", "Reader mode"],
+      [".darkmode", "Light/dark mode"],
+    ]
+    tips.forEach(function (pair) {
+      document.querySelectorAll(".fpe-topbar " + pair[0]).forEach(function (btn) {
+        if (!btn.getAttribute("data-fpe-tip")) btn.setAttribute("data-fpe-tip", pair[1])
+      })
+    })
+  }
+
   function init() {
     hydrateCodeBlocks(document)
     ensureProgressBar()
@@ -489,6 +505,7 @@
     ensureRichFooter()
     polishToc(document)
     ensureArticleFontControl()
+    ensureToolbarTooltips()
   }
 
   if (document.readyState === "loading") {
