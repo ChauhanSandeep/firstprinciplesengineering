@@ -123,6 +123,27 @@
 
   boot()
 
+  // Both this widget and the header auth chip need a Supabase client, and each
+  // used to call createClient() independently. Two GoTrueClient instances that
+  // share the same storage key contend on Supabase's global navigator lock
+  // during session recovery/refresh, so one instance intermittently sees a
+  // null session while the other is signed in — the comment box would then
+  // render its signed-out state even though the header shows the user's name.
+  // Sharing one client across both scripts removes the race entirely.
+  function sharedClient(mod, url, key) {
+    if (!window.__FPE_SB_CLIENT__) {
+      window.__FPE_SB_CLIENT__ = mod.createClient(url, key, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          flowType: "implicit",
+        },
+      })
+    }
+    return window.__FPE_SB_CLIENT__
+  }
+
   async function boot() {
     var mod
     try {
@@ -131,9 +152,7 @@
       renderOffline()
       return
     }
-    sb = mod.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "implicit" },
-    })
+    sb = sharedClient(mod, CFG.supabaseUrl, CFG.supabaseAnonKey)
     renderShell()
 
     var sess = await sb.auth.getSession()
