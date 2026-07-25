@@ -1254,6 +1254,17 @@ a.internal.tag-link {
   align-self: start;
 }
 
+// The per-page afterBody slot (`.page-footer`) renders below the article
+// content, separated by a trailing `<hr>`. With the graph view disabled it is
+// empty on every page, leaving the divider and its margins as dead space
+// before the site footer. Collapse both when there's nothing to show.
+.page > #quartz-body > .center > .page-footer:empty {
+  display: none;
+}
+.page > #quartz-body > .center > hr:has(+ .page-footer:empty) {
+  display: none;
+}
+
 .section-ul,
 ul.section-ul {
   list-style: none;

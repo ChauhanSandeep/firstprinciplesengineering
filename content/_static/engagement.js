@@ -317,7 +317,7 @@
   }
   async function reflectRead() {
     if (!FEATURES.readState || !els.readBtn) return
-    var read = localRead()
+    var read = user ? localRead() : false
     if (user) {
       var r = await sb
         .from("article_reads")
@@ -336,16 +336,20 @@
     els.readLabel.textContent = read ? "Read" : "Mark as read"
   }
   async function onToggleRead() {
+    if (!user) return requireAuth()
     var read = !els.readBtn.classList.contains("is-read")
     setReadUI(read)
-    setLocalRead(read) // instant, works signed-out
-    if (!user) return
+    setLocalRead(read) // optimistic
     var res = read
       ? await sb
           .from("article_reads")
           .upsert({ slug: SLUG, user_id: user.id }, { onConflict: "slug,user_id" })
       : await sb.from("article_reads").delete().eq("slug", SLUG).eq("user_id", user.id)
-    if (res.error) flash("Saved on this device; couldn't sync across devices.", "error")
+    if (res.error) {
+      setReadUI(!read) // revert
+      setLocalRead(!read)
+      flash("Couldn't save your progress. Try again.", "error")
+    }
   }
   async function syncLocalReadUp() {
     if (localRead() && user) {
