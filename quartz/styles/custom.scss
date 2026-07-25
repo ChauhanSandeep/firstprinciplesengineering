@@ -4244,6 +4244,64 @@ body .backlinks > ul.overflow {
   }
 }
 
+// Segmented Sign in / Create account switch — only one flow is active.
+.fpe-auth-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin-bottom: 0.1rem;
+  background: var(--lightgray);
+  border-radius: 10px;
+}
+.fpe-auth-tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    color: var(--dark);
+  }
+  &.is-active {
+    background: var(--light);
+    color: var(--dark);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Side-by-side first / last name inputs in the create-account flow.
+.fpe-auth-row {
+  display: flex;
+  gap: 0.6rem;
+
+  .fpe-auth-input {
+    width: 100%;
+  }
+}
+@media (max-width: 420px) {
+  .fpe-auth-row {
+    flex-direction: column;
+  }
+}
+
+.fpe-auth-switch {
+  margin: 0.55rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--darkgray);
+
+  .fpe-auth-link {
+    font-size: 0.85rem;
+  }
+}
+
 .fpe-auth-note {
   min-height: 1.1rem;
   margin: 0.2rem 0 0;
@@ -4270,6 +4328,14 @@ body .backlinks > ul.overflow {
   .fpe-auth-secondary,
   .fpe-auth-input {
     background: var(--light);
+  }
+
+  .fpe-auth-tabs {
+    background: color-mix(in srgb, var(--light) 60%, #000 40%);
+  }
+  .fpe-auth-tab.is-active {
+    background: var(--lightgray);
+    color: var(--dark);
   }
 
   .fpe-auth-note.is-error {
@@ -4367,6 +4433,68 @@ body .backlinks > ul.overflow {
     background: var(--light);
     color: var(--dark);
     font-size: 0.9rem;
+  }
+  .fpe-account-sub {
+    margin: -0.3rem 0 0.2rem;
+    font-size: 0.82rem;
+    color: var(--gray);
+  }
+  .fpe-account-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1rem;
+  }
+  .fpe-account-field-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .fpe-account-field {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .fpe-account-input {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+    &::placeholder {
+      color: var(--gray);
+    }
+    &:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(184, 91, 60, 0.15);
+    }
+  }
+  .fpe-account-textarea {
+    resize: vertical;
+    min-height: 3.5rem;
+    font-family: var(--bodyFont);
+  }
+  .fpe-account-hint {
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    color: var(--gray);
+  }
+  .fpe-account-save-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.2rem;
+  }
+  @media (max-width: 480px) {
+    .fpe-account-field-row {
+      flex-direction: column;
+    }
   }
   .fpe-account-save,
   .fpe-account-oauth,

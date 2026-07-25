@@ -29,27 +29,79 @@ create table if not exists public.profiles (
   id           uuid primary key references auth.users (id) on delete cascade,
   display_name text,
   avatar_url   text,
+  first_name       text,
+  last_name        text,
+  company          text,
+  job_title        text,
+  years_experience integer,
+  location         text,
+  linkedin_url     text,
+  bio              text,
   created_at   timestamptz not null default now()
 );
 
+-- Extended, all-optional profile columns. Added idempotently so re-running
+-- this file on an existing database is safe (no data loss).
+alter table public.profiles add column if not exists first_name       text;
+alter table public.profiles add column if not exists last_name        text;
+alter table public.profiles add column if not exists company          text;
+alter table public.profiles add column if not exists job_title        text;
+alter table public.profiles add column if not exists years_experience integer;
+alter table public.profiles add column if not exists location         text;
+alter table public.profiles add column if not exists linkedin_url     text;
+alter table public.profiles add column if not exists bio              text;
+
+-- Sanity constraints (added only once; every field stays nullable/optional).
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'profiles_years_experience_range') then
+    alter table public.profiles
+      add constraint profiles_years_experience_range
+      check (years_experience is null or years_experience between 0 and 80);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'profiles_text_lengths') then
+    alter table public.profiles
+      add constraint profiles_text_lengths
+      check (
+        (first_name   is null or char_length(first_name)   <= 80)  and
+        (last_name    is null or char_length(last_name)    <= 80)  and
+        (company      is null or char_length(company)      <= 120) and
+        (job_title    is null or char_length(job_title)    <= 120) and
+        (location     is null or char_length(location)     <= 120) and
+        (linkedin_url is null or char_length(linkedin_url) <= 300) and
+        (bio          is null or char_length(bio)          <= 500)
+      );
+  end if;
+end $$;
+
 -- Auto-provision a profile row when a new auth user is created, seeding
--- display_name / avatar from the OAuth metadata when present.
+-- name / avatar from the OAuth metadata when present. The email local-part is
+-- intentionally NOT used as a display name (it leaks the address publicly);
+-- users without OAuth names show as "Reader" until they fill in the account.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_full  text := coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name');
+  v_first text := new.raw_user_meta_data ->> 'first_name';
+  v_last  text := new.raw_user_meta_data ->> 'last_name';
 begin
-  insert into public.profiles (id, display_name, avatar_url)
+  -- Derive first/last from a single "full name" when discrete parts are absent.
+  if v_first is null and v_full is not null then
+    v_first := nullif(split_part(v_full, ' ', 1), '');
+    v_last  := nullif(trim(substr(v_full, char_length(split_part(v_full, ' ', 1)) + 1)), '');
+  end if;
+
+  insert into public.profiles (id, display_name, avatar_url, first_name, last_name)
   values (
     new.id,
-    coalesce(
-      new.raw_user_meta_data ->> 'full_name',
-      new.raw_user_meta_data ->> 'name',
-      split_part(new.email, '@', 1)
-    ),
-    new.raw_user_meta_data ->> 'avatar_url'
+    coalesce(v_full, nullif(trim(concat_ws(' ', v_first, v_last)), '')),
+    new.raw_user_meta_data ->> 'avatar_url',
+    v_first,
+    v_last
   )
   on conflict (id) do nothing;
   return new;

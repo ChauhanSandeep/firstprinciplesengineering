@@ -142,7 +142,7 @@
   // ---- signed in ----------------------------------------------------------
   function renderSignedIn() {
     var meta = user.user_metadata || {}
-    var name = meta.full_name || meta.name || (user.email ? user.email.split("@")[0] : "you")
+    var name = meta.full_name || meta.name || "Reader"
     var avatar = meta.avatar_url
 
     var btn = el("button", {
@@ -161,8 +161,24 @@
         el("img", { class: "fpe-authchip-avatar", src: avatar, alt: "", loading: "lazy" }),
       )
     else btn.appendChild(el("span", { class: "fpe-authchip-icon", html: USER_ICON }))
-    btn.appendChild(el("span", { class: "fpe-authchip-label", text: name }))
+    var label = el("span", { class: "fpe-authchip-label", text: name })
+    btn.appendChild(label)
     mount.appendChild(btn)
+
+    // Prefer the profile's saved display name (e.g. for email sign-ups that
+    // have no OAuth full_name) so the chip never falls back to the email.
+    if (sb && !meta.full_name && !meta.name) {
+      sb
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(function (res) {
+          var dn = res && res.data && res.data.display_name
+          if (dn) label.textContent = dn
+        })
+        .catch(function () {})
+    }
   }
 
   function buildUserMenu() {

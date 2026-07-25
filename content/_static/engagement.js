@@ -217,15 +217,29 @@
     clear(els.authbar)
     if (user) {
       var meta = user.user_metadata || {}
-      var name = meta.full_name || meta.name || (user.email ? user.email.split("@")[0] : "you")
+      var name = meta.full_name || meta.name || "you"
       var avatar = meta.avatar_url
+      var nameEl = el("span", { class: "fpe-engage-name", text: name })
       var who = el("span", { class: "fpe-engage-who" }, [
         avatar
           ? el("img", { class: "fpe-engage-avatar", src: avatar, alt: "", loading: "lazy" })
           : null,
-        el("span", { class: "fpe-engage-name", text: name }),
+        nameEl,
       ])
       els.authbar.appendChild(who)
+      // Prefer the saved profile name so email sign-ups don't show "you".
+      if (!meta.full_name && !meta.name) {
+        sb
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user.id)
+          .maybeSingle()
+          .then(function (res) {
+            var dn = res && res.data && res.data.display_name
+            if (dn) nameEl.textContent = dn
+          })
+          .catch(function () {})
+      }
       els.authbar.appendChild(
         el("button", {
           class: "fpe-engage-signout",
