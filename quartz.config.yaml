@@ -3,7 +3,9 @@ configuration:
   pageTitle: First Principles Engineering
   pageTitleSuffix: ""
   enableSPA: true
-  enablePopovers: true
+  # Wikipedia-style hover previews are disabled: on this site they added no
+  # value and hurt UX by covering neighbouring content on hover.
+  enablePopovers: false
   locale: en-US
   baseUrl: firstprinciplesengineering.tech
   ignorePatterns:
@@ -167,7 +169,9 @@ plugins:
       position: left
       priority: 50
   - source: github:quartz-community/graph
-    enabled: true
+    # Disabled: the local connections graph at the bottom of every page was
+    # noise for this site and has been turned off.
+    enabled: false
     options:
       localGraph:
         depth: 2
