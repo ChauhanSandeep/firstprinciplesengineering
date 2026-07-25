@@ -53,10 +53,24 @@
     })
   }
 
+  function isStudySection() {
+    // Reading progress belongs only on long-form study pages inside the
+    // Fundamentals and Roadmap sections. Vault folders carry an ordering
+    // prefix (e.g. `/01-fundamentals/`, `/03-roadmaps/`) which may change,
+    // so match the section name after an optional `NN-`/`NN_` prefix.
+    return /^\/(?:\d+[-_])?(fundamentals|roadmaps?)(?:\/|$)/i.test(window.location.pathname)
+  }
+
   function ensureProgressBar() {
-    // Only on article-style pages: a single <article> with substantial scroll.
-    if (!document.querySelector("article")) return
-    if (document.getElementById("scroll-progress")) return
+    const existing = document.getElementById("scroll-progress")
+    // Only on article-style study pages (Fundamentals / Roadmap). On any
+    // other page — home, about, account, tags, folder/tag indexes — remove a
+    // bar left over from a prior SPA navigation and bail.
+    if (!isStudySection() || !document.querySelector("article")) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing)
+      return
+    }
+    if (existing) return
     const bar = document.createElement("div")
     bar.id = "scroll-progress"
     document.body.prepend(bar)
@@ -435,10 +449,13 @@
   function ensureArticleFontControl() {
     applyArticleFontSize(readArticleFontSize())
 
-    const left = document.querySelector(".sidebar.left")
-    if (!left) return
+    // The reading-font control now lives in the full-width top bar's actions
+    // cluster (next to the account chip), rendered by DefaultFrame as
+    // <div class="fpe-topbar-actions" data-fpe-topbar-actions>.
+    const actions = document.querySelector("[data-fpe-topbar-actions]")
+    if (!actions) return
 
-    let control = left.querySelector(".fpe-font-size-control")
+    let control = actions.querySelector(".fpe-font-size-control")
     if (!control) {
       control = document.createElement("div")
       control.className = "fpe-font-size-control"
@@ -454,46 +471,9 @@
       control.querySelector("[data-fpe-font-inc]").addEventListener("click", () => {
         applyArticleFontSize(readArticleFontSize() + ARTICLE_FONT_STEP)
       })
-    }
-
-    const toolbar = Array.from(left.querySelectorAll(".flex-component")).find((el) =>
-      el.querySelector(".search"),
-    )
-    const explorer = left.querySelector(".explorer")
-    if (toolbar) {
-      let controlsGroup = left.querySelector(".fpe-sidebar-reading-controls")
-      if (!controlsGroup) {
-        controlsGroup = document.createElement("section")
-        controlsGroup.className = "fpe-sidebar-reading-controls"
-        controlsGroup.setAttribute("aria-labelledby", "fpe-sidebar-reading-label")
-        controlsGroup.innerHTML =
-          '<div class="fpe-sidebar-section-label" id="fpe-sidebar-reading-label">Reading</div>'
-      }
-
-      let controlsRow = controlsGroup.querySelector(".fpe-sidebar-tool-row")
-      if (!controlsRow) {
-        controlsRow = left.querySelector(".fpe-sidebar-tool-row")
-      }
-      if (!controlsRow) {
-        controlsRow = document.createElement("div")
-        controlsRow.className = "fpe-sidebar-tool-row"
-      }
-      if (controlsRow.parentElement !== controlsGroup) {
-        controlsGroup.appendChild(controlsRow)
-      }
-      if (controlsGroup.parentElement !== left) {
-        left.insertBefore(controlsGroup, toolbar.nextSibling)
-      }
-
-      const readerSlot = left.querySelector(".readermode")?.parentElement
-      const darkSlot = left.querySelector(".darkmode")?.parentElement
-      controlsRow.appendChild(control)
-      if (readerSlot) controlsRow.appendChild(readerSlot)
-      if (darkSlot) controlsRow.appendChild(darkSlot)
-
-      left.querySelectorAll(".fpe-font-size-toolbar-slot").forEach((slot) => slot.remove())
-    } else if (control.parentElement !== left) {
-      left.insertBefore(control, explorer || left.firstChild)
+      // Place the font control before the auth chip so the chip stays rightmost.
+      const chip = actions.querySelector(".fpe-authchip")
+      actions.insertBefore(control, chip || null)
     }
     applyArticleFontSize(readArticleFontSize())
   }
@@ -509,7 +489,6 @@
     ensureRichFooter()
     polishToc(document)
     ensureArticleFontControl()
-    ensureSidebarSocial()
   }
 
   if (document.readyState === "loading") {

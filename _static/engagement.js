@@ -96,6 +96,8 @@
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>'
   var CHECK =
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+  var COMMENT_BUBBLE =
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
 
   // ---- state --------------------------------------------------------------
   var sb = null
@@ -174,7 +176,11 @@
 
     if (FEATURES.comments) {
       els.comments = el("div", { class: "fpe-engage-comments" }, [
-        el("h3", { class: "fpe-engage-comments-heading", text: "Comments" }),
+        el("h3", { class: "fpe-engage-comments-heading" }, [
+          el("span", { class: "fpe-engage-comments-icon", html: COMMENT_BUBBLE }),
+          el("span", { class: "fpe-engage-comments-title", text: "Comments" }),
+          (els.commentsCount = el("span", { class: "fpe-engage-comments-count", text: "" })),
+        ]),
         (els.commentForm = el("div", { class: "fpe-engage-comment-form" })),
         (els.commentList = el("div", { class: "fpe-engage-comment-list" })),
       ])
@@ -396,9 +402,19 @@
   function renderCommentForm() {
     clear(els.commentForm)
     if (!user) {
-      els.commentForm.appendChild(
-        el("p", { class: "fpe-engage-comment-cta", text: "Sign in above to join the discussion." }),
-      )
+      var nudge = el("div", { class: "fpe-engage-comment-nudge" }, [
+        el("button", {
+          class: "fpe-engage-comment-nudge-btn",
+          type: "button",
+          text: "Sign in to join the discussion",
+          onclick: requireAuth,
+        }),
+        el("p", {
+          class: "fpe-engage-comment-nudge-sub",
+          text: "Your account is free — sign in with Google or a magic link.",
+        }),
+      ])
+      els.commentForm.appendChild(nudge)
       return
     }
     var ta = el("textarea", {
@@ -487,6 +503,9 @@
 
   function renderCommentTree(rows, profilesMap) {
     clear(els.commentList)
+    if (els.commentsCount) {
+      els.commentsCount.textContent = rows.length ? "(" + rows.length + ")" : ""
+    }
     if (!rows.length) {
       els.commentList.appendChild(
         el("p", { class: "fpe-engage-comment-empty", text: "No comments yet. Be the first." }),

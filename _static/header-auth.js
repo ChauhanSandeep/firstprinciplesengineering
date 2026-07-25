@@ -3,10 +3,10 @@
  * -------------------------------------------------------------------------
  * Global header auth chip for First Principles Engineering.
  *
- * Injected into the left sidebar (below the site title) of EVERY page by
- * scripts/build/inject-header-auth.mjs, which also writes an inline
- * `window.__FPE_AUTHCHIP__` config (Supabase URL + anon key, OAuth
- * providers, magic-link flag, and the /account href) just before loading
+ * Injected into the full-width top navigation bar (.fpe-topbar-actions, at the
+ * right edge) of EVERY page by scripts/build/inject-header-auth.mjs, which also
+ * writes an inline `window.__FPE_AUTHCHIP__` config (Supabase URL + anon key,
+ * OAuth providers, magic-link flag, and the /account href) just before loading
  * this module.
  *
  *   • Signed out → a compact "Sign in" button that opens a small popover
@@ -62,6 +62,18 @@
   var openPanel = null
 
   boot()
+
+  // Quartz performs client-side (SPA) navigation, morphing the DOM on every
+  // in-site link click. That resets the injected chip back to its empty static
+  // markup (and can swap the mount node), so re-acquire the mount and re-render
+  // on each `nav` event — otherwise the chip vanishes after the first
+  // navigation and never comes back (even returning to the home page).
+  document.addEventListener("nav", function () {
+    var next = document.querySelector("[data-fpe-authchip]")
+    if (!next) return
+    mount = next
+    if (sb) render()
+  })
 
   async function boot() {
     var mod
