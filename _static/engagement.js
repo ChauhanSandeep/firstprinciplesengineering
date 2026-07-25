@@ -115,7 +115,7 @@
       return
     }
     sb = mod.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "implicit" },
     })
     renderShell()
 
