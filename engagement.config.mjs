@@ -66,6 +66,12 @@ export default {
     // Supabase's email provider is on by default; no SMTP setup required
     // for the built-in flow at low volume.
     emailMagicLink: true,
+    // Show a classic email + password form (sign in, create account, and a
+    // "forgot password" reset link). Uses Supabase's built-in email/password
+    // provider (Authentication → Providers → Email, enabled by default).
+    // If "Confirm email" is on in the dashboard, new sign-ups must click a
+    // confirmation link before their password works; the UI guides them.
+    emailPassword: true,
   },
 
   // ---- Comments behaviour -------------------------------------------------

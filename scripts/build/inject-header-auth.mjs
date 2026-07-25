@@ -104,6 +104,7 @@ async function main() {
     supabaseAnonKey: config.supabaseAnonKey,
     oauthProviders: auth.oauthProviders || [],
     emailMagicLink: !!auth.emailMagicLink,
+    emailPassword: !!auth.emailPassword,
     accountHref: hrefForSlug(basePath, "account"),
     moduleSrc: `${basePath}/_static/header-auth.js`,
   }

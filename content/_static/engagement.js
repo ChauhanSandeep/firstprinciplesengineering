@@ -32,6 +32,7 @@
   var FEATURES = CFG.features || {}
   var AUTH = CFG.auth || {}
   var COMMENTS_CFG = CFG.comments || {}
+  var ACCOUNT_HREF = CFG.accountHref || "/account"
   var LS_READ_KEY = "fpe:read:" + SLUG
   var LS_LAST_KEY = "fpe:last:" + SLUG
 
@@ -256,8 +257,89 @@
         )
       })
       els.authbar.appendChild(buttons)
+      if (AUTH.emailPassword) els.authbar.appendChild(renderPasswordForm())
       if (AUTH.emailMagicLink) els.authbar.appendChild(renderMagicLinkForm())
     }
+  }
+
+  function renderPasswordForm() {
+    var email = el("input", {
+      class: "fpe-engage-email",
+      type: "email",
+      placeholder: "you@example.com",
+      autocomplete: "email",
+      "aria-label": "Email",
+    })
+    var pass = el("input", {
+      class: "fpe-engage-password",
+      type: "password",
+      placeholder: "Password",
+      autocomplete: "current-password",
+      "aria-label": "Password",
+    })
+    var signInBtn = el("button", {
+      class: "fpe-engage-pw-btn",
+      type: "submit",
+      text: "Sign in",
+    })
+    var signUpBtn = el("button", {
+      class: "fpe-engage-pw-btn fpe-engage-pw-secondary",
+      type: "button",
+      text: "Create account",
+      onclick: function () {
+        submit("signup")
+      },
+    })
+    var forgot = el("button", {
+      class: "fpe-engage-pw-forgot",
+      type: "button",
+      text: "Forgot password?",
+      onclick: function () {
+        submit("reset")
+      },
+    })
+    var form = el("form", { class: "fpe-engage-pwform" }, [
+      email,
+      pass,
+      el("div", { class: "fpe-engage-pw-actions" }, [signInBtn, signUpBtn]),
+      forgot,
+    ])
+    form.addEventListener("submit", function (e) {
+      e.preventDefault()
+      submit("signin")
+    })
+    async function submit(mode) {
+      var e = (email.value || "").trim()
+      var p = pass.value || ""
+      if (!e) return flash("Enter your email address.", "error")
+      if (mode === "reset") {
+        var rr = await sb.auth.resetPasswordForEmail(e, {
+          redirectTo: window.location.origin + ACCOUNT_HREF,
+        })
+        return flash(
+          rr.error ? rr.error.message : "Check your inbox to reset your password.",
+          rr.error ? "error" : "ok",
+        )
+      }
+      if (!p) return flash("Enter your password.", "error")
+      if (mode === "signup") {
+        var sr = await sb.auth.signUp({
+          email: e,
+          password: p,
+          options: { emailRedirectTo: window.location.href },
+        })
+        if (sr.error) return flash(sr.error.message, "error")
+        return flash(
+          sr.data && sr.data.session
+            ? "Account created — you're signed in."
+            : "Account created. Check your inbox to confirm, then sign in.",
+          "ok",
+        )
+      }
+      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
+      if (ir.error) flash(ir.error.message, "error")
+    }
+    return form
   }
 
   function renderMagicLinkForm() {

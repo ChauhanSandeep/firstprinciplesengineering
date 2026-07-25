@@ -3154,6 +3154,7 @@ body .backlinks > ul.overflow {
   // ---- buttons (shared pill styling) -------------------------------------
   .fpe-engage-oauth,
   .fpe-engage-magic-btn,
+  .fpe-engage-pw-btn,
   .fpe-engage-signout,
   .fpe-engage-like,
   .fpe-engage-read,
@@ -3194,6 +3195,7 @@ body .backlinks > ul.overflow {
 
   // Primary tone for the OAuth + comment-submit call to action.
   .fpe-engage-oauth,
+  .fpe-engage-pw-btn:not(.fpe-engage-pw-secondary),
   .fpe-engage-comment-submit {
     background: var(--secondary);
     color: var(--light);
@@ -3252,6 +3254,7 @@ body .backlinks > ul.overflow {
     flex-wrap: wrap;
   }
   .fpe-engage-email,
+  .fpe-engage-password,
   .fpe-engage-textarea {
     font-family: var(--bodyFont);
     font-size: 0.85rem;
@@ -3272,6 +3275,36 @@ body .backlinks > ul.overflow {
   .fpe-engage-textarea {
     width: 100%;
     resize: vertical;
+  }
+
+  // ---- email + password form ---------------------------------------------
+  .fpe-engage-pwform {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    max-width: 20rem;
+  }
+  .fpe-engage-password {
+    width: 100%;
+  }
+  .fpe-engage-pw-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .fpe-engage-pw-forgot {
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--secondary);
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover {
+      color: var(--tertiary);
+    }
   }
 
   // ---- comments ----------------------------------------------------------
@@ -3436,6 +3469,7 @@ body .backlinks > ul.overflow {
 
   .fpe-engage-oauth,
   .fpe-engage-magic-btn,
+  .fpe-engage-pw-btn,
   .fpe-engage-signout,
   .fpe-engage-like,
   .fpe-engage-read {
@@ -3451,7 +3485,13 @@ body .backlinks > ul.overflow {
     color: var(--light);
     border-color: var(--secondary);
   }
+  .fpe-engage-pw-btn:not(.fpe-engage-pw-secondary) {
+    background: var(--secondary);
+    color: var(--light);
+    border-color: var(--secondary);
+  }
   .fpe-engage-email,
+  .fpe-engage-password,
   .fpe-engage-textarea {
     background: color-mix(in srgb, var(--light) 88%, var(--dark) 12%);
   }
@@ -3826,7 +3866,8 @@ body .backlinks > ul.overflow {
   }
 
   .fpe-authchip-oauth,
-  .fpe-authchip-magic-btn {
+  .fpe-authchip-magic-btn,
+  .fpe-authchip-pw-btn {
     width: 100%;
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
@@ -3843,13 +3884,57 @@ body .backlinks > ul.overflow {
     }
   }
 
+  .fpe-authchip-pwform {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  .fpe-authchip-password {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-size: 0.85rem;
+  }
+  .fpe-authchip-pw-actions {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .fpe-authchip-pw-actions .fpe-authchip-pw-btn {
+    flex: 1 1 0;
+  }
+  .fpe-authchip-pw-secondary {
+    background: var(--light);
+    color: var(--dark);
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    }
+  }
+  .fpe-authchip-pw-forgot {
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--secondary);
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover {
+      color: var(--tertiary);
+    }
+  }
+
   .fpe-authchip-magic {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
     margin: 0;
   }
-  .fpe-authchip-email {
+  .fpe-authchip-email,
+  .fpe-authchip-password {
     width: 100%;
     padding: 0.45rem 0.6rem;
     border-radius: 8px;
@@ -3993,7 +4078,8 @@ body .backlinks > ul.overflow {
   }
   .fpe-account-save,
   .fpe-account-oauth,
-  .fpe-account-magic-btn {
+  .fpe-account-magic-btn,
+  .fpe-account-pw-btn {
     padding: 0.5rem 1.1rem;
     border-radius: 8px;
     border: 1px solid var(--secondary);
@@ -4020,7 +4106,8 @@ body .backlinks > ul.overflow {
     display: flex;
     gap: 0.5rem;
   }
-  .fpe-account-email {
+  .fpe-account-email,
+  .fpe-account-password {
     flex: 1 1 auto;
     padding: 0.5rem 0.7rem;
     border-radius: 8px;
@@ -4028,6 +4115,44 @@ body .backlinks > ul.overflow {
     background: var(--light);
     color: var(--dark);
     font-size: 0.9rem;
+  }
+
+  // ---- email + password form ---------------------------------------------
+  .fpe-account-pwform {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 22rem;
+    margin-top: 0.6rem;
+  }
+  .fpe-account-pw-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .fpe-account-pw-actions .fpe-account-pw-btn {
+    flex: 1 1 0;
+  }
+  .fpe-account-pw-secondary {
+    background: var(--light);
+    color: var(--dark);
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+      color: var(--dark);
+    }
+  }
+  .fpe-account-pw-forgot {
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--secondary);
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover {
+      color: var(--tertiary);
+    }
   }
   .fpe-account-save-status,
   .fpe-account-danger-status {

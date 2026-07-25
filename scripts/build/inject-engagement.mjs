@@ -76,6 +76,7 @@ function renderBlock({ slug, title, basePath }) {
     features: config.features || {},
     auth: config.auth || {},
     comments: config.comments || {},
+    accountHref: `${basePath || ""}/account`,
   }
   const moduleSrc = `${basePath || ""}/_static/engagement.js`
   return [
