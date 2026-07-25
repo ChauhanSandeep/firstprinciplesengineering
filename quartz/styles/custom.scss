@@ -4048,17 +4048,232 @@ body .backlinks > ul.overflow {
 // content/_static/account.js (scripts/build/inject-account.mjs wires it).
 // =========================================================================
 
+// =========================================================================
+// Dedicated /signin page (content/signin.md → [data-fpe-signin])
+// Hydrated by content/_static/signin.js. Clean, centered auth card.
+// =========================================================================
+.fpe-signin {
+  max-width: 26rem;
+  margin: 2.5rem auto;
+
+  .fpe-account-loading,
+  .fpe-account-msg {
+    color: var(--darkgray);
+    text-align: center;
+  }
+}
+
+// On the dedicated /signin page the auth card is the hero — suppress the
+// default article title + reading-time meta so the heading isn't duplicated.
+[data-slug="signin"] {
+  .article-title,
+  .content-meta {
+    display: none;
+  }
+}
+
+.fpe-auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 2rem 1.75rem 1.75rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 14px;
+  background: var(--light);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
+}
+
+.fpe-auth-title {
+  margin: 0;
+  font-family: var(--headerFont);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--dark);
+}
+
+.fpe-auth-sub {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--darkgray);
+}
+
+// Outlined provider button (Google), white with hairline border.
+.fpe-auth-oauth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 9px;
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: var(--gray);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .fpe-auth-oauth-icon {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+  }
+}
+
+// "or continue with" divider with flanking hairlines.
+.fpe-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.35rem 0;
+  color: var(--gray);
+  font-size: 0.78rem;
+  text-transform: none;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--lightgray);
+  }
+}
+
+.fpe-auth-input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 9px;
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: var(--gray);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(184, 91, 60, 0.18);
+  }
+}
+
+.fpe-auth-primary {
+  width: 100%;
+  padding: 0.72rem 1rem;
+  margin-top: 0.15rem;
+  border: 1px solid var(--secondary);
+  border-radius: 9px;
+  background: var(--secondary);
+  color: #fff;
+  font-family: var(--bodyFont);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: var(--tertiary);
+    border-color: var(--tertiary);
+  }
+}
+
+.fpe-auth-secondary {
+  width: 100%;
+  padding: 0.72rem 1rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 9px;
+  background: var(--light);
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--gray);
+  }
+}
+
+.fpe-auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+  margin-top: 0.3rem;
+}
+
+.fpe-auth-link {
+  padding: 0.15rem 0;
+  border: none;
+  background: none;
+  color: var(--secondary);
+  font-family: var(--bodyFont);
+  font-size: 0.82rem;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.fpe-auth-note {
+  min-height: 1.1rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--darkgray);
+
+  &.is-error {
+    color: #c0392b;
+  }
+  &.is-ok {
+    color: #2e7d4f;
+  }
+}
+
+[saved-theme="dark"] {
+  .fpe-auth-card {
+    background: var(--light);
+    border-color: var(--lightgray);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .fpe-auth-oauth,
+  .fpe-auth-secondary,
+  .fpe-auth-input {
+    background: var(--light);
+  }
+
+  .fpe-auth-note.is-error {
+    color: #ff8a7a;
+  }
+  .fpe-auth-note.is-ok {
+    color: #78d29b;
+  }
+}
+
 .fpe-account {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   margin: 1.5rem 0;
-
-  // Dedicated /signin page: center the single auth card on the page.
-  &.fpe-signin {
-    max-width: 30rem;
-    margin: 2rem auto;
-  }
 
   // Anchors that are styled as buttons (link to the /signin page).
   .fpe-account-signin-link {
