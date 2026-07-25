@@ -461,9 +461,9 @@
       control.className = "fpe-font-size-control"
       control.setAttribute("aria-label", "Article font size")
       control.innerHTML =
-        '<button type="button" data-fpe-font-inc aria-label="Increase article font size" title="Increase font size">+</button>' +
+        '<button type="button" data-fpe-font-inc aria-label="Increase article font size" data-fpe-tip="Increase text size">+</button>' +
         '<span class="fpe-font-size-value" aria-live="polite"></span>' +
-        '<button type="button" data-fpe-font-dec aria-label="Decrease article font size" title="Decrease font size">−</button>'
+        '<button type="button" data-fpe-font-dec aria-label="Decrease article font size" data-fpe-tip="Decrease text size">−</button>'
 
       control.querySelector("[data-fpe-font-dec]").addEventListener("click", () => {
         applyArticleFontSize(readArticleFontSize() - ARTICLE_FONT_STEP)

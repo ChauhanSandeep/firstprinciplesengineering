@@ -36,7 +36,6 @@
   var MAGIC = !!CFG.emailMagicLink
   var PASSWORD = !!CFG.emailPassword
   var ACCOUNT_HREF = CFG.accountHref || "/account"
-  var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
 
   // ---- tiny DOM helpers (mirrors account.js) ------------------------------
   function el(tag, attrs, children) {
@@ -110,30 +109,171 @@
     mount.appendChild(el("p", { class: "fpe-account-msg", text: text }))
   }
 
+  var GOOGLE_G =
+    '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>'
+
   function renderSignIn() {
     clear(mount)
-    var card = el("div", { class: "fpe-account-card fpe-account-signin" }, [
-      el("h1", { class: "fpe-account-h", text: "Sign in or create an account" }),
+    var card = el("div", { class: "fpe-auth-card" })
+
+    card.appendChild(el("h1", { class: "fpe-auth-title", text: "Sign in or sign up" }))
+    card.appendChild(
       el("p", {
-        class: "fpe-account-lede",
-        text: "Sign in to like, comment, and track what you've read across your devices.",
+        class: "fpe-auth-sub",
+        text: PASSWORD
+          ? "Use your email and password, a one-time link, or continue with Google."
+          : "Use just your email, or continue with Google.",
       }),
-    ])
+    )
+
     PROVIDERS.forEach(function (p) {
+      var btn = el("button", {
+        class: "fpe-auth-oauth fpe-auth-oauth-" + p,
+        type: "button",
+        onclick: function () {
+          signInOAuth(p)
+        },
+      })
+      if (p === "google") btn.appendChild(el("span", { class: "fpe-auth-oauth-icon", html: GOOGLE_G }))
+      btn.appendChild(
+        el("span", {
+          text: p === "google" ? "Continue with Google" : "Continue with " + p,
+        }),
+      )
+      card.appendChild(btn)
+    })
+
+    if (PROVIDERS.length && (PASSWORD || MAGIC)) {
+      card.appendChild(
+        el("div", { class: "fpe-auth-divider" }, [
+          el("span", { text: "or continue with" }),
+        ]),
+      )
+    }
+
+    var note = el("p", { class: "fpe-auth-note", role: "status", "aria-live": "polite" })
+    function setNote(text, isError) {
+      note.textContent = text || ""
+      note.className = "fpe-auth-note" + (text ? (isError ? " is-error" : " is-ok") : "")
+    }
+
+    var email = el("input", {
+      class: "fpe-auth-input",
+      type: "email",
+      placeholder: "Email",
+      autocomplete: "email",
+      "aria-label": "Email",
+    })
+    card.appendChild(email)
+
+    var pass = null
+    if (PASSWORD) {
+      pass = el("input", {
+        class: "fpe-auth-input",
+        type: "password",
+        placeholder: "Password",
+        autocomplete: "current-password",
+        "aria-label": "Password",
+      })
+      card.appendChild(pass)
+    }
+
+    // Primary action: password sign-in when enabled, else magic link.
+    var primary = el("button", {
+      class: "fpe-auth-primary",
+      type: "button",
+      text: PASSWORD ? "Sign in" : "Email me a sign-in link",
+      onclick: function () {
+        PASSWORD ? submit("signin") : submit("magic")
+      },
+    })
+    card.appendChild(primary)
+
+    if (PASSWORD) {
       card.appendChild(
         el("button", {
-          class: "fpe-account-oauth fpe-account-oauth-" + p,
+          class: "fpe-auth-secondary",
           type: "button",
-          text: OAUTH_LABELS[p] || "Continue with " + p,
+          text: "Create account",
           onclick: function () {
-            signInOAuth(p)
+            submit("signup")
           },
         }),
       )
+    }
+
+    // Secondary text links.
+    var links = el("div", { class: "fpe-auth-links" })
+    if (PASSWORD) {
+      links.appendChild(
+        el("button", {
+          class: "fpe-auth-link",
+          type: "button",
+          text: "Forgot password?",
+          onclick: function () {
+            submit("reset")
+          },
+        }),
+      )
+    }
+    if (MAGIC && PASSWORD) {
+      links.appendChild(
+        el("button", {
+          class: "fpe-auth-link",
+          type: "button",
+          text: "Email me a link instead",
+          onclick: function () {
+            submit("magic")
+          },
+        }),
+      )
+    }
+    if (links.childNodes.length) card.appendChild(links)
+    card.appendChild(note)
+
+    // Submit on Enter from either field.
+    ;[email, pass].forEach(function (inp) {
+      if (!inp) return
+      inp.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault()
+          PASSWORD ? submit("signin") : submit("magic")
+        }
+      })
     })
-    if (PASSWORD) card.appendChild(buildPasswordForm())
-    if (MAGIC) card.appendChild(buildMagicForm())
+
+    async function submit(mode) {
+      var e = (email.value || "").trim()
+      var p = pass ? pass.value || "" : ""
+      if (!e) return setNote("Enter your email address.", true)
+
+      if (mode === "magic") {
+        setNote("Sending your sign-in link…")
+        var mr = await sb.auth.signInWithOtp({ email: e, options: { emailRedirectTo: redirectUrl() } })
+        return setNote(mr.error ? mr.error.message : "Check your inbox for a sign-in link.", !!mr.error)
+      }
+      if (mode === "reset") {
+        setNote("Sending a reset link…")
+        var rr = await sb.auth.resetPasswordForEmail(e, {
+          redirectTo: window.location.origin + ACCOUNT_HREF,
+        })
+        return setNote(rr.error ? rr.error.message : "Check your inbox to reset your password.", !!rr.error)
+      }
+      if (!p) return setNote("Enter your password.", true)
+      if (mode === "signup") {
+        setNote("Creating your account…")
+        var sr = await sb.auth.signUp({ email: e, password: p, options: { emailRedirectTo: redirectUrl() } })
+        if (sr.error) return setNote(sr.error.message, true)
+        if (sr.data && sr.data.session) return go()
+        return setNote("Account created. Check your inbox to confirm, then sign in.", false)
+      }
+      setNote("Signing you in…")
+      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
+      if (ir.error) setNote(ir.error.message, true)
+    }
+
     mount.appendChild(card)
+    email.focus()
   }
 
   async function signInOAuth(provider) {
@@ -141,117 +281,5 @@
       provider: provider,
       options: { redirectTo: redirectUrl() },
     })
-  }
-
-  function buildMagicForm() {
-    var input = el("input", {
-      class: "fpe-account-email",
-      type: "email",
-      placeholder: "you@example.com",
-      autocomplete: "email",
-      "aria-label": "Email for a sign-in link",
-    })
-    var form = el("form", { class: "fpe-account-magic" }, [
-      input,
-      el("button", { class: "fpe-account-magic-btn", type: "submit", text: "Email me a link" }),
-    ])
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault()
-      var email = (input.value || "").trim()
-      if (!email) return
-      var res = await sb.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: redirectUrl() },
-      })
-      var note = el("p", {
-        class: "fpe-account-note" + (res.error ? " is-error" : ""),
-        text: res.error ? res.error.message : "Check your inbox for a sign-in link.",
-      })
-      form.appendChild(note)
-    })
-    return form
-  }
-
-  function buildPasswordForm() {
-    var email = el("input", {
-      class: "fpe-account-email",
-      type: "email",
-      placeholder: "you@example.com",
-      autocomplete: "email",
-      "aria-label": "Email",
-    })
-    var pass = el("input", {
-      class: "fpe-account-password",
-      type: "password",
-      placeholder: "Password",
-      autocomplete: "current-password",
-      "aria-label": "Password",
-    })
-    var signInBtn = el("button", {
-      class: "fpe-account-pw-btn",
-      type: "submit",
-      text: "Sign in",
-    })
-    var signUpBtn = el("button", {
-      class: "fpe-account-pw-btn fpe-account-pw-secondary",
-      type: "button",
-      text: "Create account",
-      onclick: function () {
-        submit("signup")
-      },
-    })
-    var forgot = el("button", {
-      class: "fpe-account-pw-forgot",
-      type: "button",
-      text: "Forgot password?",
-      onclick: function () {
-        submit("reset")
-      },
-    })
-    var form = el("form", { class: "fpe-account-pwform" }, [
-      email,
-      pass,
-      el("div", { class: "fpe-account-pw-actions" }, [signInBtn, signUpBtn]),
-      forgot,
-    ])
-    form.addEventListener("submit", function (e) {
-      e.preventDefault()
-      submit("signin")
-    })
-    function note(text, isError) {
-      var existing = form.querySelector(".fpe-account-note")
-      if (existing) existing.parentNode.removeChild(existing)
-      form.appendChild(
-        el("p", { class: "fpe-account-note" + (isError ? " is-error" : ""), text: text }),
-      )
-    }
-    async function submit(mode) {
-      var e = (email.value || "").trim()
-      var p = pass.value || ""
-      if (!e) return note("Enter your email address.", true)
-      if (mode === "reset") {
-        var rr = await sb.auth.resetPasswordForEmail(e, {
-          redirectTo: window.location.origin + ACCOUNT_HREF,
-        })
-        return note(
-          rr.error ? rr.error.message : "Check your inbox to reset your password.",
-          !!rr.error,
-        )
-      }
-      if (!p) return note("Enter your password.", true)
-      if (mode === "signup") {
-        var sr = await sb.auth.signUp({
-          email: e,
-          password: p,
-          options: { emailRedirectTo: redirectUrl() },
-        })
-        if (sr.error) return note(sr.error.message, true)
-        if (sr.data && sr.data.session) return go()
-        return note("Account created. Check your inbox to confirm, then sign in.", false)
-      }
-      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
-      if (ir.error) note(ir.error.message, true)
-    }
-    return form
   }
 })()
