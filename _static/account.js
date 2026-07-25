@@ -199,9 +199,9 @@
 
   async function renderProfileCard() {
     var meta = user.user_metadata || {}
-    var prof = await loadProfile()
-    var currentName = (prof && prof.display_name) || meta.full_name || meta.name || ""
-    var avatar = (prof && prof.avatar_url) || meta.avatar_url
+    var prof = (await loadProfile()) || {}
+    var currentName = prof.display_name || meta.full_name || meta.name || ""
+    var avatar = prof.avatar_url || meta.avatar_url
 
     var head = el("div", { class: "fpe-account-profile-head" }, [
       avatar
@@ -213,14 +213,47 @@
       ]),
     ])
 
-    var input = el("input", {
-      class: "fpe-account-name-input",
-      type: "text",
-      value: currentName,
-      maxlength: "80",
-      placeholder: "Your display name",
-      "aria-label": "Display name",
+    function textInput(attrs) {
+      return el("input", Object.assign({ class: "fpe-account-input", type: "text" }, attrs))
+    }
+    function field(labelText, inputEl, hint) {
+      var kids = [el("label", { class: "fpe-account-label", text: labelText }), inputEl]
+      if (hint) kids.push(el("span", { class: "fpe-account-hint", text: hint }))
+      return el("div", { class: "fpe-account-field" }, kids)
+    }
+
+    var firstEl = textInput({ value: prof.first_name || "", maxlength: "80", placeholder: "First name", autocomplete: "given-name", "aria-label": "First name" })
+    var lastEl = textInput({ value: prof.last_name || "", maxlength: "80", placeholder: "Last name", autocomplete: "family-name", "aria-label": "Last name" })
+    var companyEl = textInput({ value: prof.company || "", maxlength: "120", placeholder: "Company", autocomplete: "organization", "aria-label": "Company" })
+    var titleEl = textInput({ value: prof.job_title || "", maxlength: "120", placeholder: "Role / title", autocomplete: "organization-title", "aria-label": "Role or title" })
+    var yoeEl = el("input", {
+      class: "fpe-account-input",
+      type: "number",
+      min: "0",
+      max: "80",
+      step: "1",
+      value: prof.years_experience != null ? String(prof.years_experience) : "",
+      placeholder: "Years",
+      "aria-label": "Years of experience",
     })
+    var locationEl = textInput({ value: prof.location || "", maxlength: "120", placeholder: "City, Country", "aria-label": "Location" })
+    var linkedinEl = el("input", {
+      class: "fpe-account-input",
+      type: "url",
+      value: prof.linkedin_url || "",
+      maxlength: "300",
+      placeholder: "https://www.linkedin.com/in/…",
+      "aria-label": "LinkedIn URL",
+    })
+    var bioEl = el("textarea", {
+      class: "fpe-account-input fpe-account-textarea",
+      rows: "3",
+      maxlength: "500",
+      placeholder: "A short bio (optional)",
+      "aria-label": "Short bio",
+    })
+    bioEl.value = prof.bio || ""
+
     var status = el("span", {
       class: "fpe-account-save-status",
       role: "status",
@@ -229,14 +262,38 @@
     var saveBtn = el("button", {
       class: "fpe-account-save",
       type: "button",
-      text: "Save",
+      text: "Save profile",
       onclick: async function () {
-        var name = (input.value || "").trim()
+        function v(elm) {
+          return (elm.value || "").trim()
+        }
+        var first = v(firstEl)
+        var last = v(lastEl)
+        var yoeRaw = v(yoeEl)
+        var yoe = yoeRaw === "" ? null : parseInt(yoeRaw, 10)
+        if (yoe !== null && (isNaN(yoe) || yoe < 0 || yoe > 80)) {
+          status.textContent = "Years of experience must be between 0 and 80."
+          status.className = "fpe-account-save-status is-error"
+          return
+        }
+        var display = [first, last].filter(Boolean).join(" ") || currentName || null
+        var patch = {
+          id: user.id,
+          first_name: first || null,
+          last_name: last || null,
+          company: v(companyEl) || null,
+          job_title: v(titleEl) || null,
+          years_experience: yoe,
+          location: v(locationEl) || null,
+          linkedin_url: v(linkedinEl) || null,
+          bio: v(bioEl) || null,
+        }
+        if (display) patch.display_name = display
+
         saveBtn.disabled = true
         status.textContent = "Saving…"
-        var res = await sb
-          .from("profiles")
-          .upsert({ id: user.id, display_name: name }, { onConflict: "id" })
+        status.className = "fpe-account-save-status"
+        var res = await sb.from("profiles").upsert(patch, { onConflict: "id" })
         saveBtn.disabled = false
         if (res.error) {
           status.textContent = "Couldn't save. Try again."
@@ -244,20 +301,34 @@
         } else {
           status.textContent = "Saved."
           status.className = "fpe-account-save-status is-ok"
+          currentName = display || currentName
           var nameEl = head.querySelector(".fpe-account-profile-name")
-          if (nameEl) nameEl.textContent = name || "Reader"
+          if (nameEl) nameEl.textContent = currentName || "Reader"
         }
       },
     })
 
-    var form = el("div", { class: "fpe-account-name-form" }, [
-      el("label", { class: "fpe-account-label", text: "Display name" }),
-      el("div", { class: "fpe-account-name-row" }, [input, saveBtn]),
-      status,
+    var form = el("div", { class: "fpe-account-profile-form" }, [
+      el("div", { class: "fpe-account-field-row" }, [
+        field("First name", firstEl),
+        field("Last name", lastEl),
+      ]),
+      el("div", { class: "fpe-account-field-row" }, [
+        field("Company", companyEl),
+        field("Role / title", titleEl),
+      ]),
+      el("div", { class: "fpe-account-field-row" }, [
+        field("Years of experience", yoeEl),
+        field("Location", locationEl),
+      ]),
+      field("LinkedIn", linkedinEl),
+      field("Short bio", bioEl),
+      el("div", { class: "fpe-account-save-row" }, [saveBtn, status]),
     ])
 
     return el("section", { class: "fpe-account-card" }, [
       el("h2", { class: "fpe-account-h", text: "Profile" }),
+      el("p", { class: "fpe-account-sub", text: "All fields are optional. Only your name appears publicly on comments." }),
       head,
       form,
     ])
@@ -266,7 +337,9 @@
   async function loadProfile() {
     var res = await sb
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select(
+        "display_name, avatar_url, first_name, last_name, company, job_title, years_experience, location, linkedin_url, bio",
+      )
       .eq("id", user.id)
       .maybeSingle()
     return res && res.data ? res.data : null

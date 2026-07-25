@@ -97,6 +97,11 @@
       go()
       return
     }
+    try {
+      if (new URLSearchParams(window.location.search).get("mode") === "signup") {
+        authState.mode = "signup"
+      }
+    } catch (e) {}
     renderSignIn()
 
     sb.auth.onAuthStateChange(function (evt, session) {
@@ -112,20 +117,51 @@
   var GOOGLE_G =
     '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>'
 
+  // Persisted across tab switches so typed input isn't lost.
+  var authState = { mode: "signin", email: "", password: "", first: "", last: "" }
+
   function renderSignIn() {
+    var mode = authState.mode
+    var isSignup = mode === "signup"
     clear(mount)
     var card = el("div", { class: "fpe-auth-card" })
 
-    card.appendChild(el("h1", { class: "fpe-auth-title", text: "Sign in or sign up" }))
+    card.appendChild(
+      el("h1", {
+        class: "fpe-auth-title",
+        text: isSignup ? "Create your account" : "Welcome back",
+      }),
+    )
     card.appendChild(
       el("p", {
         class: "fpe-auth-sub",
-        text: PASSWORD
-          ? "Use your email and password, a one-time link, or continue with Google."
-          : "Use just your email, or continue with Google.",
+        text: isSignup
+          ? "Sign up with Google or your email and a password."
+          : "Sign in with Google, your password, or a one-time link.",
       }),
     )
 
+    // ---- mode tabs: exactly one flow is active at a time ----
+    var tabs = el("div", { class: "fpe-auth-tabs", role: "tablist" })
+    function tab(label, m) {
+      return el("button", {
+        class: "fpe-auth-tab" + (mode === m ? " is-active" : ""),
+        type: "button",
+        role: "tab",
+        "aria-selected": mode === m ? "true" : "false",
+        onclick: function () {
+          if (authState.mode === m) return
+          captureInputs()
+          authState.mode = m
+          renderSignIn()
+        },
+      }, [label])
+    }
+    tabs.appendChild(tab("Sign in", "signin"))
+    tabs.appendChild(tab("Create account", "signup"))
+    card.appendChild(tabs)
+
+    // ---- OAuth (shared by both flows) ----
     PROVIDERS.forEach(function (p) {
       var btn = el("button", {
         class: "fpe-auth-oauth fpe-auth-oauth-" + p,
@@ -137,7 +173,9 @@
       if (p === "google") btn.appendChild(el("span", { class: "fpe-auth-oauth-icon", html: GOOGLE_G }))
       btn.appendChild(
         el("span", {
-          text: p === "google" ? "Continue with Google" : "Continue with " + p,
+          text:
+            (isSignup ? "Sign up with " : "Continue with ") +
+            (p === "google" ? "Google" : p),
         }),
       )
       card.appendChild(btn)
@@ -146,7 +184,7 @@
     if (PROVIDERS.length && (PASSWORD || MAGIC)) {
       card.appendChild(
         el("div", { class: "fpe-auth-divider" }, [
-          el("span", { text: "or continue with" }),
+          el("span", { text: isSignup ? "or sign up with email" : "or continue with" }),
         ]),
       )
     }
@@ -157,12 +195,36 @@
       note.className = "fpe-auth-note" + (text ? (isError ? " is-error" : " is-ok") : "")
     }
 
+    // ---- optional name fields (create-account flow only) ----
+    var firstEl = null
+    var lastEl = null
+    if (isSignup) {
+      firstEl = el("input", {
+        class: "fpe-auth-input",
+        type: "text",
+        placeholder: "First name (optional)",
+        autocomplete: "given-name",
+        "aria-label": "First name",
+        value: authState.first,
+      })
+      lastEl = el("input", {
+        class: "fpe-auth-input",
+        type: "text",
+        placeholder: "Last name (optional)",
+        autocomplete: "family-name",
+        "aria-label": "Last name",
+        value: authState.last,
+      })
+      card.appendChild(el("div", { class: "fpe-auth-row" }, [firstEl, lastEl]))
+    }
+
     var email = el("input", {
       class: "fpe-auth-input",
       type: "email",
       placeholder: "Email",
       autocomplete: "email",
       "aria-label": "Email",
+      value: authState.email,
     })
     card.appendChild(email)
 
@@ -171,40 +233,36 @@
       pass = el("input", {
         class: "fpe-auth-input",
         type: "password",
-        placeholder: "Password",
-        autocomplete: "current-password",
+        placeholder: isSignup ? "Create a password (min 6 characters)" : "Password",
+        autocomplete: isSignup ? "new-password" : "current-password",
         "aria-label": "Password",
+        value: authState.password,
       })
       card.appendChild(pass)
     }
 
-    // Primary action: password sign-in when enabled, else magic link.
+    function captureInputs() {
+      authState.email = (email && email.value) || ""
+      authState.password = (pass && pass.value) || ""
+      if (firstEl) authState.first = firstEl.value || ""
+      if (lastEl) authState.last = lastEl.value || ""
+    }
+
+    // ---- single primary action, scoped to the active flow ----
+    var primaryMode = isSignup ? "signup" : PASSWORD ? "signin" : "magic"
     var primary = el("button", {
       class: "fpe-auth-primary",
       type: "button",
-      text: PASSWORD ? "Sign in" : "Email me a sign-in link",
+      text: isSignup ? "Create account" : PASSWORD ? "Sign in" : "Email me a sign-in link",
       onclick: function () {
-        PASSWORD ? submit("signin") : submit("magic")
+        submit(primaryMode)
       },
     })
     card.appendChild(primary)
 
-    if (PASSWORD) {
-      card.appendChild(
-        el("button", {
-          class: "fpe-auth-secondary",
-          type: "button",
-          text: "Create account",
-          onclick: function () {
-            submit("signup")
-          },
-        }),
-      )
-    }
-
-    // Secondary text links.
+    // ---- secondary links (differ per flow) ----
     var links = el("div", { class: "fpe-auth-links" })
-    if (PASSWORD) {
+    if (!isSignup && PASSWORD) {
       links.appendChild(
         el("button", {
           class: "fpe-auth-link",
@@ -216,7 +274,7 @@
         }),
       )
     }
-    if (MAGIC && PASSWORD) {
+    if (!isSignup && MAGIC && PASSWORD) {
       links.appendChild(
         el("button", {
           class: "fpe-auth-link",
@@ -231,20 +289,38 @@
     if (links.childNodes.length) card.appendChild(links)
     card.appendChild(note)
 
-    // Submit on Enter from either field.
-    ;[email, pass].forEach(function (inp) {
+    // Switch-flow prompt under the form.
+    card.appendChild(
+      el("p", { class: "fpe-auth-switch" }, [
+        isSignup ? "Already have an account? " : "New here? ",
+        el("button", {
+          class: "fpe-auth-link",
+          type: "button",
+          text: isSignup ? "Sign in" : "Create an account",
+          onclick: function () {
+            captureInputs()
+            authState.mode = isSignup ? "signin" : "signup"
+            renderSignIn()
+          },
+        }),
+      ]),
+    )
+
+    // Submit on Enter from any field.
+    ;[firstEl, lastEl, email, pass].forEach(function (inp) {
       if (!inp) return
       inp.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
           e.preventDefault()
-          PASSWORD ? submit("signin") : submit("magic")
+          submit(primaryMode)
         }
       })
     })
 
     async function submit(mode) {
-      var e = (email.value || "").trim()
-      var p = pass ? pass.value || "" : ""
+      captureInputs()
+      var e = authState.email.trim()
+      var p = pass ? authState.password : ""
       if (!e) return setNote("Enter your email address.", true)
 
       if (mode === "magic") {
@@ -264,7 +340,10 @@
         setNote("Creating your account…")
         var sr = await sb.auth.signUp({ email: e, password: p, options: { emailRedirectTo: redirectUrl() } })
         if (sr.error) return setNote(sr.error.message, true)
-        if (sr.data && sr.data.session) return go()
+        if (sr.data && sr.data.session) {
+          await saveSignupProfile(sr.data.user)
+          return go()
+        }
         return setNote("Account created. Check your inbox to confirm, then sign in.", false)
       }
       setNote("Signing you in…")
@@ -272,8 +351,25 @@
       if (ir.error) setNote(ir.error.message, true)
     }
 
+    // Persist the optional name captured during sign-up into the profile row
+    // (the DB trigger has already created the row from auth metadata).
+    async function saveSignupProfile(u) {
+      var first = (authState.first || "").trim()
+      var last = (authState.last || "").trim()
+      if (!u || (!first && !last)) return
+      var patch = { id: u.id }
+      if (first) patch.first_name = first
+      if (last) patch.last_name = last
+      var display = [first, last].filter(Boolean).join(" ")
+      if (display) patch.display_name = display
+      try {
+        await sb.from("profiles").upsert(patch, { onConflict: "id" })
+      } catch (_) {}
+    }
+
     mount.appendChild(card)
-    email.focus()
+    if (isSignup && firstEl) firstEl.focus()
+    else email.focus()
   }
 
   async function signInOAuth(provider) {
