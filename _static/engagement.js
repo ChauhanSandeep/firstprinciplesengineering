@@ -33,8 +33,24 @@
   var AUTH = CFG.auth || {}
   var COMMENTS_CFG = CFG.comments || {}
   var LS_READ_KEY = "fpe:read:" + SLUG
+  var LS_LAST_KEY = "fpe:last:" + SLUG
 
   var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
+
+  // Record this visit so the homepage can offer a "Continue reading" nudge.
+  // Purely local (no network, no auth); independent of read-state.
+  ;(function recordVisit() {
+    try {
+      localStorage.setItem(
+        LS_LAST_KEY,
+        JSON.stringify({
+          t: new Date().toISOString(),
+          title: CFG.title || SLUG,
+          href: window.location.pathname,
+        }),
+      )
+    } catch (e) {}
+  })()
 
   // ---- tiny DOM helpers ---------------------------------------------------
   function el(tag, attrs, children) {
