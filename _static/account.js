@@ -31,6 +31,7 @@
 
   var PROVIDERS = CFG.oauthProviders || []
   var MAGIC = !!CFG.emailMagicLink
+  var PASSWORD = !!CFG.emailPassword
   var ARTICLE_BASE = CFG.articleBase || ""
   var CONTENT_INDEX_URL = CFG.contentIndexUrl || "/static/contentIndex.json"
   var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
@@ -79,6 +80,7 @@
   var sb = null
   var user = null
   var contentIndex = null
+  var recovery = false
 
   boot()
 
@@ -99,8 +101,9 @@
     user = sess && sess.data && sess.data.session ? sess.data.session.user : null
     await render()
 
-    sb.auth.onAuthStateChange(function (_evt, session) {
+    sb.auth.onAuthStateChange(function (evt, session) {
       user = session ? session.user : null
+      if (evt === "PASSWORD_RECOVERY") recovery = true
       render()
     })
   }
@@ -112,8 +115,66 @@
 
   async function render() {
     clear(mount)
+    if (recovery && user) return renderSetPassword()
     if (user) await renderSignedIn()
     else renderSignedOut()
+  }
+
+  // ---- password recovery (set a new password) -----------------------------
+  function renderSetPassword() {
+    var pass = el("input", {
+      class: "fpe-account-password",
+      type: "password",
+      placeholder: "New password",
+      autocomplete: "new-password",
+      "aria-label": "New password",
+      minlength: "6",
+    })
+    var status = el("span", {
+      class: "fpe-account-save-status",
+      role: "status",
+      "aria-live": "polite",
+    })
+    var btn = el("button", {
+      class: "fpe-account-save",
+      type: "submit",
+      text: "Update password",
+    })
+    var form = el("form", { class: "fpe-account-name-form" }, [
+      el("label", { class: "fpe-account-label", text: "Choose a new password" }),
+      el("div", { class: "fpe-account-name-row" }, [pass, btn]),
+      status,
+    ])
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault()
+      var p = pass.value || ""
+      if (p.length < 6) {
+        status.textContent = "Use at least 6 characters."
+        status.className = "fpe-account-save-status is-error"
+        return
+      }
+      btn.disabled = true
+      status.textContent = "Updating…"
+      var res = await sb.auth.updateUser({ password: p })
+      btn.disabled = false
+      if (res.error) {
+        status.textContent = res.error.message
+        status.className = "fpe-account-save-status is-error"
+        return
+      }
+      recovery = false
+      render()
+    })
+    mount.appendChild(
+      el("section", { class: "fpe-account-card fpe-account-signin" }, [
+        el("h2", { class: "fpe-account-h", text: "Set a new password" }),
+        el("p", {
+          class: "fpe-account-lede",
+          text: "Enter a new password for your account below.",
+        }),
+        form,
+      ]),
+    )
   }
 
   // ---- signed out ---------------------------------------------------------
@@ -137,6 +198,9 @@
         }),
       )
     })
+    if (PASSWORD) {
+      card.appendChild(buildPasswordForm())
+    }
     if (MAGIC) {
       var input = el("input", {
         class: "fpe-account-email",
@@ -173,6 +237,91 @@
       provider: provider,
       options: { redirectTo: window.location.href },
     })
+  }
+
+  function buildPasswordForm() {
+    var email = el("input", {
+      class: "fpe-account-email",
+      type: "email",
+      placeholder: "you@example.com",
+      autocomplete: "email",
+      "aria-label": "Email",
+    })
+    var pass = el("input", {
+      class: "fpe-account-password",
+      type: "password",
+      placeholder: "Password",
+      autocomplete: "current-password",
+      "aria-label": "Password",
+    })
+    var signInBtn = el("button", {
+      class: "fpe-account-pw-btn",
+      type: "submit",
+      text: "Sign in",
+    })
+    var signUpBtn = el("button", {
+      class: "fpe-account-pw-btn fpe-account-pw-secondary",
+      type: "button",
+      text: "Create account",
+      onclick: function () {
+        submit("signup")
+      },
+    })
+    var forgot = el("button", {
+      class: "fpe-account-pw-forgot",
+      type: "button",
+      text: "Forgot password?",
+      onclick: function () {
+        submit("reset")
+      },
+    })
+    var form = el("form", { class: "fpe-account-pwform" }, [
+      email,
+      pass,
+      el("div", { class: "fpe-account-pw-actions" }, [signInBtn, signUpBtn]),
+      forgot,
+    ])
+    form.addEventListener("submit", function (e) {
+      e.preventDefault()
+      submit("signin")
+    })
+    function note(text, isError) {
+      var existing = form.querySelector(".fpe-account-note")
+      if (existing) existing.parentNode.removeChild(existing)
+      form.appendChild(
+        el("p", { class: "fpe-account-note" + (isError ? " is-error" : ""), text: text }),
+      )
+    }
+    async function submit(mode) {
+      var e = (email.value || "").trim()
+      var p = pass.value || ""
+      if (!e) return note("Enter your email address.", true)
+      if (mode === "reset") {
+        var rr = await sb.auth.resetPasswordForEmail(e, { redirectTo: window.location.href })
+        return note(
+          rr.error ? rr.error.message : "Check your inbox to reset your password.",
+          !!rr.error,
+        )
+      }
+      if (!p) return note("Enter your password.", true)
+      if (mode === "signup") {
+        var sr = await sb.auth.signUp({
+          email: e,
+          password: p,
+          options: { emailRedirectTo: window.location.href },
+        })
+        if (sr.error) return note(sr.error.message, true)
+        return note(
+          sr.data && sr.data.session
+            ? "Account created — you're signed in."
+            : "Account created. Check your inbox to confirm, then sign in.",
+          false,
+        )
+      }
+      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
+      if (ir.error) note(ir.error.message, true)
+    }
+    return form
   }
 
   // ---- signed in ----------------------------------------------------------

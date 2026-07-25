@@ -28,6 +28,7 @@
 
   var PROVIDERS = CFG.oauthProviders || []
   var MAGIC = !!CFG.emailMagicLink
+  var PASSWORD = !!CFG.emailPassword
   var ACCOUNT_HREF = CFG.accountHref || "/account"
   var OAUTH_LABELS = { google: "Continue with Google", github: "Continue with GitHub" }
 
@@ -163,6 +164,9 @@
         }),
       )
     })
+    if (PASSWORD) {
+      panel.appendChild(buildPasswordForm())
+    }
     if (MAGIC) {
       var input = el("input", {
         class: "fpe-authchip-email",
@@ -199,6 +203,93 @@
       provider: provider,
       options: { redirectTo: window.location.href },
     })
+  }
+
+  function buildPasswordForm() {
+    var email = el("input", {
+      class: "fpe-authchip-email",
+      type: "email",
+      placeholder: "you@example.com",
+      autocomplete: "email",
+      "aria-label": "Email",
+    })
+    var pass = el("input", {
+      class: "fpe-authchip-password",
+      type: "password",
+      placeholder: "Password",
+      autocomplete: "current-password",
+      "aria-label": "Password",
+    })
+    var signInBtn = el("button", {
+      class: "fpe-authchip-pw-btn",
+      type: "submit",
+      text: "Sign in",
+    })
+    var signUpBtn = el("button", {
+      class: "fpe-authchip-pw-btn fpe-authchip-pw-secondary",
+      type: "button",
+      text: "Create account",
+      onclick: function () {
+        submit("signup")
+      },
+    })
+    var forgot = el("button", {
+      class: "fpe-authchip-pw-forgot",
+      type: "button",
+      text: "Forgot password?",
+      onclick: function () {
+        submit("reset")
+      },
+    })
+    var form = el("form", { class: "fpe-authchip-pwform" }, [
+      email,
+      pass,
+      el("div", { class: "fpe-authchip-pw-actions" }, [signInBtn, signUpBtn]),
+      forgot,
+    ])
+    form.addEventListener("submit", function (e) {
+      e.preventDefault()
+      submit("signin")
+    })
+    function note(text, isError) {
+      var existing = form.querySelector(".fpe-authchip-note")
+      if (existing) existing.parentNode.removeChild(existing)
+      form.appendChild(
+        el("p", { class: "fpe-authchip-note" + (isError ? " is-error" : ""), text: text }),
+      )
+    }
+    async function submit(mode) {
+      var e = (email.value || "").trim()
+      var p = pass.value || ""
+      if (!e) return note("Enter your email address.", true)
+      if (mode === "reset") {
+        var rr = await sb.auth.resetPasswordForEmail(e, {
+          redirectTo: window.location.origin + ACCOUNT_HREF,
+        })
+        return note(
+          rr.error ? rr.error.message : "Check your inbox to reset your password.",
+          !!rr.error,
+        )
+      }
+      if (!p) return note("Enter your password.", true)
+      if (mode === "signup") {
+        var sr = await sb.auth.signUp({
+          email: e,
+          password: p,
+          options: { emailRedirectTo: window.location.href },
+        })
+        if (sr.error) return note(sr.error.message, true)
+        return note(
+          sr.data && sr.data.session
+            ? "Account created — you're signed in."
+            : "Account created. Check your inbox to confirm, then sign in.",
+          false,
+        )
+      }
+      var ir = await sb.auth.signInWithPassword({ email: e, password: p })
+      if (ir.error) note(ir.error.message, true)
+    }
+    return form
   }
 
   // ---- signed in ----------------------------------------------------------
