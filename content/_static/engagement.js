@@ -25,33 +25,42 @@
 
   var CFG = window.__FPE_ENGAGEMENT__
   if (!CFG || !CFG.supabaseUrl || !CFG.supabaseAnonKey) return
-  var mount = document.querySelector("[data-fpe-engage]")
-  if (!mount) return
 
-  var SLUG = CFG.slug
+  // Site-wide config (identical on every page).
   var FEATURES = CFG.features || {}
   var AUTH = CFG.auth || {}
   var COMMENTS_CFG = CFG.comments || {}
   var ACCOUNT_HREF = CFG.accountHref || "/account"
   var SIGNIN_HREF = CFG.signinHref || "/signin"
-  var LS_READ_KEY = "fpe:read:" + SLUG
-  var LS_LAST_KEY = "fpe:last:" + SLUG
 
+  // Per-page state — recomputed every time the widget mounts (initial load and
+  // after each Quartz SPA navigation, which swaps the page content WITHOUT a
+  // reload). Quartz patches <body> with micromorph and only re-executes <head>
+  // scripts, so neither this module nor the inline `window.__FPE_ENGAGEMENT__`
+  // config script re-runs on navigation — the global config would be stale for
+  // every page after the first. We therefore read the current page's slug and
+  // title from the mount element's data-* attributes (micromorph DOES update
+  // element attributes), falling back to the global config for a direct load.
+  var mount = null
+  var SLUG = ""
+  var TITLE = ""
+  var LS_READ_KEY = ""
+  var LS_LAST_KEY = ""
 
   // Record this visit so the homepage can offer a "Continue reading" nudge.
   // Purely local (no network, no auth); independent of read-state.
-  ;(function recordVisit() {
+  function recordVisit() {
     try {
       localStorage.setItem(
         LS_LAST_KEY,
         JSON.stringify({
           t: new Date().toISOString(),
-          title: CFG.title || SLUG,
+          title: TITLE,
           href: window.location.pathname,
         }),
       )
     } catch (e) {}
-  })()
+  }
 
   // ---- tiny DOM helpers ---------------------------------------------------
   function el(tag, attrs, children) {
@@ -120,8 +129,11 @@
   var sb = null
   var user = null
   var els = {} // cached DOM references
+  var clientReady = false
 
   boot()
+  // Re-mount after every SPA navigation (see the per-page-state note above).
+  document.addEventListener("nav", onNav)
 
   // Both this widget and the header auth chip need a Supabase client, and each
   // used to call createClient() independently. Two GoTrueClient instances that
@@ -144,35 +156,89 @@
     return window.__FPE_SB_CLIENT__
   }
 
-  async function boot() {
-    var mod
-    try {
-      mod = await import("https://esm.sh/@supabase/supabase-js@2")
-    } catch (e) {
-      renderOffline()
-      return
-    }
-    sb = sharedClient(mod, CFG.supabaseUrl, CFG.supabaseAnonKey)
+  function currentMount() {
+    return document.querySelector("[data-fpe-engage]")
+  }
+
+  // Read the CURRENT page's slug/title from the mount element (not the stale
+  // global config) and rebuild the derived per-page values.
+  function readPageConfig() {
+    mount = currentMount()
+    if (!mount) return false
+    SLUG = mount.getAttribute("data-fpe-slug") || CFG.slug || ""
+    TITLE = mount.getAttribute("data-fpe-title") || CFG.title || SLUG
+    LS_READ_KEY = "fpe:read:" + SLUG
+    LS_LAST_KEY = "fpe:last:" + SLUG
+    return true
+  }
+
+  // Render the whole widget into the current page's (freshly swapped) mount.
+  function mountWidget() {
+    if (!readPageConfig()) return
+    els = {}
+    recordVisit()
     renderShell()
-
-    var sess = await sb.auth.getSession()
-    user = sess && sess.data && sess.data.session ? sess.data.session.user : null
-
-    sb.auth.onAuthStateChange(function (_evt, session) {
-      var was = user
-      user = session ? session.user : null
-      renderAuthBar()
-      if (FEATURES.likes) refreshLike()
-      if (FEATURES.readState) reflectRead()
-      if (FEATURES.comments) refreshComments()
-      // First sign-in in this tab: push any local read-state up to the DB.
-      if (!was && user && FEATURES.readState) syncLocalReadUp()
-    })
-
     renderAuthBar()
     if (FEATURES.likes) refreshLike()
     if (FEATURES.readState) reflectRead()
     if (FEATURES.comments) refreshComments()
+  }
+
+  // Import supabase-js and wire up auth exactly once for the tab's lifetime.
+  // Guarded by an in-flight promise so concurrent calls (e.g. a nav firing
+  // before the first import resolves) never double-import or double-subscribe.
+  var clientPromise = null
+  function ensureClient() {
+    if (clientPromise) return clientPromise
+    clientPromise = (async function () {
+      var mod
+      try {
+        mod = await import("https://esm.sh/@supabase/supabase-js@2")
+      } catch (e) {
+        clientPromise = null
+        return false
+      }
+      sb = sharedClient(mod, CFG.supabaseUrl, CFG.supabaseAnonKey)
+
+      var sess = await sb.auth.getSession()
+      user = sess && sess.data && sess.data.session ? sess.data.session.user : null
+
+      sb.auth.onAuthStateChange(function (_evt, session) {
+        var was = user
+        user = session ? session.user : null
+        // Only re-render if the widget is currently mounted on the page.
+        if (!mount || !mount.isConnected) return
+        renderAuthBar()
+        if (FEATURES.likes) refreshLike()
+        if (FEATURES.readState) reflectRead()
+        if (FEATURES.comments) refreshComments()
+        // First sign-in in this tab: push any local read-state up to the DB.
+        if (!was && user && FEATURES.readState) syncLocalReadUp()
+      })
+
+      clientReady = true
+      return true
+    })()
+    return clientPromise
+  }
+
+  async function boot() {
+    if (!currentMount()) return // not an article page
+    var ok = await ensureClient()
+    if (!ok) {
+      if (readPageConfig()) {
+        els = {}
+        renderOffline()
+      }
+      return
+    }
+    mountWidget()
+  }
+
+  function onNav() {
+    if (!currentMount()) return // navigated to a page without the widget
+    if (clientReady) mountWidget()
+    else boot()
   }
 
   // ---- shell / layout -----------------------------------------------------

@@ -67,6 +67,15 @@ function safeJson(obj) {
     .replace(/\u2029/g, "\\u2029")
 }
 
+// Escape a value for use inside a double-quoted HTML attribute.
+function attrEscape(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+}
+
 function renderBlock({ slug, title, basePath }) {
   const cfg = {
     slug,
@@ -81,7 +90,7 @@ function renderBlock({ slug, title, basePath }) {
   }
   const moduleSrc = `${basePath || ""}/_static/engagement.js`
   return [
-    `<section ${MARKER} class="fpe-engage" data-fpe-engage aria-label="Reader engagement">`,
+    `<section ${MARKER} class="fpe-engage" data-fpe-engage data-fpe-slug="${attrEscape(slug)}" data-fpe-title="${attrEscape(title || slug)}" aria-label="Reader engagement">`,
     `  <noscript>Enable JavaScript to like, comment, and track your reading.</noscript>`,
     `</section>`,
     `<script>window.__FPE_ENGAGEMENT__=${safeJson(cfg)};</script>`,
