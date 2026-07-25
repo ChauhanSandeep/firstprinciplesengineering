@@ -29,6 +29,26 @@
   var ACCOUNT_HREF = CFG.accountHref || "/account"
   var SIGNIN_HREF = CFG.signinHref || "/signin"
 
+  // Share a single Supabase client with engagement.js (via a window singleton).
+  // Two GoTrueClient instances sharing the same storage key contend on
+  // Supabase's global navigator lock during session recovery, which
+  // intermittently makes one instance read a null session while the other is
+  // signed in. One shared client keeps the header chip and the comment widget
+  // in perfect auth-state agreement.
+  function sharedClient(mod, url, key) {
+    if (!window.__FPE_SB_CLIENT__) {
+      window.__FPE_SB_CLIENT__ = mod.createClient(url, key, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          flowType: "implicit",
+        },
+      })
+    }
+    return window.__FPE_SB_CLIENT__
+  }
+
   // ---- tiny DOM helpers (mirrors engagement.js) ---------------------------
   function el(tag, attrs, children) {
     var n = document.createElement(tag)
@@ -80,9 +100,7 @@
     } catch (e) {
       return // fail silent: the chip simply doesn't appear
     }
-    sb = mod.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "implicit" },
-    })
+    sb = sharedClient(mod, CFG.supabaseUrl, CFG.supabaseAnonKey)
 
     var sess = await sb.auth.getSession()
     user = sess && sess.data && sess.data.session ? sess.data.session.user : null
