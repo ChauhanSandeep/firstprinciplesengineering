@@ -428,13 +428,28 @@
     )
     const explorer = left.querySelector(".explorer")
     if (toolbar) {
-      let controlsRow = left.querySelector(".fpe-sidebar-tool-row")
+      let controlsGroup = left.querySelector(".fpe-sidebar-reading-controls")
+      if (!controlsGroup) {
+        controlsGroup = document.createElement("section")
+        controlsGroup.className = "fpe-sidebar-reading-controls"
+        controlsGroup.setAttribute("aria-labelledby", "fpe-sidebar-reading-label")
+        controlsGroup.innerHTML =
+          '<div class="fpe-sidebar-section-label" id="fpe-sidebar-reading-label">Reading</div>'
+      }
+
+      let controlsRow = controlsGroup.querySelector(".fpe-sidebar-tool-row")
+      if (!controlsRow) {
+        controlsRow = left.querySelector(".fpe-sidebar-tool-row")
+      }
       if (!controlsRow) {
         controlsRow = document.createElement("div")
         controlsRow.className = "fpe-sidebar-tool-row"
       }
-      if (controlsRow.parentElement !== left) {
-        left.insertBefore(controlsRow, toolbar.nextSibling)
+      if (controlsRow.parentElement !== controlsGroup) {
+        controlsGroup.appendChild(controlsRow)
+      }
+      if (controlsGroup.parentElement !== left) {
+        left.insertBefore(controlsGroup, toolbar.nextSibling)
       }
 
       const readerSlot = left.querySelector(".readermode")?.parentElement
