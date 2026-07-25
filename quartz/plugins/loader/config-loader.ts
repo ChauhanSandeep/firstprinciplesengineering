@@ -656,7 +656,7 @@ export async function loadQuartzLayout(layoutOverrides?: {
           if (Array.isArray(components) && components.length === 0) {
             const key = pos as keyof Pick<
               FullPageLayout,
-              "left" | "right" | "beforeBody" | "afterBody"
+              "header" | "left" | "right" | "beforeBody" | "afterBody"
             >
             if (key in ptLayout) {
               ;(ptLayout as Record<string, unknown>)[key] = []
@@ -740,6 +740,7 @@ function buildLayoutForEntries(
       groupOptions?: PluginLayoutDeclaration["groupOptions"]
     }[]
   > = {
+    header: [],
     left: [],
     right: [],
     beforeBody: [],
@@ -821,7 +822,7 @@ function buildLayoutForEntries(
     const resolved = resolveGroups(items, layoutConfig.groups ?? {})
     const key = position as keyof Pick<
       FullPageLayout,
-      "left" | "right" | "beforeBody" | "afterBody"
+      "header" | "left" | "right" | "beforeBody" | "afterBody"
     >
     ;(result as Record<string, QuartzComponent[]>)[key] = resolved
   }

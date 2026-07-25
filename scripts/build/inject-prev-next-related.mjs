@@ -44,6 +44,7 @@ const MARKER = `id="fpe-prev-next-related"`
 const SKIP_SLUG_RE = [
   /^index$/,
   /^about$/,
+  /^account$/,
   /^404$/,
   /\/index$/, // folder landing pages
   /^tags(\/|$)/,

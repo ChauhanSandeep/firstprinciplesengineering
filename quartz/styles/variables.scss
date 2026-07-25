@@ -21,38 +21,42 @@ $desktop: "(min-width: #{map.get($breakpoints, desktop)})";
 $pageWidth: 960px;
 $sidePanelWidth: 325px; // 25% wider than the previous 260px — more room for explorer/graph
 $topSpacing: 6rem;
+$topbarHeight: 3.75rem; // full-width sticky top navigation bar (hellointerview-style)
 $boldWeight: 700;
 $semiBoldWeight: 600;
 $normalWeight: 400;
 
 $mobileGrid: (
-  templateRows: "auto auto auto auto",
+  templateRows: "auto auto auto auto auto",
   templateColumns: "1fr",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
-    '"grid-sidebar-left"\
+    '"grid-topbar"\
+      "grid-sidebar-left"\
       "grid-header"\
       "grid-center"\
       "grid-footer"',
 );
 $tabletGrid: (
-  templateRows: "auto auto auto",
+  templateRows: "auto auto auto auto",
   templateColumns: "#{$sidePanelWidth} 1fr",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
-    '"grid-sidebar-left grid-header"\
+    '"grid-topbar grid-topbar"\
+      "grid-sidebar-left grid-header"\
       "grid-sidebar-left grid-center"\
       "grid-sidebar-left grid-footer"',
 );
 $desktopGrid: (
-  templateRows: "auto auto auto",
+  templateRows: "auto auto auto auto",
   templateColumns: "#{$sidePanelWidth} 1fr #{$sidePanelWidth}",
   rowGap: "5px",
   columnGap: "5px",
   templateAreas:
-    '"grid-sidebar-left grid-header grid-sidebar-right"\
+    '"grid-topbar grid-topbar grid-topbar"\
+      "grid-sidebar-left grid-header grid-sidebar-right"\
       "grid-sidebar-left grid-center grid-sidebar-right"\
       "grid-sidebar-left grid-footer grid-sidebar-right"',
 );

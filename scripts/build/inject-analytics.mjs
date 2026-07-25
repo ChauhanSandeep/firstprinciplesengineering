@@ -44,6 +44,12 @@ function renderTag() {
     // anywhere in the document don't lose data while the deferred
     // bundle is still downloading.
     `<script ${MARKER_ATTR}>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>`,
+    // Error beacon: uncaught errors + unhandled promise rejections are
+    // reported as Plausible custom events (needs a *.tagged-events.js
+    // bundle, which analytics.config.mjs uses by default). Messages are
+    // truncated and only the path (never query/hash) is sent — no PII.
+    // Silently no-ops when Plausible is disabled (the shim just queues).
+    `<script ${MARKER_ATTR}>(function(){function r(n,m){try{window.plausible&&window.plausible(n,{props:{m:String(m||"unknown").slice(0,200),p:location.pathname}})}catch(e){}}window.addEventListener("error",function(e){r("JS Error",e&&e.message)});window.addEventListener("unhandledrejection",function(e){var x=e&&e.reason;r("Promise Rejection",x&&(x.message||x))})})();</script>`,
   ].join("\n")
 }
 
@@ -75,9 +81,7 @@ async function inject(abs, block) {
 
 async function main() {
   if (!config.enabled) {
-    console.log(
-      "inject-analytics: analytics disabled in analytics.config.mjs; skipping.",
-    )
+    console.log("inject-analytics: analytics disabled in analytics.config.mjs; skipping.")
     return
   }
   const block = renderTag()
@@ -89,9 +93,7 @@ async function main() {
     if (r.injected) injected++
     else skipped++
   }
-  console.log(
-    `inject-analytics: injected into ${injected} page(s); skipped ${skipped}.`,
-  )
+  console.log(`inject-analytics: injected into ${injected} page(s); skipped ${skipped}.`)
 }
 
 main().catch((e) => {

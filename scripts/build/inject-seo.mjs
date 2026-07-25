@@ -41,7 +41,13 @@ import url from "node:url"
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const SITE_ROOT = path.resolve(__dirname, "..", "..")
-const PUBLIC_DIR = path.join(SITE_ROOT, "public")
+// FPE_PUBLIC_DIR lets golden-file tests point the injector at a fixture
+// directory instead of the real build output; defaults to public/.
+// (globalThis.process because this module declares a local `process`
+// function that would otherwise shadow the Node global here.)
+const PUBLIC_DIR = globalThis.process.env.FPE_PUBLIC_DIR
+  ? path.resolve(globalThis.process.env.FPE_PUBLIC_DIR)
+  : path.join(SITE_ROOT, "public")
 
 const SITE_NAME = "First Principles Engineering"
 const AUTHOR = {
@@ -50,25 +56,16 @@ const AUTHOR = {
   url: "https://www.linkedin.com/in/sandeepcode/",
 }
 
-const SKIP_SLUG_RE = [
-  /^index$/,
-  /^about$/,
-  /^404$/,
-  /\/index$/,
-  /^tags(\/|$)/,
-]
+const SKIP_SLUG_RE = [/^index$/, /^about$/, /^404$/, /\/index$/, /^tags(\/|$)/]
 
 const OG_URL_RE = /<meta\b[^>]*\bproperty="og:url"[^>]*\bcontent="([^"]+)"/i
-const OG_IMAGE_RE =
-  /<meta\b[^>]*\bproperty="og:image"[^>]*\bcontent="([^"]+)"/i
+const OG_IMAGE_RE = /<meta\b[^>]*\bproperty="og:image"[^>]*\bcontent="([^"]+)"/i
 const DESC_RE = /<meta\b[^>]*\bname="description"[^>]*\bcontent="([^"]*)"/i
-const H1_RE =
-  /<h1\b[^>]*\bclass="[^"]*article-title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i
+const H1_RE = /<h1\b[^>]*\bclass="[^"]*article-title[^"]*"[^>]*>([\s\S]*?)<\/h1>/i
 const TIME_RE = /<time\b[^>]*\bdatetime="([^"]+)"/i
 const BREADCRUMB_NAV_RE =
   /<nav\b[^>]*\bclass="[^"]*breadcrumb-container[^"]*"[^>]*>([\s\S]*?)<\/nav>/i
-const BC_ELEMENT_RE =
-  /<div\b[^>]*\bclass="[^"]*breadcrumb-element[^"]*"[^>]*>([\s\S]*?)<\/div>/g
+const BC_ELEMENT_RE = /<div\b[^>]*\bclass="[^"]*breadcrumb-element[^"]*"[^>]*>([\s\S]*?)<\/div>/g
 const A_HREF_TEXT_RE = /<a\b([^>]*)>([\s\S]*?)<\/a>/i
 const HREF_RE = /\bhref="([^"]*)"/i
 const HAS_CANONICAL_RE = /<link\b[^>]*\brel="canonical"/i
@@ -145,7 +142,11 @@ async function walkHtml(dir) {
 
 function slugFromHtml(abs) {
   const rel = path.relative(PUBLIC_DIR, abs)
-  return rel.replace(/\.html$/, "").split(path.sep).join("/").toLowerCase()
+  return rel
+    .replace(/\.html$/, "")
+    .split(path.sep)
+    .join("/")
+    .toLowerCase()
 }
 
 function isArticle(slug) {

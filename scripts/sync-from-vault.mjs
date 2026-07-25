@@ -39,8 +39,7 @@ const QUARTZ_ROOT = path.resolve(__dirname, "..")
 // to the quartz root or absolute). Env var QUARTZ_VAULT_ROOT overrides for
 // one-off runs. Falls back to the quartz folder's parent for backward
 // compatibility with the original in-vault layout.
-const VAULT_ROOT_RAW =
-  process.env.QUARTZ_VAULT_ROOT || publishConfig.vaultRoot || ".."
+const VAULT_ROOT_RAW = process.env.QUARTZ_VAULT_ROOT || publishConfig.vaultRoot || ".."
 const VAULT_ROOT = path.resolve(QUARTZ_ROOT, VAULT_ROOT_RAW)
 const CONTENT_DIR = path.join(QUARTZ_ROOT, "content")
 
@@ -72,12 +71,10 @@ const VAULT_IGNORE = new Set([
   "private",
 ])
 
-const CONTENT_PRESERVE = new Set(["index.md", "about.md", "_static"])
+const CONTENT_PRESERVE = new Set(["index.md", "about.md", "account.md", "_static"])
 
 const HARD_BLOCK = (rel) =>
-  rel.endsWith(".excalidraw.md") ||
-  rel.endsWith(".excalidraw") ||
-  rel === MANIFEST_FILE
+  rel.endsWith(".excalidraw.md") || rel.endsWith(".excalidraw") || rel === MANIFEST_FILE
 
 const stats = {
   notesPublishedViaFlag: 0,
@@ -89,6 +86,9 @@ const stats = {
   excalidrawMissingSvg: [],
   excalidrawGenerateFailures: [],
   brokenWikilinks: 0,
+  wikilinksNormalized: 0,
+  deadLinksNeutralized: [],
+  descriptionsDerived: 0,
   errors: [],
 }
 
@@ -150,13 +150,9 @@ async function indexVault(files) {
 
 function resolveWikilink(target, index, fromAbs) {
   if (index.byRelPath.has(target)) return index.byRelPath.get(target)
-  if (index.byRelPath.has(target + ".md"))
-    return index.byRelPath.get(target + ".md")
+  if (index.byRelPath.has(target + ".md")) return index.byRelPath.get(target + ".md")
   const baseName = target.split("/").pop()
-  const candidates =
-    index.byBasename.get(baseName) ||
-    index.byBasename.get(baseName + ".md") ||
-    []
+  const candidates = index.byBasename.get(baseName) || index.byBasename.get(baseName + ".md") || []
   if (candidates.length === 1) return candidates[0]
   if (candidates.length > 1) {
     const fromDir = path.dirname(fromAbs)
@@ -215,10 +211,7 @@ async function findExcalidrawSvg(sourceAbs) {
 }
 
 function isExcalidrawTarget(target) {
-  return (
-    /\.excalidraw(\.md)?$/i.test(target) ||
-    /(^|\/)Excalidraw\//i.test(target)
-  )
+  return /\.excalidraw(\.md)?$/i.test(target) || /(^|\/)Excalidraw\//i.test(target)
 }
 
 async function copyFile(srcAbs, destAbs) {
@@ -235,17 +228,13 @@ async function loadManifest() {
   try {
     parsed = matter(raw)
   } catch (e) {
-    throw new Error(
-      `Could not parse YAML frontmatter in ${MANIFEST_FILE}: ${e.message}`,
-    )
+    throw new Error(`Could not parse YAML frontmatter in ${MANIFEST_FILE}: ${e.message}`)
   }
   const fm = parsed.data || {}
   // Accept `publish:` (preferred) or legacy aliases `publishFolders:` / `paths:`.
   const list = fm.publish ?? fm.publishFolders ?? fm.paths ?? []
   if (!Array.isArray(list)) {
-    throw new Error(
-      `'publish' field in ${MANIFEST_FILE} must be a YAML list of glob strings.`,
-    )
+    throw new Error(`'publish' field in ${MANIFEST_FILE} must be a YAML list of glob strings.`)
   }
   const patterns = list
     .map((s) => (typeof s === "string" ? s.trim() : ""))
@@ -257,17 +246,13 @@ let PUBLISH_PATTERNS = []
 
 function matchesPublishFolder(relPath) {
   const posix = relPath.split(path.sep).join("/")
-  return PUBLISH_PATTERNS.some((pattern) =>
-    minimatch(posix, pattern, { dot: false }),
-  )
+  return PUBLISH_PATTERNS.some((pattern) => minimatch(posix, pattern, { dot: false }))
 }
 
 function shouldPublish(relPath, frontmatter) {
   if (frontmatter?.publish === false) return { publish: false, source: null }
-  if (frontmatter?.publish === true)
-    return { publish: true, source: "flag" }
-  if (matchesPublishFolder(relPath))
-    return { publish: true, source: "manifest" }
+  if (frontmatter?.publish === true) return { publish: true, source: "flag" }
+  if (matchesPublishFolder(relPath)) return { publish: true, source: "manifest" }
   return { publish: false, source: null }
 }
 
@@ -287,6 +272,57 @@ function prettifyName(stem) {
     .replace(/^\d+[-_]/, "")
     .replace(/[-_]/g, " ")
     .trim()
+}
+
+// Derive a clean, single-sentence-ish description from a note body: the first
+// prose paragraph, with markdown/HTML stripped and truncated to ~155 chars at
+// a word boundary. Skips headings, callouts, blockquotes, images, code fences,
+// tables, lists, and thematic breaks so the snippet is real prose. Returns
+// null when no prose paragraph is found.
+function deriveDescription(body, maxLen = 155) {
+  const blocks = body.replace(/\r\n/g, "\n").split(/\n{2,}/)
+  let inFence = false
+  for (const raw of blocks) {
+    const block = raw.trim()
+    if (!block) continue
+    // Track/ skip fenced code blocks (may contain blank-line-free fences).
+    if (/^(```|~~~)/.test(block)) {
+      const fences = (block.match(/(^|\n)(```|~~~)/g) || []).length
+      if (fences % 2 === 1) inFence = !inFence
+      continue
+    }
+    if (inFence) continue
+    const first = block.split("\n")[0].trim()
+    // Skip non-prose leaders.
+    if (
+      /^#{1,6}\s/.test(first) || // heading
+      /^>/.test(first) || // blockquote / callout
+      /^!\[/.test(first) || // image
+      /^\|/.test(first) || // table row
+      /^(-{3,}|\*{3,}|_{3,})$/.test(first) || // thematic break
+      /^[-*+]\s/.test(first) || // bullet list
+      /^\d+\.\s/.test(first) || // ordered list
+      /^<[a-z!/]/i.test(first) // raw HTML block
+    ) {
+      continue
+    }
+    let text = block
+      .replace(/\n+/g, " ")
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // images
+      .replace(/\[\[[^\]|#]*(?:#[^\]|]*)?\|([^\]]+)\]\]/g, "$1") // wikilink w/ alias
+      .replace(/\[\[([^\]|#]+)(?:#[^\]|]*)?\]\]/g, "$1") // wikilink
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1") // markdown links
+      .replace(/<[^>]+>/g, "") // html tags (e.g. neutralized spans)
+      .replace(/[`*_~]/g, "") // inline emphasis / code markers
+      .replace(/\s+/g, " ")
+      .trim()
+    if (!text) continue
+    if (text.length <= maxLen) return text
+    const cut = text.slice(0, maxLen)
+    const lastSpace = cut.lastIndexOf(" ")
+    return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).replace(/[,.;:\s]+$/, "") + "…"
+  }
+  return null
 }
 
 // Auto-tag a published note from its vault path. Single primary topic-tag
@@ -367,7 +403,7 @@ function stripLeadingDuplicateH1(body, title) {
   return body.slice(m[0].length).replace(/^\s+/, "")
 }
 
-async function processNote(file, index) {
+async function processNote(file, index, publishedSet) {
   const { abs, rel } = file
   if (HARD_BLOCK(rel)) return
 
@@ -424,8 +460,7 @@ async function processNote(file, index) {
     }
     return base
   }
-  const hasExplicitTitle =
-    data.title != null && data.title !== "" && data.title !== "index"
+  const hasExplicitTitle = data.title != null && data.title !== "" && data.title !== "index"
   if (!hasExplicitTitle) {
     const leadingH1 = body.match(/^\s*#\s+(.+?)\s*\n+/)
     if (leadingH1) {
@@ -485,9 +520,7 @@ async function processNote(file, index) {
           svgAbs = await ensureSvg(sourceAbs)
           stats.excalidrawAutoGenerated++
         } catch (e) {
-          stats.excalidrawGenerateFailures.push(
-            `${path.basename(sourceAbs)}: ${e.message}`,
-          )
+          stats.excalidrawGenerateFailures.push(`${path.basename(sourceAbs)}: ${e.message}`)
         }
       }
       if (!svgAbs) {
@@ -559,9 +592,82 @@ async function processNote(file, index) {
     body = body.split(from).join(to)
   }
 
+  // Normalize wikilink targets that use `../` relative segments. Quartz's
+  // transformInternalLink (in @quartz-community/utils) mishandles relative
+  // segments under the non-relative link strategy: it strips the `../` and
+  // treats the remainder as a from-root slug. So `[[../02-Architecture/Foo]]`
+  // on a page under `01-Concepts/05-API/` resolves to the root-level
+  // `/02-architecture/foo` (404) instead of the sibling
+  // `/01-fundamentals/01-concepts/02-architecture/foo` that actually exists.
+  // We already resolve the true target file here, so rewrite the link path to
+  // the full vault-root path (no `../`), which Quartz slugifies to the correct
+  // absolute slug. The `#anchor` and `|alias` are preserved so Quartz still
+  // slugifies the heading anchor. Links without relative segments already
+  // resolve correctly and are left untouched.
+  const RELATIVE_SEG_RE = /(^|\/)\.\.?(\/|$)/
+  const linkRewrites = []
+  const seenLinks = new Set()
   while ((m = linkRe.exec(body)) !== null) {
-    const target = m[1].trim()
-    if (!resolveWikilink(target, index, abs)) stats.brokenWikilinks++
+    const fullMatch = m[0]
+    // Inside markdown tables the alias pipe is escaped (`[[path\|alias]]`), so
+    // the captured path keeps a trailing backslash. Strip it for resolution
+    // and remember it so we can re-escape the pipe in the rewritten link.
+    const rawPath = m[1].trim()
+    const hadBackslash = /\\$/.test(rawPath)
+    const target = rawPath.replace(/\\$/, "")
+    const anchor = m[2] ? m[2] : ""
+    const aliasText = m[3] ? m[3].trim() : ""
+    const alias = aliasText ? `|${aliasText}` : ""
+    if (seenLinks.has(fullMatch)) continue
+    seenLinks.add(fullMatch)
+
+    const resolvedAbs = resolveWikilink(target, index, abs)
+    const targetPublished =
+      resolvedAbs && resolvedAbs.endsWith(".md") && publishedSet.has(resolvedAbs)
+
+    // Live cross-link: the target note ships. Normalize `../`-relative
+    // targets to a full vault-root path (Quartz's transformInternalLink
+    // over-climbs relative segments, dropping them to a root-level 404), and
+    // leave already-correct absolute/sibling links untouched.
+    if (targetPublished) {
+      if (!RELATIVE_SEG_RE.test(target)) continue
+      const rootRel = path
+        .relative(VAULT_ROOT, resolvedAbs)
+        .replace(/\.md$/i, "")
+        .split(path.sep)
+        .join("/")
+      const sep = hadBackslash ? "\\" : ""
+      linkRewrites.push({ from: fullMatch, to: `[[${rootRel}${anchor}${sep}${alias}]]` })
+      stats.wikilinksNormalized++
+      continue
+    }
+
+    // Dead cross-link: the target is unresolved, or resolves to a note that
+    // isn't published. Quartz would render these as <a> tags to pages that
+    // were never emitted (internal 404s). Neutralize to non-clickable text so
+    // the reference is preserved but never dangles. Removing/publishing the
+    // target note flips it back to a real link on the next sync.
+    const display = aliasText || prettifyName(target.split("/").pop()) || target
+    const to = `<span class="fpe-coming-soon" title="Not yet published">${display}</span>`
+    linkRewrites.push({ from: fullMatch, to })
+    stats.deadLinksNeutralized.push(`${rel}: [[${target}]]`)
+    if (!resolvedAbs) stats.brokenWikilinks++
+  }
+  for (const { from, to } of linkRewrites) {
+    body = body.split(from).join(to)
+  }
+
+  // Fallback description for SEO / social snippets. Only ~5/46 notes set an
+  // explicit `description:`; without one, the meta description falls back to
+  // the anecdotal opening line. Derive a clean one-paragraph summary from the
+  // first prose block so every article ships a sensible snippet. An explicit
+  // frontmatter `description` always wins and is never overwritten.
+  if (data.description == null || String(data.description).trim() === "") {
+    const derived = deriveDescription(body)
+    if (derived) {
+      data.description = derived
+      stats.descriptionsDerived++
+    }
   }
 
   const outAbs = path.join(CONTENT_DIR, rel)
@@ -613,16 +719,32 @@ async function main() {
   const markdown = allFiles.filter((f) => f.rel.endsWith(".md"))
   const index = await indexVault(allFiles)
 
+  // Pre-compute the set of note files that WILL be published, so link
+  // rewriting can tell a live cross-link (target ships) from a dead one
+  // (target is unresolved or points at an unpublished note). Without this,
+  // wikilinks to unpublished notes render as <a> tags to pages that were
+  // never emitted — i.e. internal 404s (the top finding in both audits).
+  const publishedSet = new Set()
+  for (const f of markdown) {
+    if (HARD_BLOCK(f.rel)) continue
+    let fmData
+    try {
+      fmData = matter(await fs.readFile(f.abs, "utf8")).data
+    } catch {
+      continue
+    }
+    if (shouldPublish(f.rel, fmData).publish) publishedSet.add(f.abs)
+  }
+
   for (const f of markdown) {
     try {
-      await processNote(f, index)
+      await processNote(f, index, publishedSet)
     } catch (e) {
       stats.errors.push(`${f.rel}: ${e.message}`)
     }
   }
 
-  const totalPublished =
-    stats.notesPublishedViaFlag + stats.notesPublishedViaManifest
+  const totalPublished = stats.notesPublishedViaFlag + stats.notesPublishedViaManifest
   console.log(`\n── sync summary ─────────────────────────`)
   console.log(`  Published (flag):       ${stats.notesPublishedViaFlag}`)
   console.log(`  Published (manifest):   ${stats.notesPublishedViaManifest}`)
@@ -633,7 +755,22 @@ async function main() {
   console.log(`  Excalidraw build fails: ${stats.excalidrawGenerateFailures.length}`)
   console.log(`  Excalidraw missing SVG: ${stats.excalidrawMissingSvg.length}`)
   console.log(`  Unresolved wikilinks:   ${stats.brokenWikilinks}`)
+  console.log(`  Wikilinks normalized:   ${stats.wikilinksNormalized}`)
+  console.log(`  Dead links neutralized: ${stats.deadLinksNeutralized.length}`)
+  console.log(`  Descriptions derived:   ${stats.descriptionsDerived}`)
   console.log(`  Errors:                 ${stats.errors.length}`)
+
+  if (stats.deadLinksNeutralized.length > 0) {
+    console.warn(
+      `\n⚠  ${stats.deadLinksNeutralized.length} cross-link(s) to unpublished/unresolved notes were rendered as plain "coming soon" text:`,
+    )
+    for (const m of stats.deadLinksNeutralized.slice(0, 15)) {
+      console.warn(`     - ${m}`)
+    }
+    if (stats.deadLinksNeutralized.length > 15) {
+      console.warn(`     ... and ${stats.deadLinksNeutralized.length - 15} more`)
+    }
+  }
 
   if (stats.excalidrawGenerateFailures.length > 0) {
     console.warn(
@@ -643,9 +780,7 @@ async function main() {
       console.warn(`     - ${m}`)
     }
     if (stats.excalidrawGenerateFailures.length > 10) {
-      console.warn(
-        `     ... and ${stats.excalidrawGenerateFailures.length - 10} more`,
-      )
+      console.warn(`     ... and ${stats.excalidrawGenerateFailures.length - 10} more`)
     }
   }
 
@@ -669,8 +804,7 @@ async function main() {
   if (stats.errors.length) {
     console.error("\n❌ Errors:")
     for (const e of stats.errors.slice(0, 20)) console.error(`  - ${e}`)
-    if (stats.errors.length > 20)
-      console.error(`  ... and ${stats.errors.length - 20} more`)
+    if (stats.errors.length > 20) console.error(`  ... and ${stats.errors.length - 20} more`)
     process.exit(1)
   }
   if (totalPublished === 0) {

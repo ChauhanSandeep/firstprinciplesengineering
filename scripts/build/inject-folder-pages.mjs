@@ -43,7 +43,11 @@ import url from "node:url"
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const SITE_ROOT = path.resolve(__dirname, "..", "..")
-const PUBLIC_DIR = path.join(SITE_ROOT, "public")
+// FPE_PUBLIC_DIR lets golden-file tests point the injector at a fixture
+// directory instead of the real build output; defaults to public/.
+const PUBLIC_DIR = process.env.FPE_PUBLIC_DIR
+  ? path.resolve(process.env.FPE_PUBLIC_DIR)
+  : path.join(SITE_ROOT, "public")
 
 const PAGE_LISTING_MARKER = `class="page-listing"`
 const FOLDER_NORMALIZED_MARKER = `data-fpe-folder-normalized`
@@ -85,11 +89,7 @@ async function countFolderItems(absDir) {
           await fs.access(path.join(absDir, e.name, "index.html"))
           count++
         } catch {}
-      } else if (
-        e.isFile() &&
-        e.name.endsWith(".html") &&
-        e.name !== "index.html"
-      ) {
+      } else if (e.isFile() && e.name.endsWith(".html") && e.name !== "index.html") {
         count++
       }
     }
@@ -135,14 +135,11 @@ function rewriteH1(html) {
 function rewriteBreadcrumbs(html) {
   const re = /(<nav[^>]*class="breadcrumb-container"[^>]*>)([\s\S]*?)(<\/nav>)/i
   return html.replace(re, (_m, open, inner, close) => {
-    const next = inner.replace(
-      /(<a[^>]*>)([^<]+)(<\/a>)/g,
-      (mm, ao, txt, ac) => {
-        const stripped = stripPrefix(txt)
-        if (!stripped || stripped === txt) return mm
-        return `${ao}${escHtml(stripped)}${ac}`
-      },
-    )
+    const next = inner.replace(/(<a[^>]*>)([^<]+)(<\/a>)/g, (mm, ao, txt, ac) => {
+      const stripped = stripPrefix(txt)
+      if (!stripped || stripped === txt) return mm
+      return `${ao}${escHtml(stripped)}${ac}`
+    })
     return `${open}${next}${close}`
   })
 }
@@ -195,14 +192,11 @@ async function rewriteCards(html, htmlAbsPath) {
     // Cap visible tags per card so a note with many tags doesn't
     // blow up its card height past the reserved 3-pill row. Drops
     // tags beyond the cap entirely (not "+N more" — keep it clean).
-    body = body.replace(
-      /<ul class="tags">([\s\S]*?)<\/ul>/i,
-      (mm, inner) => {
-        const tagItems = inner.match(/<li>[\s\S]*?<\/li>/g) || []
-        if (tagItems.length <= MAX_TAGS_PER_CARD) return mm
-        return `<ul class="tags">${tagItems.slice(0, MAX_TAGS_PER_CARD).join("")}</ul>`
-      },
-    )
+    body = body.replace(/<ul class="tags">([\s\S]*?)<\/ul>/i, (mm, inner) => {
+      const tagItems = inner.match(/<li>[\s\S]*?<\/li>/g) || []
+      if (tagItems.length <= MAX_TAGS_PER_CARD) return mm
+      return `<ul class="tags">${tagItems.slice(0, MAX_TAGS_PER_CARD).join("")}</ul>`
+    })
 
     parts.push(`<li class="section-li">${body}</li>`)
     lastIndex = cardRe.lastIndex
@@ -227,10 +221,7 @@ async function processOne(abs) {
   html = await rewriteCards(html, abs)
 
   // Mark the page as normalized to keep this idempotent.
-  html = html.replace(
-    /(<div class="page-listing")(>)/,
-    `$1 ${FOLDER_NORMALIZED_MARKER}$2`,
-  )
+  html = html.replace(/(<div class="page-listing")(>)/, `$1 ${FOLDER_NORMALIZED_MARKER}$2`)
 
   if (html === before) return { skipped: true }
   await fs.writeFile(abs, html, "utf8")

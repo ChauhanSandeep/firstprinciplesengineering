@@ -40,10 +40,7 @@ const VAULT_ROOT = path.resolve(
   process.env.QUARTZ_VAULT_ROOT || publishConfig.vaultRoot || "..",
 )
 const CONTENT_DIR = path.join(QUARTZ_ROOT, "content")
-const MANIFEST_PATH = path.join(
-  VAULT_ROOT,
-  publishConfig.manifestFile || "PUBLISH.md",
-)
+const MANIFEST_PATH = path.join(VAULT_ROOT, publishConfig.manifestFile || "PUBLISH.md")
 
 // Mirror sync-from-vault.mjs's VAULT_IGNORE so discover sees exactly the same
 // files the sync would consider.
@@ -122,7 +119,10 @@ function eyebrowFromPath(relPath) {
   parts.pop() // drop filename
   if (parts.length === 0) return ""
   const seg = parts[parts.length - 1]
-  return seg.replace(/^\d+[-_]/, "").replace(/[-_]/g, " ").trim()
+  return seg
+    .replace(/^\d+[-_]/, "")
+    .replace(/[-_]/g, " ")
+    .trim()
 }
 
 function shouldPublish(rel, fm, manifestPatterns) {
@@ -140,10 +140,7 @@ async function classifyStatus(vaultAbs, contentAbs) {
   // diffing because the sync rewrites wikilinks, injects `publish: true`,
   // strips duplicate H1s, etc. — none of which we want to re-implement here.
   try {
-    const [vStat, cStat] = await Promise.all([
-      fs.stat(vaultAbs),
-      fs.stat(contentAbs),
-    ])
+    const [vStat, cStat] = await Promise.all([fs.stat(vaultAbs), fs.stat(contentAbs)])
     if (vStat.mtimeMs > cStat.mtimeMs + 1) return "changed"
     return "unchanged"
   } catch {
@@ -192,21 +189,14 @@ async function main() {
     // Card metadata: explicit fm keys override; otherwise we leave nulls and
     // let the skill draft them in-context (drafting is judgement work, not
     // deterministic enough for this script).
-    const card =
-      featured
-        ? {
-            eyebrow:
-              typeof fm.card_eyebrow === "string"
-                ? fm.card_eyebrow
-                : eyebrowFromPath(f.rel),
-            title: typeof fm.card_title === "string" ? fm.card_title : null,
-            description:
-              typeof fm.card_description === "string"
-                ? fm.card_description
-                : null,
-            order: Number.isFinite(fm.card_order) ? fm.card_order : null,
-          }
-        : null
+    const card = featured
+      ? {
+          eyebrow: typeof fm.card_eyebrow === "string" ? fm.card_eyebrow : eyebrowFromPath(f.rel),
+          title: typeof fm.card_title === "string" ? fm.card_title : null,
+          description: typeof fm.card_description === "string" ? fm.card_description : null,
+          order: Number.isFinite(fm.card_order) ? fm.card_order : null,
+        }
+      : null
 
     candidates.push({
       vaultPath: f.rel,
@@ -225,7 +215,7 @@ async function main() {
   // Removed = files that currently live in content/ but aren't backed by a
   // publishable vault file. We only check content/**/*.md (excluding the
   // hand-maintained preserved files).
-  const PRESERVE = new Set(["index.md", "about.md", "_static"])
+  const PRESERVE = new Set(["index.md", "about.md", "account.md", "_static"])
   const candidateContentPaths = new Set(candidates.map((c) => c.contentPath))
   const removed = []
   async function walkContent(dir, base = CONTENT_DIR) {

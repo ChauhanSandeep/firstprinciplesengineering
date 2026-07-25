@@ -157,25 +157,35 @@ plugins:
             .trim();
           if (cleaned) node.displayName = cleaned;
         }
+      # Keep utility pages out of the content navigation tree: `tags` (Quartz
+      # default) plus the `account` page (reached via the top-bar account chip,
+      # not a study note). Without this, "Your account" shows in the left
+      # explorer on every page, even for signed-out readers.
+      filterFn: |
+        (node) => node.slugSegment !== "tags" && node.slugSegment !== "account"
     layout:
       position: left
       priority: 50
   - source: github:quartz-community/graph
-    enabled: false
+    enabled: true
+    options:
+      localGraph:
+        depth: 2
+        showTags: false
+    layout:
+      position: afterBody
+      priority: 90
+      condition: not-index
   - source: github:quartz-community/search
     enabled: true
     layout:
-      position: left
+      position: header
       priority: 20
       group: toolbar
       groupOptions:
         grow: true
   - source: github:quartz-community/backlinks
-    enabled: true
-    layout:
-      position: afterBody
-      priority: 100
-      condition: not-index
+    enabled: false
   - source: github:quartz-community/article-title
     enabled: true
     layout:
@@ -191,18 +201,18 @@ plugins:
   - source: github:quartz-community/page-title
     enabled: true
     layout:
-      position: left
+      position: header
       priority: 10
   - source: github:quartz-community/darkmode
     enabled: true
     layout:
-      position: left
+      position: header
       priority: 30
       group: toolbar
   - source: github:quartz-community/reader-mode
     enabled: true
     layout:
-      position: left
+      position: header
       priority: 35
       group: toolbar
   - source: github:quartz-community/breadcrumbs

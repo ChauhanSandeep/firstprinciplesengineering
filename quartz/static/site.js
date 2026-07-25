@@ -2,7 +2,7 @@
 // Loaded from Head.tsx as `<script src="static/site.js" defer>`.
 // Idempotent: safe to run on Quartz's SPA navigation events.
 
-(function () {
+;(function () {
   // Shared inline SVG icons. Stroke-style Lucide icons (24x24, currentColor)
   // so they pick up surrounding text colour and tint on hover. Used by the
   // footer Connect column and the left-sidebar social row.
@@ -10,23 +10,23 @@
     github:
       '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
       '<path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.16 1.18.92-.26 1.9-.39 2.88-.39.98 0 1.96.13 2.88.39 2.2-1.49 3.16-1.18 3.16-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>' +
-      '</svg>',
+      "</svg>",
     linkedin:
       '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
       '<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.89 1.63-1.83 3.36-1.83 3.59 0 4.26 2.36 4.26 5.43v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0z"/>' +
-      '</svg>',
+      "</svg>",
     email:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<rect x="3" y="5" width="18" height="14" rx="2"></rect><polyline points="3 7 12 13 21 7"></polyline>' +
-      '</svg>',
+      "</svg>",
     issue:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><circle cx="12" cy="16" r="1"></circle>' +
-      '</svg>',
+      "</svg>",
     rss:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"></circle>' +
-      '</svg>',
+      "</svg>",
   }
 
   const FPE_SOCIAL = {
@@ -44,9 +44,7 @@
       // Surface language hint for the SCSS `::before` badge
       const codeEl = pre.querySelector("code")
       if (codeEl && !pre.dataset.language) {
-        const cls = Array.from(codeEl.classList).find((c) =>
-          c.startsWith("language-"),
-        )
+        const cls = Array.from(codeEl.classList).find((c) => c.startsWith("language-"))
         if (cls) pre.dataset.language = cls.slice("language-".length)
       }
 
@@ -55,10 +53,24 @@
     })
   }
 
+  function isStudySection() {
+    // Reading progress belongs only on long-form study pages inside the
+    // Fundamentals and Roadmap sections. Vault folders carry an ordering
+    // prefix (e.g. `/01-fundamentals/`, `/03-roadmaps/`) which may change,
+    // so match the section name after an optional `NN-`/`NN_` prefix.
+    return /^\/(?:\d+[-_])?(fundamentals|roadmaps?)(?:\/|$)/i.test(window.location.pathname)
+  }
+
   function ensureProgressBar() {
-    // Only on article-style pages: a single <article> with substantial scroll.
-    if (!document.querySelector("article")) return
-    if (document.getElementById("scroll-progress")) return
+    const existing = document.getElementById("scroll-progress")
+    // Only on article-style study pages (Fundamentals / Roadmap). On any
+    // other page — home, about, account, tags, folder/tag indexes — remove a
+    // bar left over from a prior SPA navigation and bail.
+    if (!isStudySection() || !document.querySelector("article")) {
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing)
+      return
+    }
+    if (existing) return
     const bar = document.createElement("div")
     bar.id = "scroll-progress"
     document.body.prepend(bar)
@@ -83,7 +95,10 @@
   // consistent across all UI surfaces.
   function prettify(s) {
     if (!s || typeof s !== "string") return s
-    return s.replace(/^\d+[-_]/, "").replace(/[-_]/g, " ").trim()
+    return s
+      .replace(/^\d+[-_]/, "")
+      .replace(/[-_]/g, " ")
+      .trim()
   }
 
   // Breadcrumbs are server-rendered with raw folder slugs (e.g. "01-Fundamentals
@@ -196,15 +211,19 @@
     overlay.dataset.theme = theme
     overlay.innerHTML =
       '<div class="fpe-lightbox-toolbar">' +
-        '<a class="fpe-lightbox-action fpe-lightbox-open" href="' + src + '" target="_blank" rel="noopener" title="Open in new tab" aria-label="Open diagram in new tab">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-            '<path d="M14 3h7v7"></path><path d="M10 14L21 3"></path>' +
-            '<path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>' +
-          '</svg>' +
-        '</a>' +
-        '<button type="button" class="fpe-lightbox-action fpe-lightbox-close" aria-label="Close">×</button>' +
-      '</div>' +
-      '<img alt="' + (alt || "") + '" />'
+      '<a class="fpe-lightbox-action fpe-lightbox-open" href="' +
+      src +
+      '" target="_blank" rel="noopener" title="Open in new tab" aria-label="Open diagram in new tab">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M14 3h7v7"></path><path d="M10 14L21 3"></path>' +
+      '<path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>' +
+      "</svg>" +
+      "</a>" +
+      '<button type="button" class="fpe-lightbox-action fpe-lightbox-close" aria-label="Close">×</button>' +
+      "</div>" +
+      '<img alt="' +
+      (alt || "") +
+      '" />'
     const img = overlay.querySelector("img")
     img.src = src
     const close = () => overlay.remove()
@@ -258,15 +277,12 @@
       }
     })
 
-    document.addEventListener(
-      "keydown",
-      function onKey(e) {
-        if (e.key === "Escape") {
-          close()
-          document.removeEventListener("keydown", onKey)
-        }
-      },
-    )
+    document.addEventListener("keydown", function onKey(e) {
+      if (e.key === "Escape") {
+        close()
+        document.removeEventListener("keydown", onKey)
+      }
+    })
     document.body.appendChild(overlay)
   }
 
@@ -275,7 +291,8 @@
     if (!footer) return
     if (footer.querySelector(".fpe-footer-rich")) return
 
-    const basePath = (document.body && document.body.dataset && document.body.dataset.basepath) || ""
+    const basePath =
+      (document.body && document.body.dataset && document.body.dataset.basepath) || ""
     const home = (basePath || "") + "/"
     const about = (basePath || "") + "/about"
     const ghRepo = FPE_SOCIAL.github
@@ -287,33 +304,47 @@
     const wrap = (svg) => svg.replace("<svg ", '<svg class="fpe-footer-icon" ')
 
     const mkConnect = (href, label, iconKey, external) => {
-      const target = external ? ' target="_blank" rel="noopener"' : ''
-      return '<li><a href="' + href + '"' + target + '>' + wrap(FPE_ICON[iconKey]) + '<span>' + label + '</span></a></li>'
+      const target = external ? ' target="_blank" rel="noopener"' : ""
+      return (
+        '<li><a href="' +
+        href +
+        '"' +
+        target +
+        ">" +
+        wrap(FPE_ICON[iconKey]) +
+        "<span>" +
+        label +
+        "</span></a></li>"
+      )
     }
 
     const rich = document.createElement("div")
     rich.className = "fpe-footer-rich"
     rich.innerHTML =
       '<div class="fpe-footer-col fpe-footer-brand">' +
-        '<div class="fpe-footer-title">First Principles Engineering</div>' +
-        '<p class="fpe-footer-tagline">Notes on distributed systems, system design, databases, networking, and the fundamentals that survive every architecture trend.</p>' +
-        '<p class="fpe-footer-byline">By <strong>Sandeep Chauhan</strong> — Senior Software Engineer @ LinkedIn</p>' +
-      '</div>' +
+      '<div class="fpe-footer-title">First Principles Engineering</div>' +
+      '<p class="fpe-footer-tagline">Notes on distributed systems, system design, databases, networking, and the fundamentals that survive every architecture trend.</p>' +
+      '<p class="fpe-footer-byline">By <strong>Sandeep Chauhan</strong> — Senior Software Engineer @ LinkedIn</p>' +
+      "</div>" +
       '<div class="fpe-footer-col fpe-footer-browse">' +
-        '<div class="fpe-footer-col-title">Browse</div>' +
-        '<ul>' +
-          '<li><a href="' + home + '">Home</a></li>' +
-          '<li><a href="' + about + '">About Me</a></li>' +
-        '</ul>' +
-      '</div>' +
+      '<div class="fpe-footer-col-title">Browse</div>' +
+      "<ul>" +
+      '<li><a href="' +
+      home +
+      '">Home</a></li>' +
+      '<li><a href="' +
+      about +
+      '">About Me</a></li>' +
+      "</ul>" +
+      "</div>" +
       '<div class="fpe-footer-col fpe-footer-connect fpe-footer-connect-iconified">' +
-        '<div class="fpe-footer-col-title">Connect</div>' +
-        '<ul>' +
-          mkConnect(ghRepo, "GitHub", "github", true) +
-          mkConnect(linkedinUrl, "LinkedIn", "linkedin", true) +
-          mkConnect("mailto:" + emailAddr, "Email", "email", false) +
-        '</ul>' +
-      '</div>'
+      '<div class="fpe-footer-col-title">Connect</div>' +
+      "<ul>" +
+      mkConnect(ghRepo, "GitHub", "github", true) +
+      mkConnect(linkedinUrl, "LinkedIn", "linkedin", true) +
+      mkConnect("mailto:" + emailAddr, "Email", "email", false) +
+      "</ul>" +
+      "</div>"
 
     footer.insertBefore(rich, footer.firstChild)
     footer.classList.add("fpe-footer-enhanced")
@@ -351,7 +382,9 @@
     if (document.body.classList.contains("fpe-left-collapsed")) {
       document.body.classList.remove("fpe-left-collapsed")
     }
-    try { localStorage.removeItem("fpe-left-collapsed") } catch (e) {}
+    try {
+      localStorage.removeItem("fpe-left-collapsed")
+    } catch (e) {}
 
     const left = document.querySelector(".sidebar.left")
     if (!left) return
@@ -361,9 +394,21 @@
     social.className = "fpe-sidebar-social"
     social.setAttribute("aria-label", "Connect")
     social.innerHTML =
-      '<a href="' + FPE_SOCIAL.github + '" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">' + FPE_ICON.github + "</a>" +
-      '<a href="' + FPE_SOCIAL.linkedin + '" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">' + FPE_ICON.linkedin + "</a>" +
-      '<a href="mailto:' + FPE_SOCIAL.email + '" aria-label="Email" title="Email">' + FPE_ICON.email + "</a>"
+      '<a href="' +
+      FPE_SOCIAL.github +
+      '" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">' +
+      FPE_ICON.github +
+      "</a>" +
+      '<a href="' +
+      FPE_SOCIAL.linkedin +
+      '" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">' +
+      FPE_ICON.linkedin +
+      "</a>" +
+      '<a href="mailto:' +
+      FPE_SOCIAL.email +
+      '" aria-label="Email" title="Email">' +
+      FPE_ICON.email +
+      "</a>"
     left.appendChild(social)
   }
 
@@ -388,7 +433,9 @@
   function applyArticleFontSize(size) {
     const next = Math.min(ARTICLE_FONT_MAX, Math.max(ARTICLE_FONT_MIN, size))
     document.documentElement.style.setProperty("--fpe-article-font-size", next + "px")
-    try { localStorage.setItem(ARTICLE_FONT_KEY, String(next)) } catch (e) {}
+    try {
+      localStorage.setItem(ARTICLE_FONT_KEY, String(next))
+    } catch (e) {}
 
     const value = document.querySelector(".fpe-font-size-value")
     if (value) value.textContent = next + "px"
@@ -402,10 +449,13 @@
   function ensureArticleFontControl() {
     applyArticleFontSize(readArticleFontSize())
 
-    const left = document.querySelector(".sidebar.left")
-    if (!left) return
+    // The reading-font control now lives in the full-width top bar's actions
+    // cluster (next to the account chip), rendered by DefaultFrame as
+    // <div class="fpe-topbar-actions" data-fpe-topbar-actions>.
+    const actions = document.querySelector("[data-fpe-topbar-actions]")
+    if (!actions) return
 
-    let control = left.querySelector(".fpe-font-size-control")
+    let control = actions.querySelector(".fpe-font-size-control")
     if (!control) {
       control = document.createElement("div")
       control.className = "fpe-font-size-control"
@@ -421,120 +471,11 @@
       control.querySelector("[data-fpe-font-inc]").addEventListener("click", () => {
         applyArticleFontSize(readArticleFontSize() + ARTICLE_FONT_STEP)
       })
-    }
-
-    const toolbar = Array.from(left.querySelectorAll(".flex-component")).find((el) =>
-      el.querySelector(".search"),
-    )
-    const explorer = left.querySelector(".explorer")
-    if (toolbar) {
-      let controlsGroup = left.querySelector(".fpe-sidebar-reading-controls")
-      if (!controlsGroup) {
-        controlsGroup = document.createElement("section")
-        controlsGroup.className = "fpe-sidebar-reading-controls"
-        controlsGroup.setAttribute("aria-labelledby", "fpe-sidebar-reading-label")
-        controlsGroup.innerHTML =
-          '<div class="fpe-sidebar-section-label" id="fpe-sidebar-reading-label">Reading</div>'
-      }
-
-      let controlsRow = controlsGroup.querySelector(".fpe-sidebar-tool-row")
-      if (!controlsRow) {
-        controlsRow = left.querySelector(".fpe-sidebar-tool-row")
-      }
-      if (!controlsRow) {
-        controlsRow = document.createElement("div")
-        controlsRow.className = "fpe-sidebar-tool-row"
-      }
-      if (controlsRow.parentElement !== controlsGroup) {
-        controlsGroup.appendChild(controlsRow)
-      }
-      if (controlsGroup.parentElement !== left) {
-        left.insertBefore(controlsGroup, toolbar.nextSibling)
-      }
-
-      const readerSlot = left.querySelector(".readermode")?.parentElement
-      const darkSlot = left.querySelector(".darkmode")?.parentElement
-      controlsRow.appendChild(control)
-      if (readerSlot) controlsRow.appendChild(readerSlot)
-      if (darkSlot) controlsRow.appendChild(darkSlot)
-
-      left.querySelectorAll(".fpe-font-size-toolbar-slot").forEach((slot) => slot.remove())
-    } else if (control.parentElement !== left) {
-      left.insertBefore(control, explorer || left.firstChild)
+      // Place the font control before the auth chip so the chip stays rightmost.
+      const chip = actions.querySelector(".fpe-authchip")
+      actions.insertBefore(control, chip || null)
     }
     applyArticleFontSize(readArticleFontSize())
-  }
-
-  function currentSiteTheme() {
-    const t = document.documentElement.getAttribute("saved-theme")
-    if (t === "dark" || t === "light") return t
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-  }
-
-  function renderCusdis(mount) {
-    if (!mount) return
-    if (window.CUSDIS && typeof window.CUSDIS.renderTo === "function") {
-      window.CUSDIS.renderTo(mount)
-    }
-  }
-
-  function ensureCusdis() {
-    const mount = document.getElementById("cusdis_thread")
-    if (!mount) return
-
-    const theme = currentSiteTheme()
-    if (mount.dataset.theme !== theme) {
-      mount.dataset.theme = theme
-    }
-
-    const host = mount.dataset.host || "https://cusdis.com"
-    const existingScript = document.querySelector("script[data-fpe-cusdis]")
-
-    if (window.CUSDIS && typeof window.CUSDIS.renderTo === "function") {
-      if (!mount.querySelector("iframe") || mount.dataset.fpeCusdisTheme !== theme) {
-        mount.dataset.fpeCusdisTheme = theme
-        renderCusdis(mount)
-      }
-      return
-    }
-
-    if (existingScript) return
-
-    const script = document.createElement("script")
-    script.src = host.replace(/\/$/, "") + "/js/cusdis.es.js"
-    script.async = true
-    script.defer = true
-    script.dataset.fpeCusdis = "1"
-    script.onload = function () {
-      const currentMount = document.getElementById("cusdis_thread")
-      if (!currentMount) return
-      currentMount.dataset.theme = currentSiteTheme()
-      currentMount.dataset.fpeCusdisTheme = currentMount.dataset.theme
-      renderCusdis(currentMount)
-    }
-    document.head.appendChild(script)
-  }
-
-  let cusdisThemeObserverInstalled = false
-
-  function ensureCusdisThemeObserver() {
-    if (cusdisThemeObserverInstalled) return
-    cusdisThemeObserverInstalled = true
-    new MutationObserver(function () {
-      const mount = document.getElementById("cusdis_thread")
-      if (!mount) return
-      const theme = currentSiteTheme()
-      if (mount.dataset.theme === theme && mount.dataset.fpeCusdisTheme === theme) return
-      mount.dataset.theme = theme
-      mount.dataset.fpeCusdisTheme = theme
-      renderCusdis(mount)
-    }).observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["saved-theme"],
-    })
   }
 
   function init() {
@@ -548,9 +489,6 @@
     ensureRichFooter()
     polishToc(document)
     ensureArticleFontControl()
-    ensureSidebarSocial()
-    ensureCusdisThemeObserver()
-    ensureCusdis()
   }
 
   if (document.readyState === "loading") {

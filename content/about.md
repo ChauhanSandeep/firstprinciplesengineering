@@ -22,7 +22,13 @@ This site is a curated slice of my private notebook. Many drafts and half-formed
 
 ## How this site is built
 
-It's a [Quartz](https://quartz.jzhao.xyz) site rendered from an Obsidian vault — Obsidian is the source of truth, every diagram is an Excalidraw drawing rendered to dark/light SVG pairs, and the entire build runs from a small set of scripts in the [public repo](https://github.com/chauhansandeep/firstprinciplesengineering). If you spot a bug or a stale link, the PR queue is open.
+It's a [Quartz](https://quartz.jzhao.xyz) site rendered from an Obsidian vault — Obsidian is the source of truth, every diagram is an Excalidraw drawing rendered to dark/light SVG pairs, and the entire build runs from a small set of scripts in the [public repo](https://github.com/chauhansandeep/firstprinciplesengineering).
+
+## Join the discussion
+
+Every note has a live comment thread at the bottom. **Sign in with Google** (the button at the top-right of any page) to comment, like a note, and mark what you've read — no GitHub account, no issue tracker, just a conversation on the note itself.
+
+If a published note is wrong, unclear, or contradicts your production experience — or a link has gone stale — that's exactly the kind of comment I want. Leave it right on the note and I'll see it; I read every thread.
 
 ## Get in touch
 
@@ -45,7 +51,5 @@ It's a [Quartz](https://quartz.jzhao.xyz) site rendered from an Obsidian vault �
 </a>
 
 </div>
-
-If a published note is wrong, unclear, or contradicts your production experience, I'd genuinely like to hear about it. The fastest path is to [open an issue on GitHub](https://github.com/chauhansandeep/firstprinciplesengineering).
 
 </div>

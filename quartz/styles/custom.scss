@@ -57,13 +57,20 @@ article {
 
   // Inter has excellent stylistic alternates; opt in to "cv11" (single-storey a)
   // and "ss01" (turn off the squashed open-counter forms) on headings only.
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--headerFont);
     font-weight: 600;
     font-feature-settings: "ss01", "cv11";
   }
 
-  h1 { letter-spacing: -0.02em; }
+  h1 {
+    letter-spacing: -0.02em;
+  }
 
   // ---- Heading hierarchy (W2-P4) ---------------------------------------
   // Explicit sizes + weights so the eye can rank sections at a glance.
@@ -94,8 +101,7 @@ article {
     line-height: 1.3;
     color: color-mix(in oklch, var(--secondary) 94%, var(--gray));
     padding-bottom: 0.4rem;
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--secondary) 14%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--secondary) 14%, transparent);
   }
   :root[saved-theme="dark"] & h2 {
     border-bottom-color: color-mix(in srgb, var(--secondary) 18%, transparent);
@@ -166,12 +172,26 @@ article {
 
   // ---- Vertical rhythm (Weekend 1 - Phase 4) ----------------------------
   // Generous breathing room between blocks so long articles scan well.
-  h1 { margin-top: 0; margin-bottom: 1.25rem; }
-  h2 { margin-top: 2.75rem; margin-bottom: 0.85rem; }
-  h3 { margin-top: 2rem;    margin-bottom: 0.65rem; }
-  h4 { margin-top: 1.5rem;  margin-bottom: 0.5rem; }
+  h1 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+  }
+  h2 {
+    margin-top: 2.75rem;
+    margin-bottom: 0.85rem;
+  }
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.65rem;
+  }
+  h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
 
-  p { margin: 0 0 1.1rem; }
+  p {
+    margin: 0 0 1.1rem;
+  }
 
   // ---- Line-height override (HI-style breathing room) -------------------
   // Quartz base.scss sets `p, li, tbody { line-height: 1.6rem }` which
@@ -180,11 +200,14 @@ article {
   // and table cells inside articles match HelloInterview's airier rhythm
   // (28px line on 16px text). Sidebars, cards and other chrome keep the
   // tighter 1.6rem baseline.
-  p, li, tbody {
+  p,
+  li,
+  tbody {
     line-height: 1.75;
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin: 0 0 1.25rem;
     padding-left: 1.5rem;
 
@@ -192,14 +215,17 @@ article {
       margin-bottom: 0.4rem;
 
       // Nested lists tighten up slightly so they read as one group.
-      & > ul, & > ol {
+      & > ul,
+      & > ol {
         margin-top: 0.4rem;
         margin-bottom: 0.4rem;
       }
     }
   }
 
-  blockquote { margin: 1.5rem 0; }
+  blockquote {
+    margin: 1.5rem 0;
+  }
 
   pre {
     margin-top: 1.75rem;
@@ -271,7 +297,9 @@ article {
 
   // Excalidraw + image breathing room (existing img:auto rules set margin
   // too; this is the consistent baseline for any block image).
-  figure { margin: 2rem auto; }
+  figure {
+    margin: 2rem auto;
+  }
 }
 
 // ---- Article font-size control -------------------------------------------
@@ -517,7 +545,10 @@ pre {
     border-radius: 4px !important;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
+    transition:
+      opacity 120ms ease,
+      color 120ms ease,
+      border-color 120ms ease;
 
     & svg {
       width: 14px;
@@ -551,7 +582,9 @@ img[src*=".excalidraw."] {
   border-radius: 0;
   // Slim matting — just a hint of border around the diagram, no wide frame.
   padding: 0.25rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
   // Dark-mode "paper figure" — softer than full cream so the contrast
@@ -560,7 +593,9 @@ img[src*=".excalidraw."] {
   // enough lift for the diagram's dark strokes to remain legible. #20.
   :root[saved-theme="dark"] & {
     background: #e8dfc9;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32), 0 6px 22px rgba(0, 0, 0, 0.26);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.32),
+      0 6px 22px rgba(0, 0, 0, 0.26);
   }
 }
 
@@ -625,7 +660,9 @@ article a {
   text-decoration-color: color-mix(in srgb, var(--secondary) 35%, transparent);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  transition: text-decoration-thickness 150ms ease, text-decoration-color 150ms ease;
+  transition:
+    text-decoration-thickness 150ms ease,
+    text-decoration-color 150ms ease;
 
   &:hover {
     text-decoration-thickness: 2px;
@@ -684,7 +721,9 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
     padding: 0.25rem;
     box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
     cursor: zoom-in;
-    transition: width 180ms ease, height 180ms ease;
+    transition:
+      width 180ms ease,
+      height 180ms ease;
     // Let the browser handle pinch-to-zoom on touch devices without
     // also panning the page. Desktop click-to-2x still works because
     // pointer events are unaffected.
@@ -758,7 +797,9 @@ article a[href^="https://"]:not([href*="firstprinciplesengineering"]) {
   background: color-mix(in srgb, var(--callout-color, var(--secondary)) 6%, var(--light));
   padding: 1rem 1.25rem;
   margin: 1.75rem 0;
-  transition: border-left-width 150ms ease, transform 150ms ease;
+  transition:
+    border-left-width 150ms ease,
+    transform 150ms ease;
 
   .callout-title {
     // Callout titles use the header font (Inter) per the typography
@@ -846,19 +887,31 @@ a.internal.tag-link {
   }
 }
 
-// ---- Scroll progress bar -------------------------------------------------
-// CSS-only on modern browsers; site.js falls back on older ones.
+// ---- Scroll / reading progress bar ---------------------------------------
+// A slim reading-progress indicator anchored to the bottom edge of the
+// full-width sticky top bar (hellointerview-style). CSS-only on modern
+// browsers; site.js falls back on older ones.
 #scroll-progress {
   position: fixed;
-  top: 0;
+  top: calc(#{$topbarHeight} - 1px);
   left: 0;
-  height: 2px;
+  height: 3px;
   width: 100%;
-  background: var(--secondary);
+  background: linear-gradient(90deg, var(--secondary), var(--tertiary));
   transform-origin: 0 50%;
   transform: scaleX(0);
-  z-index: 9999;
+  z-index: 6;
   pointer-events: none;
+
+  @media all and ($mobile) {
+    top: calc(#{$topbarHeight} - 1px);
+  }
+}
+
+// In reader mode the top bar collapses, so pin the progress line to the very
+// top edge of the viewport.
+:root[reader-mode="on"] #scroll-progress {
+  top: 0;
 }
 
 @supports (animation-timeline: scroll()) {
@@ -881,7 +934,9 @@ a.internal.tag-link {
   svg .node {
     fill: var(--gray) !important;
     opacity: 0.7;
-    transition: fill 150ms ease, opacity 150ms ease;
+    transition:
+      fill 150ms ease,
+      opacity 150ms ease;
   }
 
   svg .node:hover,
@@ -910,8 +965,16 @@ a.internal.tag-link {
 @media (min-width: 800px) {
   body {
     background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--darkgray) 4%, transparent) 1px, transparent 1px);
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--darkgray) 4%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--darkgray) 4%, transparent) 1px,
+        transparent 1px
+      );
     background-size: 32px 32px;
     background-attachment: fixed;
   }
@@ -958,6 +1021,22 @@ a.internal.tag-link {
 // flips), but the sticky right-sidebar rule above is what governs the
 // normal article view.
 
+// ---- Local connections graph (afterBody, article pages) -----------------
+// Rendered below the article body (above backlinks) as a "what is this note
+// linked to" affordance. Constrain the footprint so it reads as a compact,
+// bordered widget rather than a full-bleed canvas, and give it a little
+// breathing room from the prose above it.
+.graph {
+  margin-top: 3rem;
+
+  & > .graph-outer {
+    height: 300px;
+    max-width: 100%;
+    border: 1px solid var(--lightgray);
+    border-radius: 12px;
+  }
+}
+
 // ---- Landing-page hero + cards ------------------------------------------
 .fpe-hero {
   margin: 1rem 0 2.5rem;
@@ -988,8 +1067,13 @@ a.internal.tag-link {
     @media all and ($mobile) {
       font-size: 0.88rem;
       max-width: 32ch;
-      .fpe-hero-bullet { display: none; }
-      .fpe-hero-role { display: block; margin-top: 0.15rem; }
+      .fpe-hero-bullet {
+        display: none;
+      }
+      .fpe-hero-role {
+        display: block;
+        margin-top: 0.15rem;
+      }
     }
   }
   p {
@@ -998,7 +1082,6 @@ a.internal.tag-link {
     color: var(--darkgray);
     font-size: 1.05rem;
   }
-
 }
 
 // ---- Signature hero diagram (homepage above the fold) -------------------
@@ -1013,11 +1096,13 @@ a.internal.tag-link {
     transform 180ms ease,
     box-shadow 180ms ease;
 
-  &:hover, &:focus-visible {
+  &:hover,
+  &:focus-visible {
     transform: translateY(-2px);
     outline: none;
 
-    img, svg {
+    img,
+    svg {
       box-shadow: 0 10px 30px color-mix(in srgb, var(--dark) 18%, transparent);
     }
     .fpe-hero-figure-title {
@@ -1027,7 +1112,8 @@ a.internal.tag-link {
     }
   }
 
-  img, svg {
+  img,
+  svg {
     display: block;
     width: 100%;
     max-width: 100%;
@@ -1192,7 +1278,10 @@ li.section-li {
   min-height: 9.5rem;
   display: flex;
   flex-direction: column;
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 
   &:hover {
     transform: translateY(-2px);
@@ -1302,6 +1391,206 @@ li.section-li {
   }
 }
 
+// ============================================================================
+//  Full-width top navigation bar (hellointerview-style)
+// ============================================================================
+// The `header` layout slot (brand/page-title, search, dark-mode toggle,
+// reader-mode toggle) is rendered by DefaultFrame inside a full-width sticky
+// bar that spans all grid columns (grid-area: grid-topbar). The injected
+// reading-font control and the account/auth chip land in .fpe-topbar-actions.
+// This frees the left rail to be pure content navigation (Explorer) and the
+// right rail for the TOC + reading progress.
+
+.page > #quartz-body > .fpe-topbar {
+  grid-area: grid-topbar;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: $topbarHeight;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  margin: 0;
+  gap: 0;
+  background: color-mix(in srgb, var(--light) 92%, transparent);
+  backdrop-filter: saturate(1.2) blur(8px);
+  border-bottom: 1px solid var(--lightgray);
+
+  @media all and ($mobile) {
+    padding: 0 1rem;
+  }
+}
+
+.fpe-topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  min-width: 0;
+
+  @media all and ($mobile) {
+    gap: 0.5rem;
+  }
+}
+
+// Brand / site title — relocated from the left rail into the top bar.
+.fpe-topbar h2.page-title {
+  margin: 0;
+  margin-right: auto;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  & a {
+    background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    min-width: 0;
+  }
+
+  &::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 1.6em;
+    height: 1.6em;
+    background: url("static/brand-knight.png") center / contain no-repeat;
+  }
+
+  // On narrow screens keep the brand mark but shrink + ellipsize the wordmark
+  // so the bar stays a single compact row.
+  @media all and ($mobile) {
+    font-size: 0.95rem;
+    min-width: 0;
+    & a {
+      max-width: 46vw;
+    }
+  }
+}
+
+// Search + toggles group (resolved from the `toolbar` flex group).
+.fpe-topbar .flex-component {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.fpe-topbar .search {
+  min-width: 0;
+  width: clamp(150px, 24vw, 340px);
+
+  & > .search-button {
+    width: 100%;
+    margin: 0;
+  }
+
+  @media all and ($mobile) {
+    width: auto;
+    // Collapse to an icon-only launcher on phones.
+    & > .search-button {
+      padding: 0.5rem;
+      & p {
+        display: none;
+      }
+    }
+  }
+}
+
+.fpe-topbar .darkmode,
+.fpe-topbar .readermode {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.fpe-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+// The reading-font control (injected by site.js) sits in the actions cluster.
+.fpe-topbar-actions .fpe-font-size-control {
+  margin: 0;
+
+  // Keep the bar uncluttered on anything below desktop (tablet + mobile).
+  @media all and not ($desktop) {
+    display: none;
+  }
+}
+
+// On phones, drop the reader-mode toggle from the bar too — reader mode is a
+// desktop-reading affordance and space is at a premium.
+.fpe-topbar .readermode {
+  @media all and ($mobile) {
+    display: none;
+  }
+}
+
+// Auth / account chip (injected by inject-header-auth.mjs) pinned far right.
+// Because the chip sits at the right edge of the bar, its popover/menu must
+// open leftward (right-aligned) so it never overflows the viewport.
+.fpe-topbar-actions .fpe-authchip {
+  margin: 0;
+
+  .fpe-authchip-panel,
+  .fpe-authchip-menu {
+    left: auto;
+    right: 0;
+  }
+
+  @media all and ($mobile) {
+    .fpe-authchip-panel,
+    .fpe-authchip-menu {
+      position: fixed;
+      top: calc(#{$topbarHeight} + 0.4rem);
+      right: 0.6rem;
+      left: auto;
+      max-width: min(20rem, calc(100vw - 1.2rem));
+    }
+  }
+}
+
+// The sticky sidebars must start *below* the sticky top bar and never slide
+// under it. Offset their sticky anchor + trim the reserved $topSpacing that
+// the stock layout used when there was no header.
+.page > #quartz-body > .sidebar {
+  top: $topbarHeight;
+  height: calc(100vh - #{$topbarHeight});
+  padding-top: 1.5rem;
+
+  @media all and ($mobile) {
+    top: 0;
+    height: unset;
+  }
+}
+
+// Content no longer needs the tall 6rem top gap — the bar occupies it.
+.page > #quartz-body > .center > .page-header {
+  margin-top: 1.5rem;
+}
+
+// With a sticky top bar, jumping to an in-page anchor (heading link, TOC
+// entry, footnote) must offset the scroll so the target isn't hidden behind
+// the bar.
+.page article :is(h1, h2, h3, h4, h5, h6)[id],
+.page article :target,
+.page [id] {
+  scroll-margin-top: calc(#{$topbarHeight} + 1rem);
+}
+
 // ---- Search bar (W2-P8) --------------------------------------------------
 // Polish the launcher button and the modal input field.
 .search > .search-button {
@@ -1331,7 +1620,9 @@ li.section-li {
   border-radius: 10px;
   padding: 0.7rem 1rem;
   border: 1px solid var(--lightgray);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 
   &::placeholder {
     color: var(--darkgray);
@@ -1385,9 +1676,24 @@ ul.toc-content.overflow {
   & #quartz-body {
     grid-template-columns: minmax(0, 1fr) !important;
     grid-template-areas:
+      "grid-topbar"
       "grid-header"
       "grid-center"
       "grid-footer" !important;
+  }
+
+  // The reader-mode toggle now lives in the full-width top bar. Collapse the
+  // bar to nothing (its other children are hidden below and the toggle itself
+  // is repositioned as a fixed floating close button), so reader mode is
+  // truly distraction-free.
+  & .fpe-topbar {
+    position: static !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    backdrop-filter: none !important;
   }
 
   // The readermode button lives inside .sidebar.left, so we can't
@@ -1476,7 +1782,9 @@ ul.toc-content.overflow {
     background-repeat: no-repeat !important;
     background-size: 22px 22px !important;
     box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
-    transition: background-color 150ms ease, transform 150ms ease;
+    transition:
+      background-color 150ms ease,
+      transform 150ms ease;
 
     &:hover {
       background-color: var(--tertiary) !important;
@@ -1668,7 +1976,7 @@ ul.toc-content.overflow {
   background: color-mix(in srgb, var(--lightgray) 50%, transparent);
   font-family: var(--codeFont);
   font-size: 0.68rem;
-  color: var(--gray);
+  color: var(--darkgray);
   line-height: 1.4;
 }
 .search > .search-button {
@@ -1678,6 +1986,30 @@ ul.toc-content.overflow {
   p {
     margin: 0;
   }
+}
+
+// ---- Neutralized cross-links (P1 #12) -----------------------------------
+// A wikilink whose target note isn't published yet is rendered as plain,
+// non-clickable text instead of a dangling <a> (internal 404). Style it so
+// it reads as an intentional "coming soon" reference, not a broken link.
+.fpe-coming-soon {
+  color: var(--gray);
+  border-bottom: 1px dotted var(--gray);
+  cursor: help;
+  &::after {
+    content: " ·soon";
+    font-size: 0.72em;
+    font-variant: all-small-caps;
+    letter-spacing: 0.03em;
+    opacity: 0.75;
+  }
+}
+
+// A breadcrumb / folder-listing label whose folder page is intentionally not
+// published (former Reading Series). Kept as plain muted text, not a link.
+.fpe-breadcrumb-inactive {
+  color: var(--gray);
+  cursor: default;
 }
 
 // ---- TOC: scroll-spy active highlight (#13) -----------------------------
@@ -1801,7 +2133,9 @@ footer {
     color: var(--gray);
     text-decoration: none;
     border-bottom: 1px dotted var(--lightgray);
-    transition: color 150ms ease, border-color 150ms ease;
+    transition:
+      color 150ms ease,
+      border-color 150ms ease;
     &:hover {
       color: var(--secondary);
       border-bottom-color: var(--secondary);
@@ -1862,7 +2196,10 @@ footer.fpe-footer-enhanced {
     margin: 0;
     font-size: 0.82rem;
     color: var(--gray);
-    strong { color: var(--darkgray); font-weight: 600; }
+    strong {
+      color: var(--darkgray);
+      font-weight: 600;
+    }
   }
 
   // Column lists: stacked, no bullets, no border-bottom dotted underline
@@ -1968,7 +2305,9 @@ body[data-slug="404"] {
         color: var(--secondary);
       }
     }
-    p, ul, li {
+    p,
+    ul,
+    li {
       color: var(--darkgray);
     }
     em {
@@ -2054,7 +2393,9 @@ body[data-slug="404"] {
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 0.25rem;
-  @media all and ($mobile) { scrollbar-width: thin; }
+  @media all and ($mobile) {
+    scrollbar-width: thin;
+  }
 }
 
 @media all and ($mobile) {
@@ -2158,16 +2499,25 @@ body[data-slug="404"] {
       "icon value";
     row-gap: 0.1rem;
 
-    & > .fpe-contact-icon  { grid-area: icon;  }
-    & > .fpe-contact-label { grid-area: label; }
-    & > .fpe-contact-value { grid-area: value; font-size: 0.78rem; }
+    & > .fpe-contact-icon {
+      grid-area: icon;
+    }
+    & > .fpe-contact-label {
+      grid-area: label;
+    }
+    & > .fpe-contact-value {
+      grid-area: value;
+      font-size: 0.78rem;
+    }
   }
 }
 
 // ---- About page: hide Properties component -----------------------------
 // The About page has no useful frontmatter to expose. Hide for a cleaner read.
 body[data-slug="about"] {
-  .note-properties { display: none !important; }
+  .note-properties {
+    display: none !important;
+  }
 }
 
 // ---- Backlinks: rely on page scroll --------------------------------------
@@ -2286,6 +2636,21 @@ body .backlinks > ul.overflow {
 .explorer li:has(.folder-outer a.active) > .folder-container > .folder-icon {
   color: var(--secondary);
   opacity: 1;
+}
+
+// Accessibility (UX audit §2.3 / §9.4 · WCAG 2.5.8): explorer folder and file
+// rows were ~21.7px tall — below the 24×24px minimum tap target and awkward on
+// mobile. Give every interactive row a ≥32px hit area via min-height + vertical
+// padding, keeping the label vertically centered. These live here (not in the
+// vendored plugin scss) because only quartz/styles is recompiled by the build.
+.explorer .folder-container div > button,
+.explorer .folder-container div > a,
+.explorer-content ul li > a {
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
 }
 
 // Softer guide rail between nesting levels.
@@ -2436,7 +2801,11 @@ body .backlinks > ul.overflow {
     color: var(--darkgray);
     opacity: 0.75;
     text-decoration: none;
-    transition: color 150ms ease, opacity 150ms ease, background-color 150ms ease, transform 120ms ease;
+    transition:
+      color 150ms ease,
+      opacity 150ms ease,
+      background-color 150ms ease,
+      transform 120ms ease;
 
     &:hover {
       color: var(--secondary);
@@ -2511,7 +2880,10 @@ body .backlinks > ul.overflow {
     letter-spacing: 0.08em;
     color: var(--tertiary);
     margin-bottom: 0.4rem;
-    svg { width: 12px; height: 12px; }
+    svg {
+      width: 12px;
+      height: 12px;
+    }
   }
   & > .roadmap-title {
     display: block;
@@ -2536,7 +2908,7 @@ body .backlinks > ul.overflow {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--gray);
+    color: var(--darkgray);
     padding: 0.15rem 0.5rem;
     border-radius: 999px;
     background: color-mix(in srgb, var(--gray) 12%, transparent);
@@ -2594,8 +2966,12 @@ body .backlinks > ul.overflow {
     color: var(--darkgray);
     font-size: 0.95rem;
     line-height: 1.6;
-    p { margin: 0 0 0.6rem; }
-    p:last-child { margin-bottom: 0; }
+    p {
+      margin: 0 0 0.6rem;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
   .about-strip-link {
     color: var(--secondary) !important;
@@ -2603,7 +2979,9 @@ body .backlinks > ul.overflow {
     text-decoration: none !important;
     border-bottom: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
     transition: border-color 180ms ease;
-    &:hover { border-bottom-color: var(--secondary); }
+    &:hover {
+      border-bottom-color: var(--secondary);
+    }
   }
 }
 
@@ -2719,92 +3097,77 @@ body .backlinks > ul.overflow {
 }
 
 // =========================================================================
-// Comments — Phase-04 Giscus mount
+// Reader engagement widget (Supabase-backed)
 // -------------------------------------------------------------------------
-// Wraps the lazily-mounted Giscus iframe. Falls back to a "Discuss on
-// GitHub" link when JS is disabled or the iframe never loads.
-//
-// Status: dormant on the live site until comments.config.mjs is enabled.
-// The script is wired into the build chain regardless; it logs and
-// skips when disabled, so this CSS lays in waiting.
+// Injected by scripts/build/inject-engagement.mjs, rendered client-side by
+// content/_static/engagement.js. Auth bar, like + mark-as-read actions, and
+// an inline one-level comment thread. All interactive state is written by
+// the JS module, so these rules mostly style elements created after
+// hydration.
 // =========================================================================
 
-.fpe-comments {
-  margin: 2.5rem 0 1rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--lightgray);
-
-  & > .fpe-comments-heading {
-    margin: 0 0 0.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  & > .fpe-comments-fallback {
-    margin: 0 0 1rem;
-    color: var(--darkgray);
-    font-size: 0.92rem;
-    a {
-      color: var(--secondary) !important;
-      text-decoration: none !important;
-      border-bottom: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
-      transition: border-color 160ms ease;
-      &:hover { border-bottom-color: var(--secondary); }
-    }
-  }
-  & > .fpe-comments-mount {
-    // Giscus inserts its own iframe inside this div; give it a min
-    // height so the page doesn't jump as the iframe finishes loading.
-    min-height: 4rem;
-  }
-}
-
-// =========================================================================
-// Discuss CTA (alternative to Giscus)
-// -------------------------------------------------------------------------
-// Zero-friction "Have a question or correction?" block emitted by
-// inject-comments.mjs when comments.config.mjs `mode: "discuss-cta"`.
-// Pure HTML — no scripts, no iframes, no reader account required.
-// Three buttons: LinkedIn DM (primary), email (mailto), GitHub issue.
-// =========================================================================
-
-.fpe-discuss-cta {
-  margin: 2.5rem 0 1rem;
-  padding: 1.5rem 1.5rem 1.4rem;
+.fpe-engage {
+  margin: 2rem 0 1rem;
+  padding: 1rem 1.15rem;
   border-radius: 14px;
   border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
   background: color-mix(in srgb, var(--secondary) 5%, var(--light));
 
-  & > .fpe-discuss-heading {
-    margin: 0 0 0.4rem;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--dark);
-    letter-spacing: -0.005em;
-  }
-  & > .fpe-discuss-lede {
-    margin: 0 0 1.05rem;
-    color: var(--darkgray);
-    font-size: 0.93rem;
-    line-height: 1.55;
-    max-width: 56ch;
-  }
-  & > .fpe-discuss-links {
+  // ---- auth bar ----------------------------------------------------------
+  .fpe-engage-authbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.7rem;
+    border-bottom: 1px solid var(--lightgray);
   }
-
-  .fpe-discuss-link {
+  .fpe-engage-signin-lede {
+    color: var(--darkgray);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    flex: 1 1 14rem;
+  }
+  .fpe-engage-signin-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .fpe-engage-who {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 0.95rem;
+    font-family: var(--headerFont);
+    font-weight: 600;
+    color: var(--dark);
+    margin-right: auto;
+  }
+  .fpe-engage-avatar {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    object-fit: cover;
+    display: block;
+  }
+
+  // ---- buttons (shared pill styling) -------------------------------------
+  .fpe-engage-oauth,
+  .fpe-engage-magic-btn,
+  .fpe-engage-signout,
+  .fpe-engage-like,
+  .fpe-engage-read,
+  .fpe-engage-comment-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 999px;
     font-family: var(--headerFont);
-    font-size: 0.88rem;
+    font-size: 0.8rem;
     font-weight: 600;
     line-height: 1.2;
-    text-decoration: none !important;
+    cursor: pointer;
     border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
     background: var(--light);
     color: var(--dark);
@@ -2819,12 +3182,19 @@ body .backlinks > ul.overflow {
       transform: translateY(-1px);
       background: color-mix(in srgb, var(--secondary) 10%, var(--light));
       border-color: color-mix(in srgb, var(--secondary) 55%, transparent);
-      color: var(--dark);
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
     }
+    &:disabled {
+      opacity: 0.55;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
   }
-  // Primary tone for LinkedIn (the channel the author is most active on)
-  .fpe-discuss-link.fpe-discuss-linkedin {
+
+  // Primary tone for the OAuth + comment-submit call to action.
+  .fpe-engage-oauth,
+  .fpe-engage-comment-submit {
     background: var(--secondary);
     color: var(--light);
     border-color: var(--secondary);
@@ -2834,74 +3204,257 @@ body .backlinks > ul.overflow {
       color: var(--light);
     }
   }
-  .fpe-discuss-icon {
+  .fpe-engage-signout {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  // ---- like + read actions row -------------------------------------------
+  .fpe-engage-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 0.25rem;
+  }
+  .fpe-engage-like-icon,
+  .fpe-engage-read-icon {
     display: inline-flex;
     width: 1.05rem;
     height: 1.05rem;
-    svg { width: 100%; height: 100%; display: block; }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+  .fpe-engage-like.is-liked {
+    background: color-mix(in srgb, var(--secondary) 16%, var(--light));
+    border-color: var(--secondary);
+    color: var(--secondary);
+    .fpe-engage-like-icon svg {
+      fill: currentColor;
+      stroke: currentColor;
+    }
+  }
+  .fpe-engage-read.is-read {
+    background: color-mix(in srgb, var(--secondary) 14%, var(--light));
+    border-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+    color: var(--tertiary);
+  }
+  .fpe-engage-like-count {
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---- magic-link form ---------------------------------------------------
+  .fpe-engage-magic {
+    display: inline-flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .fpe-engage-email,
+  .fpe-engage-textarea {
+    font-family: var(--bodyFont);
+    font-size: 0.85rem;
+    color: var(--dark);
+    background: var(--light);
+    border: 1px solid var(--lightgray);
+    border-radius: 10px;
+    padding: 0.4rem 0.65rem;
+    &:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--secondary) 18%, transparent);
+    }
+  }
+  .fpe-engage-email {
+    min-width: 11rem;
+  }
+  .fpe-engage-textarea {
+    width: 100%;
+    resize: vertical;
+  }
+
+  // ---- comments ----------------------------------------------------------
+  .fpe-engage-comments {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--lightgray);
+  }
+  .fpe-engage-comments-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.85rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+  .fpe-engage-comments-icon {
+    display: inline-flex;
+    align-items: center;
+    color: var(--secondary);
+  }
+  .fpe-engage-comments-count {
+    color: var(--darkgray);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  // ---- signed-out login nudge (centered, HelloInterview-style) ------------
+  .fpe-engage-comment-nudge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 1.25rem 1rem 1.5rem;
+  }
+  .fpe-engage-comment-nudge-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.15rem;
+    border-radius: 999px;
+    font-family: var(--headerFont);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    color: var(--dark);
+    background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    border: 1px solid color-mix(in srgb, var(--secondary) 25%, transparent);
+    transition:
+      transform 140ms ease,
+      background 140ms ease,
+      border-color 140ms ease,
+      box-shadow 140ms ease;
+    &:hover {
+      transform: translateY(-1px);
+      background: color-mix(in srgb, var(--secondary) 20%, var(--light));
+      border-color: color-mix(in srgb, var(--secondary) 45%, transparent);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+  }
+  .fpe-engage-comment-nudge-sub {
+    margin: 0;
+    color: var(--darkgray);
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .fpe-engage-comment-compose,
+  .fpe-engage-reply-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+  .fpe-engage-compose-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .fpe-engage-comment-empty {
+    color: var(--darkgray);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 1rem;
+  }
+  .fpe-engage-comment {
+    padding: 0.75rem 0;
+    border-top: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
+    &:first-child {
+      border-top: none;
+    }
+  }
+  .fpe-engage-comment-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.3rem;
+  }
+  .fpe-engage-comment-author {
+    font-family: var(--headerFont);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark);
+  }
+  .fpe-engage-comment-time {
+    font-size: 0.78rem;
+    color: var(--gray);
+  }
+  .fpe-engage-comment-body {
+    color: var(--darkgray);
+    font-size: 0.94rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .fpe-engage-comment-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+  }
+  .fpe-engage-comment-reply,
+  .fpe-engage-comment-delete {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray);
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+  .fpe-engage-comment-replies {
+    margin: 0.6rem 0 0 1rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--lightgray);
+  }
+
+  // ---- status line / offline fallback ------------------------------------
+  .fpe-engage-msg {
+    min-height: 1.2rem;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--darkgray);
+    &.is-error {
+      color: var(--tertiary);
+    }
+    &.is-ok {
+      color: var(--secondary);
+    }
+  }
+  .fpe-engage-offline {
+    color: var(--darkgray);
+    font-size: 0.9rem;
+    margin: 0;
   }
 }
 
-[saved-theme="dark"] .fpe-discuss-cta {
+[saved-theme="dark"] .fpe-engage {
   background: color-mix(in srgb, var(--secondary) 10%, var(--light));
   border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
 
-  .fpe-discuss-link {
+  .fpe-engage-oauth,
+  .fpe-engage-magic-btn,
+  .fpe-engage-signout,
+  .fpe-engage-like,
+  .fpe-engage-read {
     background: color-mix(in srgb, var(--light) 88%, var(--dark) 12%);
-    color: var(--dark);
     border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
     &:hover {
       background: color-mix(in srgb, var(--secondary) 18%, var(--light));
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
   }
-}
-
-// =========================================================================
-// Cusdis comments mount (alternative to Giscus / discuss-cta)
-// -------------------------------------------------------------------------
-// Cusdis embeds an iframe inside #cusdis_thread. We give the panel the
-// same card chrome as .fpe-discuss-cta for visual consistency, and a
-// min-height on the mount so the page doesn't jump as the iframe loads.
-// =========================================================================
-
-.fpe-cusdis {
-  margin: 2.5rem 0 1rem;
-  padding: 1.5rem 1.5rem 1.4rem;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
-  background: color-mix(in srgb, var(--secondary) 5%, var(--light));
-
-  & > .fpe-cusdis-heading {
-    margin: 0 0 0.4rem;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--dark);
-    letter-spacing: -0.005em;
+  .fpe-engage-oauth {
+    background: var(--secondary);
+    color: var(--light);
+    border-color: var(--secondary);
   }
-  & > .fpe-cusdis-lede {
-    margin: 0 0 1rem;
-    color: var(--darkgray);
-    font-size: 0.93rem;
-    line-height: 1.55;
-    max-width: 56ch;
+  .fpe-engage-email,
+  .fpe-engage-textarea {
+    background: color-mix(in srgb, var(--light) 88%, var(--dark) 12%);
   }
-  & > #cusdis_thread {
-    min-height: 360px;
-    // Cusdis embeds a singleton iframe and resizes it via postMessage
-    // (event: "resize", data: pixel height). Before the resize message
-    // fires (and as a floor for the empty-form layout), give the iframe
-    // enough room so Name / Email / Reply / Submit are not clipped.
-    iframe {
-      width: 100% !important;
-      min-height: 360px;
-    }
-  }
-}
-
-[saved-theme="dark"] .fpe-cusdis {
-  background: color-mix(in srgb, var(--secondary) 10%, var(--light));
-  border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
 }
 
 // =========================================================================
@@ -3027,7 +3580,9 @@ body .backlinks > ul.overflow {
   // Subtle scrollbar so the cap doesn't feel jarring when content
   // exceeds the viewport.
   scrollbar-width: thin;
-  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
   &::-webkit-scrollbar-thumb {
     background: color-mix(in srgb, var(--lightgray) 60%, transparent);
     border-radius: 3px;
@@ -3182,5 +3737,523 @@ body .backlinks > ul.overflow {
     font-size: 0.85rem;
     line-height: 1;
     opacity: 0.85;
+  }
+}
+
+// =========================================================================
+// Global header auth chip (Supabase-backed)
+// -------------------------------------------------------------------------
+// Injected below the site title on every page by
+// scripts/build/inject-header-auth.mjs, rendered client-side by
+// content/_static/header-auth.js. Signed out → a "Sign in" button opening a
+// popover; signed in → avatar + name opening a small menu.
+// =========================================================================
+
+.fpe-authchip {
+  position: relative;
+  display: block;
+  margin: 0.5rem 0 0.35rem;
+
+  .fpe-authchip-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    max-width: 100%;
+    padding: 0.34rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 28%, transparent);
+    background: color-mix(in srgb, var(--secondary) 6%, var(--light));
+    color: var(--dark);
+    font-family: var(--headerFont);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background 140ms ease,
+      border-color 140ms ease,
+      box-shadow 140ms ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 14%, var(--light));
+      border-color: color-mix(in srgb, var(--secondary) 48%, transparent);
+    }
+  }
+
+  .fpe-authchip-icon {
+    display: inline-flex;
+    color: var(--secondary);
+    svg {
+      display: block;
+    }
+  }
+  .fpe-authchip-avatar {
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .fpe-authchip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 9rem;
+  }
+
+  .fpe-authchip-panel {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    min-width: 15rem;
+    max-width: 18rem;
+    padding: 0.85rem;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 24%, transparent);
+    background: var(--light);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.14);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fpe-authchip-lede {
+    margin: 0 0 0.2rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--darkgray);
+  }
+
+  .fpe-authchip-oauth,
+  .fpe-authchip-magic-btn {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--secondary);
+    color: var(--light);
+    font-family: var(--headerFont);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 140ms ease;
+    &:hover {
+      background: var(--tertiary);
+    }
+  }
+
+  .fpe-authchip-magic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  .fpe-authchip-email {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-size: 0.85rem;
+  }
+  .fpe-authchip-note {
+    margin: 0.1rem 0 0;
+    font-size: 0.78rem;
+    color: var(--darkgray);
+    &.is-error {
+      color: #c0392b;
+    }
+  }
+
+  .fpe-authchip-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--dark) !important;
+    font-family: var(--headerFont);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    cursor: pointer;
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    }
+  }
+  .fpe-authchip-signout {
+    color: #c0392b !important;
+  }
+}
+
+[saved-theme="dark"] .fpe-authchip {
+  .fpe-authchip-trigger {
+    background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    border-color: color-mix(in srgb, var(--secondary) 34%, transparent);
+  }
+  .fpe-authchip-panel {
+    background: color-mix(in srgb, var(--light) 92%, var(--dark) 8%);
+    border-color: color-mix(in srgb, var(--secondary) 32%, transparent);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4);
+  }
+}
+
+// =========================================================================
+// Account / settings page
+// -------------------------------------------------------------------------
+// content/account.md provides the [data-fpe-account] mount; hydrated by
+// content/_static/account.js (scripts/build/inject-account.mjs wires it).
+// =========================================================================
+
+.fpe-account {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+
+  .fpe-account-loading,
+  .fpe-account-msg {
+    color: var(--darkgray);
+    font-size: 0.92rem;
+  }
+
+  .fpe-account-card {
+    padding: 1.4rem 1.5rem;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 22%, transparent);
+    background: color-mix(in srgb, var(--secondary) 5%, var(--light));
+  }
+
+  .fpe-account-h {
+    margin: 0 0 0.9rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.005em;
+  }
+  .fpe-account-lede {
+    margin: 0 0 1rem;
+    color: var(--darkgray);
+    font-size: 0.93rem;
+    line-height: 1.55;
+  }
+
+  // ---- profile -----------------------------------------------------------
+  .fpe-account-profile-head {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.1rem;
+  }
+  .fpe-account-avatar {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: color-mix(in srgb, var(--secondary) 18%, var(--light));
+  }
+  .fpe-account-avatar-empty {
+    display: inline-block;
+  }
+  .fpe-account-profile-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+  .fpe-account-profile-email {
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+
+  .fpe-account-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--darkgray);
+  }
+  .fpe-account-name-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .fpe-account-name-input {
+    flex: 1 1 12rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-size: 0.9rem;
+  }
+  .fpe-account-save,
+  .fpe-account-oauth,
+  .fpe-account-magic-btn {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    background: var(--secondary);
+    color: var(--light);
+    font-family: var(--headerFont);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 140ms ease;
+    &:hover {
+      background: var(--tertiary);
+      border-color: var(--tertiary);
+    }
+  }
+  .fpe-account-oauth,
+  .fpe-account-magic {
+    display: block;
+    width: 100%;
+    max-width: 22rem;
+    margin-top: 0.6rem;
+  }
+  .fpe-account-magic {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .fpe-account-email {
+    flex: 1 1 auto;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-size: 0.9rem;
+  }
+  .fpe-account-save-status,
+  .fpe-account-danger-status {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--gray);
+    &.is-ok {
+      color: #1e824c;
+    }
+    &.is-error {
+      color: #c0392b;
+    }
+  }
+  .fpe-account-note {
+    margin: 0.4rem 0 0;
+    font-size: 0.82rem;
+    color: var(--darkgray);
+    &.is-error {
+      color: #c0392b;
+    }
+  }
+
+  // ---- activity ----------------------------------------------------------
+  .fpe-account-activity {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.2rem;
+  }
+  .fpe-account-group-h {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+  .fpe-account-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--secondary) 16%, var(--light));
+    color: var(--secondary);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .fpe-account-empty {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+  .fpe-account-item-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .fpe-account-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .fpe-account-item-link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark) !important;
+    text-decoration: none !important;
+    &:hover {
+      color: var(--secondary) !important;
+    }
+  }
+  .fpe-account-item-meta {
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+  .fpe-account-comment-quote {
+    margin: 0.25rem 0 0;
+    padding: 0.4rem 0.7rem;
+    border-left: 3px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+    background: color-mix(in srgb, var(--secondary) 6%, var(--light));
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+    color: var(--darkgray);
+  }
+
+  // ---- account actions ---------------------------------------------------
+  .fpe-account-danger-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .fpe-account-signout {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 34%, transparent);
+    background: var(--light);
+    color: var(--dark);
+    font-family: var(--headerFont);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover {
+      background: color-mix(in srgb, var(--secondary) 10%, var(--light));
+    }
+  }
+  .fpe-account-delete {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, #c0392b 55%, transparent);
+    background: transparent;
+    color: #c0392b;
+    font-family: var(--headerFont);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover {
+      background: color-mix(in srgb, #c0392b 10%, var(--light));
+    }
+  }
+  .fpe-account-danger-note {
+    margin: 0.7rem 0 0;
+    font-size: 0.8rem;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+}
+
+[saved-theme="dark"] .fpe-account {
+  .fpe-account-card {
+    background: color-mix(in srgb, var(--secondary) 10%, var(--light));
+    border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+  }
+  .fpe-account-signout {
+    background: color-mix(in srgb, var(--light) 90%, var(--dark) 10%);
+  }
+}
+
+// =========================================================================
+// Home "Continue reading" strip + card "Read" badges
+// -------------------------------------------------------------------------
+// Injected by scripts/build/inject-home-personalize.mjs, rendered by
+// content/_static/home-personalize.js. The strip stays `hidden` until the
+// script finds a visited-but-unfinished article for the reader.
+// =========================================================================
+
+.fpe-home-continue {
+  margin: 1.5rem 0 0.5rem;
+
+  .fpe-continue-h {
+    margin: 0 0 0.8rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+  .fpe-continue-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.8rem;
+  }
+  .fpe-continue-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--secondary) 26%, transparent);
+    background: color-mix(in srgb, var(--secondary) 7%, var(--light));
+    text-decoration: none !important;
+    transition:
+      transform 140ms ease,
+      border-color 140ms ease,
+      box-shadow 140ms ease;
+    &:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+  }
+  .fpe-continue-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--secondary);
+  }
+  .fpe-continue-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--dark) !important;
+  }
+}
+
+// A card the reader has finished gets a small "Read" badge. The badge is
+// appended client-side; anchor cards are positioned so it can sit corner-top.
+.fpe-article-card.is-read,
+.fpe-rail-card.is-read {
+  position: relative;
+}
+.fpe-card-read-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  align-self: flex-start;
+  border-radius: 999px;
+  background: color-mix(in srgb, #1e824c 16%, var(--light));
+  color: #1e824c;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+[saved-theme="dark"] {
+  .fpe-home-continue .fpe-continue-card {
+    background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+  }
+  .fpe-card-read-badge {
+    background: color-mix(in srgb, #2ecc71 20%, var(--dark));
+    color: #4cd07d;
   }
 }

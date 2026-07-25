@@ -52,6 +52,7 @@ const UPDATED_WINDOW_DAYS = 14
 const SKIP_SLUG_RE = [
   /^index$/,
   /^about$/,
+  /^account$/,
   /^404$/,
   /\/index$/,
   /^tags(\/|$)/,
@@ -103,19 +104,9 @@ async function vaultDates(relInVault) {
       )
     ).stdout.trim()
     const modified = (
-      await execFileP(
-        "git",
-        [
-          "-C",
-          VAULT_ROOT,
-          "log",
-          "--format=%aI",
-          "-1",
-          "--",
-          relInVault,
-        ],
-        { maxBuffer: 1024 * 1024 },
-      )
+      await execFileP("git", ["-C", VAULT_ROOT, "log", "--format=%aI", "-1", "--", relInVault], {
+        maxBuffer: 1024 * 1024,
+      })
     ).stdout.trim()
     return { created: created || null, modified: modified || created || null }
   } catch {
@@ -140,15 +131,8 @@ async function vaultFrontmatterStatus(relInVault) {
 }
 
 function decideStatus(override, created, modified, relInVault) {
-  if (
-    override &&
-    override !== "new" &&
-    override !== "updated" &&
-    override !== "evergreen"
-  ) {
-    throw new Error(
-      `${relInVault}: frontmatter status must be one of: new, updated, evergreen`,
-    )
+  if (override && override !== "new" && override !== "updated" && override !== "evergreen") {
+    throw new Error(`${relInVault}: frontmatter status must be one of: new, updated, evergreen`)
   }
   if (override === "evergreen") return null
   if (override === "new") return "new"
@@ -202,7 +186,11 @@ async function walkHtml(dir) {
 
 function slugFromHtml(abs) {
   const rel = path.relative(PUBLIC_DIR, abs)
-  return rel.replace(/\.html$/, "").split(path.sep).join("/").toLowerCase()
+  return rel
+    .replace(/\.html$/, "")
+    .split(path.sep)
+    .join("/")
+    .toLowerCase()
 }
 
 async function main() {
@@ -265,11 +253,7 @@ async function main() {
   }
 
   await fs.mkdir(path.dirname(STATUS_INDEX_OUT), { recursive: true })
-  await fs.writeFile(
-    STATUS_INDEX_OUT,
-    JSON.stringify(statusIndex, null, 0),
-    "utf8",
-  )
+  await fs.writeFile(STATUS_INDEX_OUT, JSON.stringify(statusIndex, null, 0), "utf8")
 
   const newCount = Object.values(statusIndex).filter((s) => s.status === "new").length
   const updCount = Object.values(statusIndex).filter((s) => s.status === "updated").length

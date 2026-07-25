@@ -1,13 +1,16 @@
 import { PageFrame, PageFrameProps } from "./types"
-import HeaderConstructor from "../Header"
-
-const Header = HeaderConstructor()
 
 /**
- * The default page frame — three-column layout with left sidebar, center
- * content (header + body + afterBody), and right sidebar, followed by a footer.
+ * The default page frame — a full-width sticky top navigation bar spanning all
+ * columns, followed by a three-column layout with left sidebar, center content
+ * (beforeBody + body + afterBody), and right sidebar, then a footer.
  *
- * This is the original Quartz layout, extracted from renderPage.tsx.
+ * The `header` slot is rendered inside the full-width top bar (brand, search,
+ * theme/reader controls, and — injected post-build — the reading-font control
+ * and the account/auth chip). This mirrors the hellointerview.com pattern:
+ * global brand + controls live in the top bar, while the left rail is reserved
+ * purely for content navigation (Explorer) and the right rail for the table of
+ * contents + reading progress.
  */
 export const DefaultFrame: PageFrame = {
   name: "default",
@@ -23,18 +26,21 @@ export const DefaultFrame: PageFrame = {
   }: PageFrameProps) {
     return (
       <>
+        <header class="fpe-topbar">
+          <div class="fpe-topbar-inner">
+            {header.map((HeaderComponent) => (
+              <HeaderComponent {...componentData} />
+            ))}
+            <div class="fpe-topbar-actions" data-fpe-topbar-actions></div>
+          </div>
+        </header>
         <div class="left sidebar">
           {left.map((BodyComponent) => (
             <BodyComponent {...componentData} />
           ))}
         </div>
-        <div class="center">
+        <main class="center">
           <div class="page-header">
-            <Header {...componentData}>
-              {header.map((HeaderComponent) => (
-                <HeaderComponent {...componentData} />
-              ))}
-            </Header>
             <div class="popover-hint">
               {beforeBody.map((BodyComponent) => (
                 <BodyComponent {...componentData} />
@@ -48,7 +54,7 @@ export const DefaultFrame: PageFrame = {
               <BodyComponent {...componentData} />
             ))}
           </div>
-        </div>
+        </main>
         <div class="right sidebar">
           {right.map((BodyComponent) => (
             <BodyComponent {...componentData} />
