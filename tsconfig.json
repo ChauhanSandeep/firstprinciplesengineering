@@ -4,7 +4,11 @@
     "experimentalDecorators": true,
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
+    // TypeScript 7 removed "node"/"node10". Sources are bundled by esbuild, so
+    // "bundler" is the closest match; exports-map resolution stays off to keep
+    // the deep type-only imports (e.g. remark-parse/lib) that node10 allowed.
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": false,
     "ignoreDeprecations": "5.0",
     "strict": true,
     "incremental": true,
