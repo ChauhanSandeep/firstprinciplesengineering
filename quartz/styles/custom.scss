@@ -590,12 +590,12 @@ img[src*=".excalidraw."] {
     0 4px 16px rgba(0, 0, 0, 0.04);
   cursor: zoom-in;
 
-  // Dark-mode "paper figure" — softer than full cream so the contrast
-  // against the warm-dark page reads as a tinted plate rather than a
-  // bright punch. Tones the plate toward the dark page bg while keeping
-  // enough lift for the diagram's dark strokes to remain legible. #20.
+  // Dark-mode "paper figure" plate. After the theme-swap fix the diagram
+  // shown in dark mode is the dark-appearance export (dark background), so the
+  // plate is a subtle lifted dark surface that frames it as a tinted plate
+  // rather than the old cream punch. #20.
   :root[saved-theme="dark"] & {
-    background: #e8dfc9;
+    background: var(--lightgray);
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.32),
       0 6px 22px rgba(0, 0, 0, 0.26);
@@ -3665,11 +3665,13 @@ body .backlinks > ul.overflow {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  padding: 1rem;
+  padding: 0;
   margin: 0;
-  border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--light) 60%, var(--secondary) 6%);
-  border: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
+  border-radius: 0;
+  // Seamless: no outer panel chrome. The cards sit directly in the sidebar
+  // column so the rail reads as part of the page rather than a floating box.
+  background: transparent;
+  border: none;
 
   // Stick to viewport so the rail scrolls with the reader instead of
   // hanging in empty space below shorter sections. Same treatment as the
@@ -3796,8 +3798,8 @@ body .backlinks > ul.overflow {
 
 [saved-theme="dark"] {
   .fpe-home-rail {
-    background: color-mix(in srgb, var(--light) 80%, var(--dark) 10%);
-    border-color: color-mix(in srgb, var(--lightgray) 35%, transparent);
+    background: transparent;
+    border: none;
 
     .fpe-rail-card {
       background: color-mix(in srgb, var(--light) 92%, var(--dark) 8%);
