@@ -36,30 +36,33 @@ configuration:
       body: Atkinson Hyperlegible
       code: JetBrains Mono
     colors:
-      # Anthropic-inspired light mode — warm cream + near-black + Claude
-      # orange / clay. Same warm structure as the fly hybrid, but pivoted
-      # to Anthropic's signature warm-clay accent palette.
+      # "Blueprint & Notebook" identity — an engineer's drafting table.
+      # Cool drafting-paper substrate, blueprint teal-ink for links/accent,
+      # pencil-sienna for annotations. Deliberately steps off the warm
+      # cream + terracotta look (which reads as a generic default) toward
+      # a palette grounded in this site's real artifacts: hand-drawn
+      # Excalidraw trade-off sketches and graph-paper engineering notes.
       lightMode:
-        light: "#f5f1e6" # Anthropic "Oat" — warm beige page background
-        lightgray: "#e6e0cf" # warm beige surfaces / borders / card bg
-        gray: "#8c7e6a" # warm muted — secondary text / icons
-        darkgray: "#5a4f40" # warm subtext
-        dark: "#1f1b16" # near-black, warm — primary text
-        secondary: "#cc785c" # Anthropic "Book Cloth" — muted terracotta accent / links
-        tertiary: "#a05a3f" # deeper clay — second accent
-        highlight: rgba(204, 120, 92, 0.08)
-        textHighlight: rgba(204, 120, 92, 0.28)
-      # Warm-dark companion — terracotta/clay lifted for dark-mode contrast
+        light: "#eef0ea" # cool drafting paper — page background
+        lightgray: "#dee1d8" # paper surfaces / borders / card bg
+        gray: "#79817b" # muted — secondary text / icons
+        darkgray: "#464f4c" # subtext
+        dark: "#141a19" # blue-black ink — primary text
+        secondary: "#1c5f6b" # blueprint teal ink — links / primary accent
+        tertiary: "#b4532a" # pencil sienna — annotations / second accent
+        highlight: rgba(28, 95, 107, 0.08)
+        textHighlight: rgba(28, 95, 107, 0.26)
+      # Blueprint-dark companion — deep ink slate with lifted cyan + sienna.
       darkMode:
-        light: "#1a1714" # warm near-black — page background
-        lightgray: "#2c2823" # lifted surfaces / borders / card bg
-        gray: "#8b8273" # warm muted
-        darkgray: "#b8afa0" # warm subtext
-        dark: "#ede6d6" # warm off-white — primary text
-        secondary: "#d99077" # terracotta, lifted for dark
-        tertiary: "#bb7159" # clay, lifted for dark
-        highlight: rgba(217, 144, 119, 0.12)
-        textHighlight: rgba(217, 144, 119, 0.32)
+        light: "#0e1417" # deep ink slate — page background
+        lightgray: "#1b2529" # lifted surfaces / borders / card bg
+        gray: "#7c8b90" # muted
+        darkgray: "#b6c2c3" # subtext
+        dark: "#e7ece9" # cool off-white — primary text
+        secondary: "#58b6c3" # blueprint cyan, lifted for dark
+        tertiary: "#e0895c" # pencil sienna, lifted for dark
+        highlight: rgba(88, 182, 195, 0.12)
+        textHighlight: rgba(88, 182, 195, 0.3)
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true

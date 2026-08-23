@@ -1,22 +1,25 @@
 @use "./variables.scss" as *;
 
 // =============================================================================
-//  First Principles Engineering — Anthropic-inspired warm orange theme
-//  All site-wide visual customizations live here. Pure CSS / SCSS only —
-//  Quartz components are untouched.
+//  First Principles Engineering — "Blueprint & Notebook" identity
+//  An engineer's drafting table: graph-paper substrate, blueprint teal-ink
+//  links, pencil-sienna handwritten annotations. All site-wide visual
+//  customizations live here. Pure CSS / SCSS only — Quartz components are
+//  untouched.
 // =============================================================================
 
 // ---- Extra accent tokens -------------------------------------------------
-// Quartz's palette ships --secondary (primary accent) and --tertiary (warm
-// rust second accent). Callouts need a green and a red too. Keep them muted
-// so blue stays the dominant signal.
+// Quartz's palette ships --secondary (blueprint teal, primary accent) and
+// --tertiary (pencil sienna, second accent). Callouts need a green and a red
+// too. --handFont is the handwritten annotation face.
 :root {
-  --accent-success: #5c8f4e;
+  --handFont: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  --accent-success: #4f7d63;
   --accent-danger: #b5341a;
   --fpe-article-font-size: 16px;
 }
 :root[saved-theme="dark"] {
-  --accent-success: #7fb868;
+  --accent-success: #74c39a;
   --accent-danger: #e07a4a;
 }
 
@@ -74,8 +77,8 @@ article {
 
   // ---- Heading hierarchy (W2-P4) ---------------------------------------
   // Explicit sizes + weights so the eye can rank sections at a glance.
-  // ---- Per-heading colour variation (Anthropic warm orange, fading) ---
-  // All headings live in the orange family; each level fades a little
+  // ---- Per-heading colour variation (blueprint teal, fading) ----------
+  // All headings live in the blueprint-teal family; each level fades a little
   // toward neutral gray so the hierarchy reads as a quiet gradient
   // rather than a stack of competing shades. The fade is intentionally
   // gentle — even h6 stays clearly orange-family, never muddy gray.
@@ -443,7 +446,7 @@ article {
 // ---- Article page title (h1.article-title) is outside <article> ----------
 // The article-title plugin renders the page H1 inside .popover-hint sibling
 // of the actual <article> element, so article-scoped rules don't catch it.
-// Mirrors the in-article h1 colour (Anthropic orange = --secondary).
+// Mirrors the in-article h1 colour (blueprint teal = --secondary).
 h1.article-title {
   font-family: var(--headerFont);
   font-size: 2.4rem;
@@ -956,36 +959,10 @@ a.internal.tag-link {
   }
 }
 
-// ---- Background texture --------------------------------------------------
-// Graph paper in light mode, dot grid in dark mode. Applied site-wide so
-// every page (landing + notes) shares the same paper-like surface. Article
-// content sits on an opaque card (see .popover-hint / article backgrounds)
-// so the texture only shows in the margins and stays out of the reading
-// column. Skipped on mobile to save repaints.
-@media (min-width: 800px) {
-  body {
-    background-image:
-      linear-gradient(
-        to right,
-        color-mix(in srgb, var(--darkgray) 4%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--darkgray) 4%, transparent) 1px,
-        transparent 1px
-      );
-    background-size: 32px 32px;
-    background-attachment: fixed;
-  }
-  :root[saved-theme="dark"] body {
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--dark) 8%, transparent) 1px,
-      transparent 1px
-    );
-    background-size: 24px 24px;
-  }
-}
+// ---- Background ----------------------------------------------------------
+// Plain paper backdrop. A graph-paper grid was trialled here as a "drafting
+// table" signature but read as distracting, so the page background is left
+// clean; the hand-drawn Excalidraw diagrams carry the notebook character.
 
 // ---- Right sidebar visibility -------------------------------------------
 // On desktop (>=1200px) we re-instate the right sidebar at $sidePanelWidth
@@ -1133,11 +1110,12 @@ a.internal.tag-link {
     font-size: 0.88rem;
   }
   .fpe-hero-figure-eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 0.7rem;
-    color: var(--gray);
-    font-family: var(--codeFont);
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--tertiary);
+    font-family: var(--handFont);
   }
   .fpe-hero-figure-title {
     color: var(--secondary);
@@ -1201,12 +1179,13 @@ a.internal.tag-link {
 
   & > .article-eyebrow {
     display: block;
-    font-family: var(--codeFont);
-    font-size: 0.68em;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--secondary);
-    margin-bottom: 0.3rem;
+    font-family: var(--handFont);
+    font-size: 0.95em;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    color: var(--tertiary);
+    margin-bottom: 0.2rem;
   }
   & > .article-title {
     display: block;
@@ -1877,16 +1856,17 @@ ul.toc-content.overflow {
 
 // ---- Featured / learning-path cards: title-first hierarchy (#7) ----------
 // Was: orange uppercase eyebrow + dark title (eyebrow visually outweighed
-// the title). Now: title takes the orange→clay gradient (primary attention),
+// the title). Now: title takes the teal→sienna gradient (primary attention),
 // eyebrow shrinks into a muted lowercase-ish label (secondary context).
 .fpe-article-card > .article-eyebrow {
-  font-family: var(--codeFont);
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray);
-  margin-bottom: 0.35rem;
-  opacity: 0.85;
+  font-family: var(--handFont);
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 600;
+  color: var(--tertiary);
+  margin-bottom: 0.15rem;
+  opacity: 0.95;
 }
 .fpe-article-card > .article-title {
   background: linear-gradient(135deg, var(--secondary), var(--tertiary));
@@ -2935,15 +2915,16 @@ body .backlinks > ul.overflow {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-family: var(--codeFont);
-    font-size: 0.68em;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-family: var(--handFont);
+    font-size: 1.05em;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
     color: var(--tertiary);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.3rem;
     svg {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
     }
   }
   & > .roadmap-title {
@@ -2965,14 +2946,15 @@ body .backlinks > ul.overflow {
     display: inline-block;
     margin-top: 0.7rem;
     align-self: flex-start;
-    font-family: var(--codeFont);
-    font-size: 0.7em;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--darkgray);
-    padding: 0.15rem 0.5rem;
+    font-family: var(--handFont);
+    font-size: 1em;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--secondary);
+    padding: 0.05rem 0.55rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--gray) 12%, transparent);
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
   }
 
   &:hover {
@@ -3007,11 +2989,12 @@ body .backlinks > ul.overflow {
     gap: 0.3rem;
   }
   .about-strip-eyebrow {
-    font-family: var(--codeFont);
-    font-size: 0.68em;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--secondary);
+    font-family: var(--handFont);
+    font-size: 0.95em;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    color: var(--tertiary);
   }
   .about-strip-name {
     font-family: var(--headerFont);
@@ -3753,11 +3736,12 @@ body .backlinks > ul.overflow {
     }
 
     .fpe-rail-card-eyebrow {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--secondary);
+      font-family: var(--handFont);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--tertiary);
     }
     .fpe-rail-card-title {
       font-size: 0.92rem;
@@ -4111,7 +4095,9 @@ body .backlinks > ul.overflow {
   border: 1px solid var(--lightgray);
   border-radius: 14px;
   background: var(--light);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 28px rgba(0, 0, 0, 0.06);
 }
 
 .fpe-auth-title {
@@ -4148,7 +4134,10 @@ body .backlinks > ul.overflow {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     border-color: var(--gray);
@@ -4191,7 +4180,9 @@ body .backlinks > ul.overflow {
   font-family: var(--bodyFont);
   font-size: 0.95rem;
   box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &::placeholder {
     color: var(--gray);
@@ -4216,7 +4207,9 @@ body .backlinks > ul.overflow {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 
   &:hover {
     background: var(--tertiary);
@@ -4235,7 +4228,9 @@ body .backlinks > ul.overflow {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 
   &:hover {
     border-color: var(--gray);
@@ -4284,7 +4279,10 @@ body .backlinks > ul.overflow {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
     color: var(--dark);
@@ -4341,7 +4339,9 @@ body .backlinks > ul.overflow {
   .fpe-auth-card {
     background: var(--light);
     border-color: var(--lightgray);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.3),
+      0 8px 28px rgba(0, 0, 0, 0.35);
   }
 
   .fpe-auth-oauth,
@@ -4485,7 +4485,9 @@ body .backlinks > ul.overflow {
     font-family: var(--bodyFont);
     font-size: 0.9rem;
     box-sizing: border-box;
-    transition: border-color 140ms ease, box-shadow 140ms ease;
+    transition:
+      border-color 140ms ease,
+      box-shadow 140ms ease;
     &::placeholder {
       color: var(--gray);
     }

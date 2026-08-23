@@ -91,7 +91,12 @@ export function googleFontHref(theme: Theme) {
   const bodyFont = formatFontSpecification("body", body)
   const codeFont = formatFontSpecification("code", code)
 
-  return `https://fonts.googleapis.com/css2?family=${headerFont}&family=${bodyFont}&family=${codeFont}&display=swap`
+  // Caveat is the site's handwritten annotation face (--handFont). It is not
+  // one of Quartz's header/body/code slots, so it is appended here to ride the
+  // same self-hosted font pipeline (cdnCaching) and stay CSP-safe in prod.
+  const handFont = "Caveat:wght@500;600;700"
+
+  return `https://fonts.googleapis.com/css2?family=${headerFont}&family=${bodyFont}&family=${codeFont}&family=${handFont}&display=swap`
 }
 
 export function googleFontSubsetHref(theme: Theme, text: string) {
