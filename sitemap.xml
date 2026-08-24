@@ -1,153 +1,153 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/01-distributed-systems-primitives</loc>
-    <lastmod>2026-08-24T15:22:18.647Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.887Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/02-logical-clocks</loc>
-    <lastmod>2026-08-24T15:22:18.651Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.891Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/03-consensus-algorithm</loc>
-    <lastmod>2026-08-24T15:22:18.659Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.898Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/04-distributed-lock</loc>
-    <lastmod>2026-08-24T15:22:18.664Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.903Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/05-distributed-transactions</loc>
-    <lastmod>2026-08-24T15:22:18.668Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.909Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/06-gossip-protocol</loc>
-    <lastmod>2026-08-24T15:22:18.671Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.911Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/07-microservices</loc>
-    <lastmod>2026-08-24T15:22:18.676Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.916Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/01-choreography-orchestration</loc>
-    <lastmod>2026-08-24T15:22:18.680Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.920Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/02-event-sourcing-cqrs</loc>
-    <lastmod>2026-08-24T15:22:18.682Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.922Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/03-fan-out-strategies</loc>
-    <lastmod>2026-08-24T15:22:18.683Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.923Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/04-optimistic-pessimistic-locking</loc>
-    <lastmod>2026-08-24T15:22:18.687Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.926Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/05-strangler-fig</loc>
-    <lastmod>2026-08-24T15:22:18.689Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.929Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/06-backend-for-frontend</loc>
-    <lastmod>2026-08-24T15:22:18.692Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.932Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/07-multi-tenancy</loc>
-    <lastmod>2026-08-24T15:22:18.699Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.939Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/01-big-data-stream-processing</loc>
-    <lastmod>2026-08-24T15:22:18.702Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.942Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/02-change-data-capture</loc>
-    <lastmod>2026-08-24T15:22:18.705Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.944Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/03-data-pipeline</loc>
-    <lastmod>2026-08-24T15:22:18.708Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.947Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/01-caching-techniques</loc>
-    <lastmod>2026-08-24T15:22:18.712Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.952Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/02-consistent-hashing</loc>
-    <lastmod>2026-08-24T15:22:18.717Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.956Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/01-api-design</loc>
-    <lastmod>2026-08-24T15:22:18.719Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.958Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/02-api-gateway</loc>
-    <lastmod>2026-08-24T15:22:18.721Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.960Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/03-graphql</loc>
-    <lastmod>2026-08-24T15:22:18.733Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.973Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/04-grpc-rpc</loc>
-    <lastmod>2026-08-24T15:22:18.741Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.980Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/01-cryptographic-primitives</loc>
-    <lastmod>2026-08-24T15:22:18.744Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.983Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/02-cryptography-authentication</loc>
-    <lastmod>2026-08-24T15:22:18.749Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.987Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/03-authorization-concepts</loc>
-    <lastmod>2026-08-24T15:22:18.752Z</lastmod>
+    <lastmod>2026-08-24T15:37:57.991Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/01-observability</loc>
-    <lastmod>2026-08-24T15:22:18.763Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.000Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/02-testing-strategies</loc>
-    <lastmod>2026-08-24T15:22:18.777Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.013Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/03-container-and-image-internals</loc>
-    <lastmod>2026-08-24T15:22:18.784Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.021Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/01-database-concepts</loc>
-    <lastmod>2026-08-24T15:22:18.789Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.025Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/02-cap-and-pacelc</loc>
-    <lastmod>2026-08-24T15:22:18.792Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.029Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/05-isolation-levels</loc>
-    <lastmod>2026-08-24T15:22:18.795Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.032Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/06-mvcc</loc>
-    <lastmod>2026-08-24T15:22:18.799Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.036Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/01-01-redis</loc>
-    <lastmod>2026-08-24T15:22:18.802Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.039Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/03-dynamodb</loc>
-    <lastmod>2026-08-24T15:22:18.806Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.042Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/01-kafka</loc>
-    <lastmod>2026-08-24T15:22:18.810Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.047Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/07-spanner</loc>
-    <lastmod>2026-08-24T15:22:18.815Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.051Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/01-tcp-udp-quic</loc>
-    <lastmod>2026-08-24T15:22:18.818Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.055Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/02-http-1-2-3</loc>
-    <lastmod>2026-08-24T15:22:18.821Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.057Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/03-tls-and-mtls</loc>
-    <lastmod>2026-08-24T15:22:18.823Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.060Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/04-api-protocols-compared</loc>
-    <lastmod>2026-08-24T15:22:18.824Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.062Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/05-load-balancers</loc>
-    <lastmod>2026-08-24T15:22:18.827Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.065Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/06-dns-geodns-anycast</loc>
-    <lastmod>2026-08-24T15:22:18.829Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.066Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/01-ml-system-design-fundamentals</loc>
-    <lastmod>2026-08-24T15:22:18.831Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.068Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/04-rag-architecture</loc>
-    <lastmod>2026-08-24T15:22:18.833Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.070Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/05-model-serving</loc>
-    <lastmod>2026-08-24T15:22:18.837Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.073Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/03-roadmaps/ai-systems-roadmap</loc>
-    <lastmod>2026-08-24T15:22:18.844Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.078Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/03-roadmaps/foundations-roadmap</loc>
-    <lastmod>2026-08-24T15:22:18.845Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.079Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/03-roadmaps/</loc>
-    <lastmod>2026-08-24T15:22:18.845Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.080Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/03-roadmaps/system-design-interviews-roadmap</loc>
-    <lastmod>2026-08-24T15:22:18.846Z</lastmod>
+    <lastmod>2026-08-24T15:37:58.081Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/about</loc>
     <lastmod>2026-07-25T12:42:38.000Z</lastmod>
@@ -162,89 +162,89 @@
     <lastmod>2026-07-25T14:09:09.000Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/01-distributed-systems/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/02-architecture/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/03-data/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/04-caching/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/05-api/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/06-security/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/01-concepts/07-operations/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/01-fundamentals/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/02-databases/02-nosql/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/03-technologies/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/04-networking/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/01-fundamentals/05-ai-ml/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/distributed-systems</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/architecture</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/data</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/caching</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/apis</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/security</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/operations</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/databases</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/nosql</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/systems</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/networking</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/ai-systems</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/roadmap</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url><url>
     <loc>https://firstprinciplesengineering.tech/tags/</loc>
-    <lastmod>2026-08-24T15:22:22.792Z</lastmod>
+    <lastmod>2026-08-24T15:38:02.031Z</lastmod>
   </url></urlset>
