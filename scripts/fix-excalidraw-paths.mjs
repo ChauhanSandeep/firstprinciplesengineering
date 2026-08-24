@@ -158,17 +158,17 @@ for (const html of htmls) {
       const lightRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), lightFile))
       const darkRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), darkFile))
 
-      // NOTE: the vault authors Excalidraw with reversed theme naming — its
-      // `*.excalidraw.light.svg` export is actually the DARK-appearance diagram
-      // (dark background) and `*.excalidraw.dark.svg` is the LIGHT-appearance
-      // one. So we deliberately cross-wire the sources here: the tag shown in
-      // the site's LIGHT theme (class `excalidraw-light`) points at the vault's
-      // `.dark.svg` file, and the tag shown in DARK theme at the `.light.svg`
-      // file. Classes/alt/aria stay semantic so accessibility is unaffected.
-      let lightTag = setSrc(baseTag, darkRelSrc)
+      // The vault now exports Excalidraw with correct theme naming: its
+      // `*.excalidraw.light.svg` is the LIGHT-appearance diagram (light
+      // background) and `*.excalidraw.dark.svg` is the DARK-appearance one.
+      // So the tag shown in the site's LIGHT theme (class `excalidraw-light`)
+      // points at the `.light.svg` file, and the tag shown in DARK theme at
+      // the `.dark.svg` file. Classes/alt/aria stay semantic so accessibility
+      // is unaffected.
+      let lightTag = setSrc(baseTag, lightRelSrc)
       lightTag = addClass(lightTag, "excalidraw-light")
 
-      let darkTag = setSrc(baseTag, lightRelSrc)
+      let darkTag = setSrc(baseTag, darkRelSrc)
       darkTag = addClass(darkTag, "excalidraw-dark")
       // Hide the duplicate from assistive tech so screen readers don't
       // announce the same alt text twice.
