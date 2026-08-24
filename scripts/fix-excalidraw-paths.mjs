@@ -8,7 +8,7 @@
 // We compute the correct file-mode relative path from the HTML file to
 // public/excalidraw/<file> and substitute it.
 
-import { promises as fs, existsSync } from "node:fs"
+import { promises as fs, existsSync, readFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -120,6 +120,67 @@ function companionBasename(fname) {
   return null
 }
 
+// ---- Content-based light/dark detection ---------------------------------
+// The vault's `.light.svg` / `.dark.svg` filename convention is UNRELIABLE:
+// some regenerated pairs are reversed (the `.light.svg` file actually holds
+// the dark-appearance diagram, and vice-versa). Trusting the suffix produced
+// dark diagrams in light mode (and near-invisible text). So we never trust
+// the name for theme assignment — instead we inspect each SVG's background
+// color and route the light-background variant to the site's light theme.
+const bgLightCache = new Map()
+
+function hexLuminance(hex) {
+  const h = hex.replace("#", "")
+  const full =
+    h.length === 3
+      ? h
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : h
+  const r = parseInt(full.slice(0, 2), 16)
+  const g = parseInt(full.slice(2, 4), 16)
+  const b = parseInt(full.slice(4, 6), 16)
+  // Rec. 709 perceived luminance, 0–255.
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+// Extract the full-canvas background fill of an Excalidraw SVG, handling both
+// the raw export form (`<rect x="0" y="0" … fill="#…">`) and the SVGO-optimized
+// form (`<path fill="#…" d="M0 0h…v…H0z"/>`), with a first-fill fallback.
+function svgBackgroundHex(svg) {
+  let m =
+    svg.match(/fill="(#[0-9a-fA-F]{3,6})"\s+d="M0 0[hH][\d.]+[vV][\d.]+[Hh]0z"/i) ||
+    svg.match(/d="M0 0[hH][\d.]+[vV][\d.]+[Hh]0z"\s+fill="(#[0-9a-fA-F]{3,6})"/i)
+  if (m) return m[1]
+  const rectRe = /<rect\b[^>]*>/g
+  let rm
+  while ((rm = rectRe.exec(svg))) {
+    const tag = rm[0]
+    if (/\bx="0"/.test(tag) && /\by="0"/.test(tag) && /\bwidth="\d/.test(tag)) {
+      const fm = tag.match(/\bfill="(#[0-9a-fA-F]{3,6})"/)
+      if (fm) return fm[1]
+    }
+  }
+  m = svg.match(/fill="(#[0-9a-fA-F]{3,6})"/)
+  return m ? m[1] : null
+}
+
+// Returns true if the SVG's background reads as "light", false if "dark",
+// or null when it can't be determined (missing file / no detectable bg).
+function svgIsLight(absPath) {
+  if (bgLightCache.has(absPath)) return bgLightCache.get(absPath)
+  let light = null
+  try {
+    const bg = svgBackgroundHex(readFileSync(absPath, "utf8"))
+    if (bg) light = hexLuminance(bg) >= 128
+  } catch {
+    // leave null (undetectable)
+  }
+  bgLightCache.set(absPath, light)
+  return light
+}
+
 const htmls = await walk(PUBLIC_DIR)
 for (const html of htmls) {
   const orig = await fs.readFile(html, "utf8")
@@ -145,26 +206,47 @@ for (const html of htmls) {
     // shows in both themes — just without theme-specific colors.
     const companion = companionBasename(fname)
     if (companion) {
+      const selfAbs = path.join(EXCALIDRAW_DIR, fname)
       const companionAbs = path.join(EXCALIDRAW_DIR, companion)
-      const isLight = fname.endsWith(LIGHT_SUFFIX)
-      const lightFname = isLight ? fname : companion
-      const darkFname = isLight ? companion : fname
-      const lightExists = isLight ? true : existsSync(companionAbs)
-      const darkExists = isLight ? existsSync(companionAbs) : true
+      const companionExists = existsSync(companionAbs)
 
-      const lightFile = lightExists ? lightFname : darkFname
-      const darkFile = darkExists ? darkFname : lightFname
+      // Decide which physical file is the light- vs dark-appearance diagram by
+      // INSPECTING each SVG's background luminance — never by the filename
+      // suffix, which the vault sometimes reverses. Fall back to the filename
+      // convention only when content detection is inconclusive.
+      let lightFile, darkFile
+      const selfLight = svgIsLight(selfAbs)
+      const compLight = companionExists ? svgIsLight(companionAbs) : null
+
+      if (!companionExists) {
+        // "Duplicate, never fail": show the one export in both themes.
+        lightFile = fname
+        darkFile = fname
+      } else if (selfLight === true && compLight !== true) {
+        lightFile = fname
+        darkFile = companion
+      } else if (selfLight === false && compLight !== false) {
+        lightFile = companion
+        darkFile = fname
+      } else if (compLight === true && selfLight !== true) {
+        lightFile = companion
+        darkFile = fname
+      } else if (compLight === false && selfLight !== false) {
+        lightFile = fname
+        darkFile = companion
+      } else {
+        // Inconclusive (both same / undetectable) → trust the filename.
+        const isLightName = fname.endsWith(LIGHT_SUFFIX)
+        lightFile = isLightName ? fname : companion
+        darkFile = isLightName ? companion : fname
+      }
 
       const lightRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), lightFile))
       const darkRelSrc = fixSrc(html, path.posix.join(path.posix.dirname(src), darkFile))
 
-      // The vault now exports Excalidraw with correct theme naming: its
-      // `*.excalidraw.light.svg` is the LIGHT-appearance diagram (light
-      // background) and `*.excalidraw.dark.svg` is the DARK-appearance one.
-      // So the tag shown in the site's LIGHT theme (class `excalidraw-light`)
-      // points at the `.light.svg` file, and the tag shown in DARK theme at
-      // the `.dark.svg` file. Classes/alt/aria stay semantic so accessibility
-      // is unaffected.
+      // The site's LIGHT theme shows the light-background export; DARK theme
+      // shows the dark-background export. Classes/alt/aria stay semantic so
+      // accessibility is unaffected.
       let lightTag = setSrc(baseTag, lightRelSrc)
       lightTag = addClass(lightTag, "excalidraw-light")
 
