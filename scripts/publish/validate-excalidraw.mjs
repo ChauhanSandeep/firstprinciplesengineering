@@ -9,11 +9,20 @@
  *
  * Severity classification:
  *   critical  → no sidecars exist at all (build would fail)
- *   warning   → only one variant exists (the dark/light pair upgrade in
+ *   warning   → only one variant exists (the pair upgrade in
  *               fix-excalidraw-paths.mjs falls back to duplicating the
  *               present one into both slots; theme parity is lost on that
- *               diagram but the page still renders)
- *   ok        → both sidecars present
+ *               diagram but the page still renders), OR both variants share
+ *               the same background orientation (light/dark themes would look
+ *               identical), OR a variant's own text is illegible against its
+ *               own background (contrast < ~2:1)
+ *   ok        → both sidecars present, backgrounds opposite, text legible
+ *
+ * Note on theme routing: the build assigns each variant to the site's light or
+ * dark theme by the SVG's BACKGROUND COLOR, not its filename — the vault's
+ * `.light.svg`/`.dark.svg` names are sometimes reversed. A reversed-but-
+ * otherwise-healthy pair is therefore NOT flagged here (routing self-corrects);
+ * only genuinely broken pairs (same orientation / illegible) are warned.
  *
  * Output: JSON object to stdout with shape:
  *   {
@@ -51,6 +60,122 @@ async function exists(p) {
   } catch {
     return false
   }
+}
+
+// ---- Theme/contrast analysis --------------------------------------------
+// The build routes each Excalidraw pair to the site's light/dark theme by the
+// SVG's BACKGROUND COLOR, not its filename (vault names are sometimes
+// reversed). So the pairing is only healthy when the two sidecars have
+// OPPOSITE background orientations (one light, one dark) and each variant's
+// own text is legible against its own background. These checks surface the
+// "wrong diagram / invisible text" class before it ships.
+function hexLuminance(hex) {
+  let h = hex.replace("#", "")
+  if (h.length === 3)
+    h = h
+      .split("")
+      .map((c) => c + c)
+      .join("")
+  const r = parseInt(h.slice(0, 2), 16) / 255
+  const g = parseInt(h.slice(2, 4), 16) / 255
+  const b = parseInt(h.slice(4, 6), 16) / 255
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+}
+
+function contrastRatio(hexA, hexB) {
+  const a = hexLuminance(hexA)
+  const b = hexLuminance(hexB)
+  const [hi, lo] = a >= b ? [a, b] : [b, a]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+// Extract the full-canvas background fill (raw and SVGO-optimized forms, with
+// decimal sizes), falling back to the first fill in the document.
+function backgroundHex(svg) {
+  let m =
+    svg.match(/fill="(#[0-9a-fA-F]{3,6})"\s+d="M0 0[hH][\d.]+[vV][\d.]+[Hh]0z"/i) ||
+    svg.match(/d="M0 0[hH][\d.]+[vV][\d.]+[Hh]0z"\s+fill="(#[0-9a-fA-F]{3,6})"/i)
+  if (m) return m[1]
+  const rectRe = /<rect\b[^>]*>/g
+  let rm
+  while ((rm = rectRe.exec(svg))) {
+    const t = rm[0]
+    if (/\bx="0"/.test(t) && /\by="0"/.test(t) && /\bwidth="\d/.test(t)) {
+      const f = t.match(/\bfill="(#[0-9a-fA-F]{3,6})"/)
+      if (f) return f[1]
+    }
+  }
+  m = svg.match(/fill="(#[0-9a-fA-F]{3,6})"/)
+  return m ? m[1] : null
+}
+
+// Most frequently used <text fill="#…"> color (the dominant body-text color).
+function dominantTextHex(svg) {
+  const counts = new Map()
+  const re = /<text\b[^>]*\bfill="(#[0-9a-fA-F]{3,6})"/gi
+  let m
+  while ((m = re.exec(svg))) {
+    const c = m[1].toLowerCase()
+    counts.set(c, (counts.get(c) || 0) + 1)
+  }
+  let best = null
+  let bestN = 0
+  for (const [c, n] of counts) if (n > bestN) ((best = c), (bestN = n))
+  return best
+}
+
+async function analyzeSvg(svgPath) {
+  try {
+    const svg = await fs.readFile(svgPath, "utf8")
+    const bg = backgroundHex(svg)
+    const text = dominantTextHex(svg)
+    return {
+      bg,
+      bgLight: bg ? hexLuminance(bg) > 0.4 : null,
+      text,
+      contrast: bg && text ? contrastRatio(bg, text) : null,
+    }
+  } catch {
+    return { bg: null, bgLight: null, text: null, contrast: null }
+  }
+}
+
+// Given the light/dark sidecar analyses, return any non-critical theme
+// warnings. Two failure modes are detected:
+//   1. Both variants share the same background orientation → the light/dark
+//      themes render identically (routing can't distinguish them).
+//   2. The pair is a "hybrid": both variants use the SAME dominant text color
+//      (i.e. only the background was recolored, the foreground was never
+//      re-themed) AND the light-background variant's text is illegible against
+//      its own light background. This is the case content-based routing CANNOT
+//      fix, because the file routed to light mode has light text on light
+//      paper. Requiring the shared-text signal avoids false-positiving on
+//      healthy pairs and legitimate white-on-dark-box flowcharts (whose light
+//      variant correctly uses dark text). Returns [] when healthy.
+function themeWarnings(light, dark) {
+  const out = []
+  if (light.bgLight !== null && dark.bgLight !== null) {
+    if (light.bgLight === dark.bgLight) {
+      out.push(
+        `both variants have a ${light.bgLight ? "light" : "dark"} background; ` +
+          `the light/dark themes will look identical (re-export the pair)`,
+      )
+      return out
+    }
+    // Opposite orientations (healthy naming or reversed-but-routable). Check
+    // the variant that will be shown in the site's LIGHT theme.
+    const lightVariant = light.bgLight ? light : dark
+    const sameText = light.text && dark.text && light.text === dark.text
+    if (sameText && lightVariant.contrast !== null && lightVariant.contrast < 2.0) {
+      out.push(
+        `hybrid export — the light-theme diagram has near-invisible text ` +
+          `(contrast ${lightVariant.contrast.toFixed(1)}:1); its foreground ` +
+          `was not re-themed for light mode. Re-export this diagram in Obsidian.`,
+      )
+    }
+  }
+  return out
 }
 
 // Index every `.excalidraw.md` file in the vault by both bare stem and full
@@ -127,9 +252,19 @@ async function checkSidecars(sourceAbs) {
   const legacyExists = await exists(legacySvg)
 
   if (lightExists && darkExists) {
+    const [lightA, darkA] = await Promise.all([analyzeSvg(lightSvg), analyzeSvg(darkSvg)])
+    const warnings = themeWarnings(lightA, darkA)
+    if (warnings.length > 0) {
+      return {
+        severity: "warning",
+        message: `dark/light pair present but: ${warnings.join("; ")}`,
+        lightSvg,
+        darkSvg,
+      }
+    }
     return {
       severity: "ok",
-      message: "dark/light pair present",
+      message: "dark/light pair present (backgrounds opposite, text legible)",
       lightSvg,
       darkSvg,
     }
@@ -163,16 +298,11 @@ async function checkSidecars(sourceAbs) {
 const EMBED_RE = /!\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]/g
 
 function isExcalidrawTarget(target) {
-  return (
-    /\.excalidraw(\.md|\.svg)?$/i.test(target) ||
-    /(^|\/)Excalidraw\//i.test(target)
-  )
+  return /\.excalidraw(\.md|\.svg)?$/i.test(target) || /(^|\/)Excalidraw\//i.test(target)
 }
 
 async function processNote(notePath) {
-  const abs = path.isAbsolute(notePath)
-    ? notePath
-    : path.join(VAULT_ROOT, notePath)
+  const abs = path.isAbsolute(notePath) ? notePath : path.join(VAULT_ROOT, notePath)
   const raw = await fs.readFile(abs, "utf8")
   const index = await buildIndex()
 
