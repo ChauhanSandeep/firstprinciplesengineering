@@ -24,7 +24,7 @@ jobs:
     name: Privacy guard (no vault content tracked)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Assert only allowlisted content/** is tracked
         run: |
           # content/ is regenerated from the private vault by `npm run sync`
@@ -51,8 +51,8 @@ jobs:
     name: Types, tests, and script syntax
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
